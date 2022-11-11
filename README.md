@@ -88,6 +88,7 @@ By default, TreeSJ has presets for these languages:
 - **CSS**;
 - **SCSS**;
 - **HTML**;
+- **Vue**;
 - **JSON**;
 
 For adding your favorite language, add it to `langs` sections in your configuration.
