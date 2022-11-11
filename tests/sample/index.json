@@ -1,0 +1,22 @@
+{
+  "language": "json",
+  "result": "result of SPLIT"
+  "configured_nodes": {
+    "object": {
+      "split": "split",
+      "join": "join"
+    },
+    "array": [
+      "split",
+      "join"
+    ]
+  }
+}
+{
+  "language": "json",
+  "result": "result of JOIN"
+  "configured_nodes": {
+    "object": { "split": "split", "join": "join" },
+    "array": [ "split", "join" ]
+  }
+}

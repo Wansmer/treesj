@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- RESULT OF JOIN (node "start_tag", preset default) -->
+    <p class="paragraph" id="general_text">Text</p>
+  <!-- RESULT OF SPLIT (node "start_tag", preset default) -->
+    <p
+      class="paragraph"
+      id="general_text"
+    >Text</p>
+
+  <!-- RESULT OF JOIN (node "self_closing_tag", preset default) -->
+    <img src="./logo.jpg" alt="pretty kitty"/>
+  <!-- RESULT OF SPLIT (node "self_closing_tag", preset default) -->
+    <img
+      src="./logo.jpg"
+      alt="pretty kitty"
+    />
+
+  <!-- RESULT OF JOIN (node "element", preset default) -->
+    <span class="text" id="span">Text</span>
+  <!-- RESULT OF SPLIT (node "element", preset default) -->
+    <span class="text" id="span">
+      Text
+    </span>
+
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+/* RESULT OF JOIN (node "block", preset default) */
+.container { display: flex; flex-direction: column; justify-content: space-between; align-items: start; }
+
+/* RESULT OF SPLIT (node "block", preset default) */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: start;
+}
+
+/* RESULT OF JOIN (node "keyframe_block_list", preset default) */
+@keyframes animation { from { margin-top: 50px; } 50% { margin-top: 150px !important; } to { margin-top: 100px; } }
+
+/* RESULT OF SPLIT (node "keyframe_block_list", preset default) */
+@keyframes animation {
+  from { margin-top: 50px; }
+  50% { margin-top: 150px !important; }
+  to { margin-top: 100px; }
+}
+
+/* RESULT OF JOIN (node "arguments", preset default) */
+div {
+  background: repeating-linear-gradient(red, orange, 50px);
+  clip-path: polygon(50%, 0%, 60%, 40%, 100%, 50%, 60%, 60%, 50%, 100%, 40%, 60%, 0%, 50%, 40%, 40%);
+}
+
+/* RESULT OF SPLIT (node "arguments", preset default) */
+div {
+  background: repeating-linear-gradient(red, orange, 50px);
+  clip-path: polygon(
+    50%,
+    0%,
+    60%,
+    40%,
+    100%,
+    50%,
+    60%,
+    60%,
+    50%,
+    100%,
+    40%,
+    60%,
+    0%,
+    50%,
+    40%,
+    40%
+  );
+}
