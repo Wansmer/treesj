@@ -125,6 +125,16 @@ local data_for_split = {
     result = { 98, 103 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "statement_block", preset default',
+    cursor = { 109, 1 },
+    expected = { 111, 116 },
+    result = { 108, 113 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -226,6 +236,16 @@ local data_for_join = {
     cursor = { 103, 12 },
     expected = { 98, 99 },
     result = { 101, 102 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "statement_block" (if with return), preset default',
+    cursor = { 112, 1 },
+    expected = { 108, 109 },
+    result = { 111, 112 },
     settings = {},
   },
 }

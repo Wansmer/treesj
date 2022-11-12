@@ -48,6 +48,16 @@ local data_for_split = {
     result = { 18, 27 },
     settings = settings,
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "statement_block", preset with recursive = true',
+    cursor = { 33, 1 },
+    expected = { 35, 40 },
+    result = { 32, 37 },
+    settings = settings,
+  },
 }
 
 describe('TreeSJ SPLIT:', function()

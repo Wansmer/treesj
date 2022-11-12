@@ -166,7 +166,9 @@ function M._split(tsj)
           _merge_text_to_prev(lines, spacing, text[1])
           table.remove(text, 1)
         end
-        table.insert(lines, text)
+        if not vim.tbl_isempty(text) then
+          table.insert(lines, text)
+        end
       end
     else
       _set_whitespace(child:text())

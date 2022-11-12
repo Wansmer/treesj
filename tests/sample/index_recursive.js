@@ -28,3 +28,14 @@ function trycatch(test) {
     console.log('Done!');
   }
 }
+
+// RESULT OF JOIN (node "statement_block", preset default)
+if (b <= a) { 1 + 2; add(2, 1) + sum(2, 1); return (console.log(1), 1) >= 1; }
+
+// RESULT OF SPLIT (node "statement_block", preset default)
+if (b <= a) {
+  1 + 2;
+  add(2, 1) + sum(2, 1);
+  return (console.log(1), 1) >= 1;
+}
+
