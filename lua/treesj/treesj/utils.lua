@@ -48,7 +48,7 @@ local function is_instruction_sep_need(child, p)
     return false
   end
 
-  if child:is_framing() or p.force_insert == '' then
+  if child:is_framing() or u.is_empty(p.force_insert) then
     return false
   end
 
@@ -129,7 +129,7 @@ function M._join(tsj)
   local lines = {}
 
   for child in tsj:iter_children() do
-    if tsj:has_preset() and child:text() ~= '' then
+    if tsj:has_preset() then
       local p = tsj:preset(JOIN)
 
       if is_instruction_sep_need(child, p) then
@@ -140,7 +140,7 @@ function M._join(tsj)
       set_whitespace(child)
 
       table.insert(lines, child:text())
-    elseif child:text() ~= '' then
+    else
       set_whitespace(child)
       table.insert(lines, child:text())
     end
@@ -177,12 +177,12 @@ function M._split(tsj)
       elseif is_string then
         set_whitespace(child)
         merge_text_to_prev_line(lines, child:text())
-      elseif is_table and not vim.tbl_isempty(lines) then
+      elseif is_table and not u.is_empty(lines) then
         set_whitespace(child)
         merge_text_to_prev_line(lines, child:text()[1])
         table.remove(child:text(), 1)
 
-        if not vim.tbl_isempty(child:text()) then
+        if not u.is_empty(child:text()) then
           table.insert(lines, child:text())
         end
       end
