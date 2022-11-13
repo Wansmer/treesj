@@ -9,18 +9,13 @@ local M = {}
 ---@param tsnode userdata TSNode instance
 ---@return integer[]
 function M.get_observed_range(tsnode)
-  local sr, sc, er, ec = tsnode:range()
+  local rr = u.readable_range({ tsnode:range() })
   local prev = tsnode:prev_sibling()
   if prev then
-    local pr = { prev:range() }
-    local is_on_one_line = sr == pr[1]
-    if is_on_one_line then
-      sc = pr[4]
-    else
-      sc = 0
-    end
+    local prr = u.readable_range({ prev:range() })
+    rr.col.start = prr.row.start == rr.row.start and prr.col.end_ or 0
   end
-  return { sr, sc, er, ec }
+  return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
 ---Add some text to start of base text. If the base is table, prepend text to first element of table
