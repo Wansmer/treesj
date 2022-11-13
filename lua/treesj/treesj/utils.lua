@@ -114,6 +114,19 @@ local function set_indent(child)
   child:_update_text(text)
 end
 
+---Append text to last item in list. If last item is a table, merge to last of this table.
+---@param lines table List-like table
+---@vararg string
+local function merge_text_to_prev_line(lines, ...)
+  local prev = lines[#lines]
+  local text = table.concat({ ... })
+  if type(prev) == 'table' then
+    prev[#prev] = prev[#prev] .. text
+  elseif type(prev) == 'string' then
+    lines[#lines] = lines[#lines] .. text
+  end
+end
+
 ---Make result line for 'join'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
@@ -139,19 +152,6 @@ function M._join(tsj)
   end
 
   return table.concat(lines)
-end
-
----Append text to last item in list. If last item is a table, merge to last of this table.
----@param lines table List-like table
----@vararg string
-local function merge_text_to_prev_line(lines, ...)
-  local prev = lines[#lines]
-  local text = table.concat({ ... })
-  if type(prev) == 'table' then
-    prev[#prev] = prev[#prev] .. text
-  elseif type(prev) == 'string' then
-    lines[#lines] = lines[#lines] .. text
-  end
 end
 
 ---Make result lines for 'split'
