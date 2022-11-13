@@ -18,6 +18,19 @@ function M.tobool(val)
   return val and true or false
 end
 
+---Checking if the string or table is is is empty
+---@param val string|table
+---@return boolean
+function M.is_empty(val)
+  if type(val) == 'table' then
+    return vim.tbl_isempty(val)
+  elseif type(val) == 'string' then
+    return val == ''
+  else
+    return false
+  end
+end
+
 ---Get lunguage for node
 ---@param node userdata TSNode instance
 ---@return string
@@ -73,7 +86,7 @@ end
 ---@return boolean
 function M.has_targets(node)
   local target = M.get_preset(node).target_nodes
-  return target and not vim.tbl_isempty(target)
+  return target and not M.is_empty(target)
 end
 
 ---Return list-like table with keys of option 'target_nodes'
@@ -108,15 +121,20 @@ function M.collect_children(node, filter)
   return children
 end
 
--- TODO: rewrite
 ---Return text of node
 ---@param node userdata TSNode instance
 ---@return string
 function M.get_node_text(node)
-  local text = query.get_node_text(node, 0, { concat = false })
-  text = vim.tbl_map(vim.trim, text)
-  text = { table.concat(text, ' ') }
-  return vim.trim(text[1])
+  local lines = query.get_node_text(node, 0, { concat = false })
+  local trimed_lines = {}
+  local sep = ' '
+  for _, line in ipairs(lines) do
+    line = vim.trim(line)
+    if not M.is_empty(line) then
+      table.insert(trimed_lines, line)
+    end
+  end
+  return table.concat(trimed_lines, sep)
 end
 
 ---Recursively iterates over each one until the state is satisfied
@@ -170,18 +188,17 @@ function M.has_disabled_descendants(tsnode, mode)
 end
 
 ---Convert range (integer[]) to human-readable
----@param tsj TreeSJ TreeSJ instance
+---@param range integer[] Range
 ---@return table
-function M.readable_range(tsj)
-  local range = tsj:range()
+function M.readable_range(range)
   return {
     row = {
       start = range[1],
-      end_ = range[3],
+      end_ = range[3] or range[1],
     },
     col = {
       start = range[2],
-      end_ = range[4],
+      end_ = range[4] or range[2],
     },
   }
 end
