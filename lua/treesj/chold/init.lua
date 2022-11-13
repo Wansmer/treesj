@@ -2,6 +2,9 @@ local settings = require('treesj.settings').settings
 local u = require('treesj.utils')
 local cu = require('treesj.chold.utils')
 
+local JOIN = 'join'
+local SPLIT = 'split'
+
 ---Calculating new position for cursor considering current mode
 ---@class CHold
 ---@field pos table Start position of cursor (0-base index)
@@ -37,7 +40,7 @@ function CHold:update(tsj, mode)
     elseif cu.is_after_node(self, tsj) then
       self:_calc_when_after(tsj, mode)
     else
-      if mode == 'join' then
+      if mode == JOIN then
         self:_calc_for_join(tsj)
       else
         self:_calc_for_split(tsj)
@@ -58,7 +61,7 @@ end
 ---Calculate '_new_pos' when settings.cursor_behavior is 'start'
 ---@param tsj TreeSJ TreeSJ instance
 function CHold:_calc_for_start(tsj)
-  local rr = u.readable_range(tsj:root())
+  local rr = u.readable_range(tsj:root():range())
   self:_update_pos({ row = rr.row.start + 1, col = rr.col.start })
   self:done()
 end
@@ -68,14 +71,14 @@ end
 function CHold:_calc_for_end(tsj, mode)
   if tsj:is_last() then
     local lines = tsj:root():get_lines()
-    if mode == 'split' then
+    if mode == SPLIT then
       self:_update_pos({
         row = self._new_pos.row + #lines - 1,
         col = #lines[#lines] - 1,
       })
       self:done()
     else
-      local rr = u.readable_range(tsj:root())
+      local rr = u.readable_range(tsj:root():range())
       self:_update_pos({
         col = rr.col.start + #lines[1] - 1,
         row = rr.row.start + 1,
@@ -89,10 +92,10 @@ end
 ---@param tsj TreeSJ TreeSJ instance
 function CHold:_calc_when_after(tsj, mode)
   if tsj:is_last() then
-    local rr = u.readable_range(tsj:root())
+    local rr = u.readable_range(tsj:root():range())
     local after = self.pos.col - rr.col.end_
     local lines = tsj:root():get_lines()
-    if mode == 'split' then
+    if mode == SPLIT then
       self:_update_pos({
         row = self._new_pos.row + #lines - 1,
         col = #lines[#lines] + after,
@@ -111,12 +114,12 @@ end
 ---Calculate '_new_pos' when settings.cursor_behavior is 'hold' and mode is 'join'
 ---@param tsj TreeSJ TreeSJ instance
 function CHold:_calc_for_join(tsj)
-  local rr = u.readable_range(tsj:root())
+  local rr = u.readable_range(tsj:root():range())
 
   if cu.in_node_range(self, tsj) then
     self:_update_pos({
       row = rr.row.start + 1,
-      col = self._new_pos.col + cu.new_col_pos(self, tsj, 'join'),
+      col = self._new_pos.col + cu.new_col_pos(self, tsj, JOIN),
     })
     self:done()
     return
@@ -133,9 +136,9 @@ function CHold:_calc_for_split(tsj)
   cu.increase_row(self, tsj)
 
   if cu.in_node_range(self, tsj) then
-    local rr = u.readable_range(tsj:root())
+    local rr = u.readable_range(tsj:root():range())
     if not (self._new_pos.row - 1 == rr.row.start) then
-      self:_update_pos({ col = cu.new_col_pos(self, tsj, 'split') })
+      self:_update_pos({ col = cu.new_col_pos(self, tsj, SPLIT) })
       self:done()
     else
       self:done()

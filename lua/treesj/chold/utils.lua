@@ -1,5 +1,6 @@
 local u = require('treesj.utils')
 local M = {}
+local SPLIT = 'split'
 
 ---Return table with cursor position (index start zero)
 ---@return table
@@ -13,12 +14,16 @@ end
 ---@param tsj TreeSJ TreeSJ instance
 ---@return boolean
 function M.is_not_need_change(chold, tsj)
-  local rr = u.readable_range(tsj:root())
+  local rr = u.readable_range(tsj:root():range())
   return chold.pos.row == rr.row.start and chold.pos.col <= rr.col.start
 end
 
+---Checking if cursor position is after node
+---@param chold CHold
+---@param tsj TreeSJ
+---@return boolean
 function M.is_after_node(chold, tsj)
-  local rr = u.readable_range(tsj:root())
+  local rr = u.readable_range(tsj:root():range())
   return chold.pos.row == rr.row.end_ and chold.pos.col >= rr.col.end_
 end
 
@@ -27,19 +32,20 @@ end
 ---@param tsj TreeSJ TreeSJ instance
 ---@return boolean
 function M.in_node_range(chold, tsj)
-  local r = tsj:o_range()
-  local cr = chold.pos.row
-  local cc = chold.pos.col
+  local rr = u.readable_range(tsj:o_range())
+  local result = false
 
-  if cr >= r[1] and cr <= r[3] then
-    if cr == r[3] then
-      return cc < r[4]
-    elseif cr == r[3] then
-      return cc >= r[2]
+  if rr.row.start <= chold.pos.row and chold.pos.row <= rr.row.end_ then
+    if chold.pos.row == rr.row.end_ then
+      result = chold.pos.col < rr.col.end_
+    elseif chold.pos.row == rr.row.start then
+      result = chold.pos.col >= rr.col.start
+    else
+      result = true
     end
-    return true
   end
-  return false
+
+  return result
 end
 
 ---Return position of cursor in current node. If this was before start column of node, returning negative value
@@ -48,15 +54,16 @@ end
 ---@param mode string Current mode (split|join)
 ---@return integer
 function M.pos_in_node(chold, tsj, mode)
-  local rr = u.readable_range(tsj)
+  local rr = u.readable_range(tsj:range())
   local pos = chold.pos.col - rr.col.start
   local p = tsj:parent():preset(mode)
+  local space_sep = p and p.space_separator or 0
 
-  if mode == 'split' then
+  if mode == SPLIT then
     local indent = -u.calc_indent(tsj)
     pos = pos >= indent and pos or indent
   else
-    local sep = -p.space_separator
+    local sep = -space_sep
     pos = pos >= sep and pos or sep
   end
 
@@ -70,17 +77,17 @@ end
 ---@return integer
 function M.new_col_pos(chold, tsj, mode)
   local pos = M.pos_in_node(chold, tsj, mode)
-  local is_need_prev_len = mode == 'split' and tsj:is_omit()
+  local is_need_prev_len = mode == SPLIT and tsj:is_omit()
   local prev_len_corr = is_need_prev_len and #tsj:prev():text() or 0
-  local ws = mode == 'split' and u.calc_indent(tsj) or #u.get_whitespace(tsj)
-  return pos + ws + prev_len_corr
+  local ws = mode == SPLIT and u.calc_indent(tsj) or #u.get_whitespace(tsj)
+  return prev_len_corr + ws + pos
 end
 
 ---Checking if row must be increase and increasing it if needed
 ---@param tsj TreeSJ TreeSJ instance
 ---@param chold CHold CHold instance
 function M.increase_row(chold, tsj)
-  local need_increase_row = not tsj:is_omit() and not tsj:is_first()
+  local need_increase_row = not (tsj:is_omit() or tsj:is_first())
 
   if need_increase_row then
     local text = tsj:text()
@@ -88,14 +95,13 @@ function M.increase_row(chold, tsj)
 
     if type(text) == 'table' then
       if M.in_node_range(chold, tsj) then
-        local pos = M.new_col_pos(chold, tsj, 'split')
+        local pos = M.new_col_pos(chold, tsj, SPLIT)
         local len = 0
-        local i = 0
+
         while pos > len do
-          i = i + 1
-          len = len + #text[i]
+          term = term + 1
+          len = len + #text[term]
         end
-        term = i
       else
         term = #vim.tbl_flatten(text)
       end

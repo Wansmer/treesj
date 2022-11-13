@@ -170,18 +170,17 @@ function M.has_disabled_descendants(tsnode, mode)
 end
 
 ---Convert range (integer[]) to human-readable
----@param tsj TreeSJ TreeSJ instance
+---@param range integer[] Range
 ---@return table
-function M.readable_range(tsj)
-  local range = tsj:range()
+function M.readable_range(range)
   return {
     row = {
       start = range[1],
-      end_ = range[3],
+      end_ = range[3] or range[1],
     },
     col = {
       start = range[2],
-      end_ = range[4],
+      end_ = range[4] or range[2],
     },
   }
 end
