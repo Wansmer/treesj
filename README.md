@@ -30,7 +30,7 @@ With [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
 ```lua
 use({
-  'https://github.com/Wansmer/treesj',
+  'Wansmer/treesj',
   requires = { 'nvim-treesitter' },
   config = function()
     require('treesj').setup({--[[ your config ]]})
