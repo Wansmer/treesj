@@ -76,6 +76,15 @@ local data = {
   },
   {
     path = PATH,
+    mode = 'split',
+    desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos on destructing array',
+    cursor = { 41, 33 },
+    expected = { 42, 9 },
+    result = {},
+    settings = settings,
+  },
+  {
+    path = PATH,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos on last sep',
     cursor = { 37, 3 },

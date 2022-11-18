@@ -36,3 +36,12 @@ const arr = [
     1,
   ],
 ];
+
+// RESULT OF JOIN (node "array", preset preset with recursive = true)
+someArr.push(...new Set([ ...someFunc(1, 2), 1 ]));
+
+// RESULT OF SPLIT (node "array", preset preset with recursive = true)
+someArr.push(...new Set([
+  ...someFunc(1, 2),
+  1,
+]));
