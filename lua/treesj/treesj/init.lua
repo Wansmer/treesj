@@ -23,7 +23,6 @@ TreeSJ.__index = TreeSJ
 function TreeSJ.new(tsnode, parent)
   local preset = u.get_self_preset(tsnode)
   local sr = tsnode:range()
-  local hd = u.has_node_to_format(tsnode)
   local ri
   if not parent then
     ri = vim.fn.indent(sr + 1)
@@ -37,7 +36,7 @@ function TreeSJ.new(tsnode, parent)
     _next = nil,
     _preset = preset,
     _text = u.get_node_text(tsnode),
-    _has_node_to_format = hd,
+    _has_node_to_format = u.has_node_to_format(tsnode),
     _children = {},
     _observed_range = tu.get_observed_range(tsnode),
     _root_indent = ri,
