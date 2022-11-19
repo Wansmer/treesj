@@ -56,6 +56,7 @@ function TreeSJ:build_tree()
       tsj:prev():_set_next(tsj)
     end
 
+    -- TODO: add check for current mode
     if not tsj:is_ignore('split') and tsj:has_preset() then
       local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
       tsj._root_indent = tsj:up_indent() + sw
@@ -69,7 +70,7 @@ function TreeSJ:build_tree()
 end
 
 function TreeSJ:up_indent()
-  if self:parent():has_preset() then
+  if self:parent():has_preset() and not self:parent():is_ignore('split') then
     return self:parent()._root_indent
   end
   if self:parent() then
