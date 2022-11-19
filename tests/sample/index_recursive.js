@@ -39,3 +39,10 @@ if (b <= a) {
   return (console.log(1), 1) >= 1;
 }
 
+// RESULT OF JOIN (node "array", preset preset with recursive = true)
+cell.siblings = [ ...new Set([ ...cell.siblings, ...currentPlaceSiblings ]) ];
+
+// RESULT OF SPLIT (node "array", preset preset with recursive = true)
+cell.siblings = [
+  ...new Set([ ...cell.siblings, ...currentPlaceSiblings ]),
+];
