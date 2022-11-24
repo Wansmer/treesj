@@ -8,7 +8,6 @@ local langs = {
   'css',
   'scss',
   'tsx',
-  'jsx',
 }
 
 local M = {}
