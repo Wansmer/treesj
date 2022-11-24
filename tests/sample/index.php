@@ -18,7 +18,7 @@ test(1, 2, 3);
 test(
   1,
   2,
-  3
+  3,
 );
 
 // RESULT OF JOIN (node "formal_parameters", preset default)
@@ -30,7 +30,7 @@ function test($a, $b, $c) {
 function test(
   $a,
   $b,
-  $c
+  $c,
 ) {
   print_r([$a, $b, $c]);
 }
