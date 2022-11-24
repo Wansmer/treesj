@@ -242,7 +242,7 @@ end
 ---@param tsj TreeSJ TreeSJ instance
 ---@return integer
 function M.calc_indent(tsj)
-  if tsj:is_first() or tsj:is_omit() then
+  if tsj:is_first() or (tsj:is_omit() and not tsj:is_last()) then
     return 0
   end
   local si = tsj:parent()._root_indent

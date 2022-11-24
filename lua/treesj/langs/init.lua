@@ -7,6 +7,8 @@ local langs = {
   'vue',
   'css',
   'scss',
+  'tsx',
+  'jsx',
 }
 
 local M = {}

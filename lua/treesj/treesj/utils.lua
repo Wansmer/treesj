@@ -159,14 +159,18 @@ function M._split(tsj)
     if tsj:has_preset() then
       local p = tsj:preset(SPLIT)
 
-      set_indent(child)
       set_last_sep_if_need(child, p)
 
       local text = child:text()
       if child:is_omit() then
         merge_text_to_prev_line(lines, text)
+        if child:is_last() then
+          local indent = u.calc_indent(child);
+          lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
+        end
       else
-        table.insert(lines, text)
+        set_indent(child)
+        table.insert(lines, child:text())
       end
     elseif tsj:has_to_format() then
       local is_string = type(child:text()) == 'string'
