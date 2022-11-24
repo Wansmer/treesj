@@ -47,3 +47,20 @@ const Button = (props) => {
     </div>
   );
 };
+
+// result of JOIN (node with 'nested_identifier')
+const test = () => {
+  return (
+    <Skeleton.Button block active />
+  );
+}
+
+// result of SPLIT (node with 'nested_identifier')
+const test = () => {
+  return (
+    <Skeleton.Button
+      block
+      active
+    />
+  );
+}
