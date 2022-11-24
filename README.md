@@ -84,6 +84,8 @@ By default, TreeSJ has presets for these languages:
 
 - **Javascript**;
 - **Typescript**;
+- **Tsx**;
+- **Jsx**;
 - **Lua**;
 - **CSS**;
 - **SCSS**;
