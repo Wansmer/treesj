@@ -4,6 +4,7 @@ return {
   object = u.set_preset_for_dict(),
   object_pattern = u.set_preset_for_dict(),
   array = u.set_preset_for_list(),
+  array_pattern = u.set_preset_for_list(),
   formal_parameters = u.set_preset_for_args(),
   arguments = u.set_preset_for_args(),
   named_imports = u.set_preset_for_dict(),
