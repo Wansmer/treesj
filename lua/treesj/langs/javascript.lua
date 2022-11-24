@@ -2,6 +2,7 @@ local u = require('treesj.langs.utils')
 
 return {
   object = u.set_preset_for_dict(),
+  object_pattern = u.set_preset_for_dict(),
   array = u.set_preset_for_list(),
   formal_parameters = u.set_preset_for_args(),
   arguments = u.set_preset_for_args(),
@@ -62,4 +63,20 @@ return {
       'object',
     },
   },
+  jsx_opening_element = u.set_default_preset({
+    both = {
+      omit = { 'identifier' },
+    },
+  }),
+  jsx_element = u.set_default_preset({
+    join = {
+      space_separator = 0,
+    },
+  }),
+  jsx_self_closing_element = u.set_default_preset({
+    both = {
+      omit = { 'identifier', '>' },
+      no_format_with = {},
+    },
+  }),
 }
