@@ -54,6 +54,16 @@ local data_for_split = {
     result = { 41, 44 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "jsx_self_closing_element" with nested_identifier, preset default',
+    cursor = { 54, 11 },
+    expected = { 60, 64 },
+    result = { 53, 57 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -105,6 +115,16 @@ local data_for_join = {
     cursor = { 45, 9 },
     expected = { 41, 42 },
     result = { 43, 44 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "jsx_self_closing_element" with nested_identifier, preset default',
+    cursor = { 61, 11 },
+    expected = { 53, 54 },
+    result = { 60, 61 },
     settings = {},
   },
 }
