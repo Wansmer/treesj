@@ -165,7 +165,7 @@ function M._split(tsj)
       if child:is_omit() then
         merge_text_to_prev_line(lines, text)
         if child:is_last() then
-          local indent = u.calc_indent(child);
+          local indent = u.calc_indent(child)
           lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
         end
       else

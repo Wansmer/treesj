@@ -95,14 +95,14 @@ function M.increase_row(chold, tsj)
 
     if type(text) == 'table' then
       if M.in_node_range(chold, tsj) then
-       local pos = M.new_col_pos(chold, tsj, 'split')
-         local len = 0
-         local line_count = 0
-         while pos > len do
-           line_count = line_count + 1
-           len = len + #text[line_count]
-         end
-         term = line_count
+        local pos = M.new_col_pos(chold, tsj, 'split')
+        local len = 0
+        local line_count = 0
+        while pos > len do
+          line_count = line_count + 1
+          len = len + #text[line_count]
+        end
+        term = line_count
       else
         term = #vim.tbl_flatten(text)
       end
