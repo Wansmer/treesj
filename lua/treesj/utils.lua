@@ -52,12 +52,19 @@ end
 ---If mode passed, return preset for specified mode
 ---@param node userdata TSNode instance
 ---@param mode? string Current mode (split|join)
----@return table
+---@return table|nil
 function M.get_preset(node, mode)
   local lang = M.get_node_lang(node)
+  if not M.is_lang_support(lang) then
+    return nil
+  end
   local preset = langs[lang]
   local type = node:type()
-  return mode and preset[type][mode] or preset[type]
+  if preset[type] then
+    return mode and preset[type][mode] or preset[type]
+  else
+    return nil
+  end
 end
 
 ---Return the preset for current node if it no contains field 'target_nodes'
@@ -181,6 +188,9 @@ end
 ---@return boolean
 function M.has_disabled_descendants(tsnode, mode)
   local p = M.get_preset(tsnode, mode)
+  if not p then
+    return false
+  end
   local function contains_in_no_format_with(tsn)
     return vim.tbl_contains(p.no_format_with, tsn:type())
   end
