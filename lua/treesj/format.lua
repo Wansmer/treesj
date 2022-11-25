@@ -40,12 +40,8 @@ function M._format(mode)
 
   if u.has_disabled_descendants(node, MODE) then
     local p = u.get_preset(node, MODE)
-    notify.info(
-      msg.no_format_with,
-      MODE,
-      node:type(),
-      vim.inspect(p.no_format_with)
-    )
+    local no_format_with = p and vim.inspect(p.no_format_with) or ''
+    notify.info(msg.no_format_with, MODE, node:type(), no_format_with)
     return
   end
 
@@ -64,7 +60,7 @@ function M._format(mode)
   local new_cursor = cursor:get_cursor()
 
   vim.api.nvim_buf_set_text(0, sr, sc, er, ec, replacement)
-  vim.api.nvim_win_set_cursor(0, new_cursor)
+  pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
 end
 
 return M
