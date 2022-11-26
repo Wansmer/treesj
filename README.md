@@ -94,7 +94,7 @@ By default, TreeSJ has presets for these languages:
 - **JSON**;
 - **PHP**;
 
-For adding your favorite language, add it to `langs` sections in your configuration.
+For adding your favorite language, add it to `langs` sections in your configuration. Also, see how [to implement fallback](https://github.com/Wansmer/treesj/discussions/19) for splitjoin.vim.
 
 To find out what nodes are called in your language, analyze your code with [nvim-treesitter/playground](https://github.com/nvim-treesitter/playground) or look in the [source code of the parsers](https://tree-sitter.github.io/tree-sitter/).
 
