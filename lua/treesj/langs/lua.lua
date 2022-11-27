@@ -8,10 +8,6 @@ return {
     both = {
       node_without_brackets = true,
     },
-    split = {
-      recursive = false,
-      recursive_ignore = { 'arguments', 'parameters' },
-    },
     join = {
       force_insert = '',
     },
@@ -25,4 +21,5 @@ return {
   if_statement = { target_nodes = { 'block' } },
   else_statement = { target_nodes = { 'block' } },
   function_declaration = { target_nodes = { 'block' } },
+  function_definition = { target_nodes = { 'block' } },
 }

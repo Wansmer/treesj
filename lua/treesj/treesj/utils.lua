@@ -119,10 +119,20 @@ end
 local function merge_text_to_prev_line(lines, ...)
   local prev = lines[#lines]
   local text = table.concat({ ... })
+
+  if vim.trim(text) == '' or not prev then
+    return
+  end
+
+  local prev_text = type(prev) == 'table' and prev[#prev] or lines[#lines]
+  if vim.endswith(prev_text, ' ') then
+    text = vim.trim(text)
+  end
+
   if type(prev) == 'table' then
-    prev[#prev] = prev[#prev] .. text
-  elseif type(prev) == 'string' then
-    lines[#lines] = lines[#lines] .. text
+    prev[#prev] = prev_text .. text
+  else
+    lines[#lines] = prev_text .. text
   end
 end
 
@@ -157,11 +167,14 @@ function M._join(tsj)
   return table.concat(lines)
 end
 
+--TODO: rewrite, no readable
 ---Make result lines for 'split'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string[]
 function M._split(tsj)
   local lines = {}
+
+  local skip_framing = tsj:without_brackets() and tsj ~= tsj:root()
 
   for child in tsj:iter_children() do
     if tsj:has_preset() then
@@ -177,6 +190,9 @@ function M._split(tsj)
           lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
         end
       else
+        if skip_framing and child:is_framing() then
+          child:_update_text('')
+        end
         set_indent(child)
         table.insert(lines, child:text())
       end

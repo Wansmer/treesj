@@ -79,7 +79,7 @@ end
 -- RESULT OF JOIN (node "block" in function_declaration contains nested function)
 local function foo() local test = function() print(123) local function ins() return 'bar' end return 'foo' end return test() end
 
--- RESULT OF JOIN (node "block" in function_declaration contains nested functions)
+-- RESULT OF RECURSIVE SPLIT (node "block" in function_declaration contains nested functions)
 local function foo()
   local test = function()
     print(123)
@@ -90,3 +90,29 @@ local function foo()
   end
   return test()
 end
+
+-- RESULT OF JOIN (node "table_constructor" with nested "block")
+local nest = { one = 'one', two = function() return 'two' end, three = 'three' }
+
+-- RESULT OF RECURSIVE SPLIT (node "table_constructor" with nested "block")
+local nest = {
+  one = 'one',
+  two = function()
+    return 'two'
+  end,
+  three = 'three',
+}
+
+-- RESULT OF JOIN (node "table_constructor" with nested "table_constructor")
+local nest = { one = 'one', two = { one = 'one', two = { one = 'one' } } }
+
+-- RESULT OF RECURSIVE SPLIT (node "table_constructor" with nested "table_constructor")
+local nest = {
+  one = 'one',
+  two = {
+    one = 'one',
+    two = {
+      one = 'one',
+    },
+  },
+}
