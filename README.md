@@ -6,8 +6,7 @@ Inspired by and partly repeats the functionality of [splitjoin.vim](https://gith
 
 > *⚡Disclaimer: The plugin is under active development. Documentation will be added when all planned features are implemented. Feel free to open an issue or PR 💪*
 
-
-https://user-images.githubusercontent.com/46977173/201088511-b336cec5-cec4-437f-95b3-0208c83377fd.mov
+<https://user-images.githubusercontent.com/46977173/201088511-b336cec5-cec4-437f-95b3-0208c83377fd.mov>
 
 <sup align="center">Theme: [Catppuccin](https://github.com/catppuccin/nvim), Font: JetBrains Mono</sup>
 
@@ -72,6 +71,7 @@ tsj.setup({
   langs = langs,
 })
 ```
+
 Also, TreeSJ provide user commands:
 
 1. `:TSJToggle` - toggle node under cursor (split if one-line and join if multiline);
@@ -94,7 +94,7 @@ By default, TreeSJ has presets for these languages:
 - **JSON**;
 - **PHP**;
 
-For adding your favorite language, add it to `langs` sections in your configuration. Also, see how [to implement fallback](https://github.com/Wansmer/treesj/discussions/19) for splitjoin.vim.
+For adding your favorite language, add it to `langs` sections in your configuration. Also, see how [to implement fallback](https://github.com/Wansmer/treesj/discussions/19) to splitjoin.vim.
 
 To find out what nodes are called in your language, analyze your code with [nvim-treesitter/playground](https://github.com/nvim-treesitter/playground) or look in the [source code of the parsers](https://tree-sitter.github.io/tree-sitter/).
 
@@ -110,7 +110,7 @@ local langs = {
 }
 ```
 
-If you have completely configured your language, and it works as well as you expected, feel free to open PR and share it.
+If you have completely configured your language, and it works as well as you expected, feel free to open PR and share it. (Please, read [manual](/tests/README.md) before PR)
 
 ### Nodes configuration
 
@@ -136,6 +136,9 @@ local somenode = {
     -- (e.g. tag_name in HTML start_tag or separator (',') in JS object) 
     -- NOTE: Must be same for both modes
     omit = {},
+    -- boolean: Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
+    -- NOTE: Must be same for both modes
+    non_bracket_node = false,
   },
 
   -- Use only for join. If contains field from 'both',
@@ -194,6 +197,8 @@ TreeSJ provide default presets for common nodes:
 `set_preset_for_statement(override)` - statement-like nodes.
 
 `set_preset_for_args(override)` - arguments-like nodes.
+
+`set_preset_for_non_bracket(override)` - non-bracket nodes;
 
 Takes a table with the settings to be overwritten as an argument.
 
@@ -255,6 +260,7 @@ Presets for node can be two types:
 **Example**:
 
 > "|" - meaning cursor
+
 ```javascript
 const arr = [ 1, 2, 3 ]
 ```

@@ -4,14 +4,7 @@ return {
   table_constructor = u.set_preset_for_dict(),
   arguments = u.set_preset_for_args(),
   parameters = u.set_preset_for_args(),
-  block = u.set_preset_for_statement({
-    both = {
-      non_bracket_node = true,
-    },
-    join = {
-      force_insert = '',
-    },
-  }),
+  block = u.set_preset_for_non_bracket(),
   variable_declaration = {
     target_nodes = { 'table_constructor', 'block' },
   },

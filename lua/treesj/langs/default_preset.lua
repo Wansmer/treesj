@@ -14,6 +14,9 @@ return {
     -- (e.g. tag_name in HTML start_tag or separator (',') in JS object)
     -- NOTE: Must be same for both modes
     omit = {},
+    -- boolean: Non-bracket nodes (e.g., with then end instead of {}|<>|[])
+    -- NOTE: Must be same for both modes
+    non_bracket_node = false,
   },
   -- Use only for join. If contains field from 'both',
   -- field here have higher priority
