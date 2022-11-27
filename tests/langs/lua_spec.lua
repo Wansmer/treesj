@@ -127,6 +127,16 @@ local data_for_join = {
     result = { 51, 52 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "block" in function_declaration contains nested functions, preset default',
+    cursor = { 83, 15 },
+    expected = { 79, 80 },
+    result = { 82, 83 },
+    settings = {},
+  },
 }
 
 describe('TreeSJ SPLIT:', function()

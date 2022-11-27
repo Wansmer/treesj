@@ -75,3 +75,18 @@ function foo ()
   local test = { one = 'one', two = 'two' }
   return test
 end
+
+-- RESULT OF JOIN (node "block" in function_declaration contains nested function)
+local function foo() local test = function() print(123) local function ins() return 'bar' end return 'foo' end return test() end
+
+-- RESULT OF JOIN (node "block" in function_declaration contains nested functions)
+local function foo()
+  local test = function()
+    print(123)
+    local function ins()
+      return 'bar'
+    end
+    return 'foo'
+  end
+  return test()
+end

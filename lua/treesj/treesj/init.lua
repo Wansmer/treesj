@@ -48,7 +48,7 @@ function TreeSJ:build_tree()
   local children = u.collect_children(self:tsnode())
   local prev
 
-  if self:witout_brackets() then
+  if self:without_brackets() then
     u.update_for_no_brackets(self:tsnode(), children)
   end
 
@@ -73,11 +73,15 @@ function TreeSJ:build_tree()
   end
 end
 
-function TreeSJ:witout_brackets()
-  return self:has_preset() and self:preset('split').node_without_brackets
+---Checking if the current treesj node is non-bracket block
+---@return boolean
+function TreeSJ:without_brackets()
+  return self:has_preset()
+      and u.get_nested_key_value(self:preset('split'), 'node_without_brackets')
     or false
 end
 
+---Get indent from previous configured ancestor node
 function TreeSJ:up_indent()
   if self:parent():has_preset() and not self:parent():is_ignore('split') then
     return self:parent()._root_indent
@@ -190,7 +194,7 @@ end
 ---Get range of current node
 ---@return integer[]
 function TreeSJ:range()
-  if self:witout_brackets() then
+  if self:without_brackets() then
     local sr, sc, er, ec
     sr, sc = self:child(1):tsnode():range()
     _, _, er, ec = self:child(#self._children):tsnode():range()

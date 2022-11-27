@@ -265,6 +265,7 @@ function M.is_on_same_line(tsj)
   return prev and prev:range()[1] == tsj:range()[1] or false
 end
 
+--TODO: rewtite
 ---Get whitespace between nodes
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
@@ -277,8 +278,10 @@ function M.get_whitespace(tsj)
   local s_count = 1
   local p = tsj:parent():preset('join')
   if not p then
-    if prev:range()[3] == tsj:range()[1] then
-      s_count = tsj:range()[2] - prev:range()[4]
+    local prev_range = { prev:tsnode():range() }
+    local tsj_range = { tsj:tsnode():range() }
+    if prev_range[3] == tsj_range[1] then
+      s_count = tsj_range[2] - prev_range[4]
     end
     return (' '):rep(s_count)
   end
