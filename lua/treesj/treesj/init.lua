@@ -87,6 +87,13 @@ function TreeSJ:up_indent()
   end
 end
 
+---Get child of TreeSJ by index
+---@param index integer
+---@return TreeSJ
+function TreeSJ:child(index)
+  return self._children[index]
+end
+
 ---Get root of TreeSJ
 ---@return TreeSJ TreeSJ instance
 function TreeSJ:root()
@@ -183,6 +190,12 @@ end
 ---Get range of current node
 ---@return integer[]
 function TreeSJ:range()
+  if self:witout_brackets() then
+    local sr, sc, er, ec
+    sr, sc = self:child(1):tsnode():range()
+    _, _, er, ec = self:child(#self._children):tsnode():range()
+    return { sr, sc, er, ec }
+  end
   return { self._tsnode:range() }
 end
 

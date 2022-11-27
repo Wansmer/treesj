@@ -14,8 +14,8 @@ end
 ---@param tsj TreeSJ TreeSJ instance
 ---@return boolean
 function M.is_not_need_change(chold, tsj)
-  local rr = u.readable_range(tsj:root():range())
-  return chold.pos.row == rr.row.start and chold.pos.col <= rr.col.start
+  local rr = u.readable_range(tsj:root():child(1):range())
+  return chold.pos.row == rr.row.start and chold.pos.col <= rr.col.end_
 end
 
 ---Checking if cursor position is after node

@@ -1,9 +1,10 @@
 local tu = require('tests.utils')
-local PATH = './tests/chold/cursor.js'
+local PATH_JS = './tests/chold/cursor.js'
+local PATH_LUA = './tests/chold/cursor.lua'
 
 local data = {
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos inside block',
     cursor = { 4, 16 },
@@ -12,7 +13,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos before block',
     cursor = { 4, 0 },
@@ -21,7 +22,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on first sym of block',
     cursor = { 4, 12 },
@@ -30,7 +31,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on last sym of block',
     cursor = { 4, 78 },
@@ -39,7 +40,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on penultimate symbol of block',
     cursor = { 4, 77 },
@@ -48,7 +49,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos after block',
     cursor = { 4, 79 },
@@ -57,7 +58,25 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_LUA,
+    mode = 'split',
+    desc = 'cursor_behavior = "hold", mode = "%s", pos inside non-bracket block',
+    cursor = { 2, 63 },
+    expected = { 4, 7 },
+    result = {},
+    settings = { cursor_behavior = 'hold' },
+  },
+  {
+    path = PATH_LUA,
+    mode = 'split',
+    desc = 'cursor_behavior = "hold", mode = "%s", pos on last element of non-bracket block',
+    cursor = { 11, 27 },
+    expected = { 13, 1 },
+    result = {},
+    settings = { cursor_behavior = 'hold' },
+  },
+  {
+    path = PATH_JS,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s", pos inside block',
     cursor = { 9, 4 },
@@ -66,7 +85,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s", pos before block',
     cursor = { 7, 3 },
@@ -75,7 +94,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on first sym of block',
     cursor = { 7, 12 },
@@ -84,7 +103,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on last sym of block',
     cursor = { 11, 0 },
@@ -93,7 +112,7 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on penultimate symbol of block',
     cursor = { 10, 38 },
@@ -102,11 +121,29 @@ local data = {
     settings = { cursor_behavior = 'hold' },
   },
   {
-    path = PATH,
+    path = PATH_JS,
     mode = 'join',
     desc = 'cursor_behavior = "hold", mode = "%s", pos after block',
     cursor = { 11, 1 },
     expected = { 7, 79 },
+    result = {},
+    settings = { cursor_behavior = 'hold' },
+  },
+  {
+    path = PATH_LUA,
+    mode = 'join',
+    desc = 'cursor_behavior = "hold", mode = "%s", pos inside non-bracket block',
+    cursor = { 7, 5 },
+    expected = { 5, 61 },
+    result = {},
+    settings = { cursor_behavior = 'hold' },
+  },
+  {
+    path = PATH_LUA,
+    mode = 'join',
+    desc = 'cursor_behavior = "hold", mode = "%s", pos on last element of non-bracket block',
+    cursor = { 16, 1 },
+    expected = { 14, 27 },
     result = {},
     settings = { cursor_behavior = 'hold' },
   },
