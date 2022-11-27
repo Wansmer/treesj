@@ -56,3 +56,22 @@ local function test(
 )
   print(a, b, c)
 end
+
+-- RESULT OF JOIN (node "block" in if_statement), preset default
+if true then print(123) local a = b print(a) end
+
+-- RESULT OF SPLIT (node "block" in if_statement), preset default
+if true then
+  print(123)
+  local a = b
+  print(a)
+end
+
+-- RESULT OF JOIN (node "block" in function_declaration), preset default
+function foo () local test = { one = 'one', two = 'two' } return test end
+
+-- RESULT OF SPLIT (node "block" in function_declaration), preset default
+function foo ()
+  local test = { one = 'one', two = 'two' }
+  return test
+end

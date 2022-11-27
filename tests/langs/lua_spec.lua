@@ -54,6 +54,26 @@ local data_for_split = {
     result = { 46, 51 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "block" in if_statement, preset default',
+    cursor = { 61, 15 },
+    expected = { 63, 68 },
+    result = { 60, 65 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "block" in function_declaration, preset default',
+    cursor = { 71, 15 },
+    expected = { 73, 77 },
+    result = { 70, 74 },
+    settings = {},
+  },
 }
 
 local data_for_join = {

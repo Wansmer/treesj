@@ -110,6 +110,50 @@ function M.get_nodes_for_lang(lang)
   return vim.tbl_keys(langs[lang])
 end
 
+---Recursively finding key in table and return its value if found or nil
+---@param tbl table|nil Dict-like table
+---@param target_key string Name of target key
+---@return any|nil
+function M.get_nested_key_value(tbl, target_key)
+  if not tbl or vim.tbl_islist(tbl) then
+    return nil
+  end
+  local found
+  for key, val in pairs(tbl) do
+    if key == target_key then
+      return val
+    end
+    if type(val) == 'table' and not vim.tbl_islist(val) then
+      found = M.get_nested_key_value(val, target_key)
+    end
+    if found then
+      return found
+    end
+  end
+  return nil
+end
+
+---Add first and last node to children list for non-bracket blocks
+---@param node userdata TSNode instance
+---@param children table
+function M.update_for_no_brackets(node, children)
+  local p = M.get_preset(node)
+  if p and M.get_nested_key_value(p, 'node_without_brackets') then
+    local prev = node:prev_sibling()
+    local next = node:next_sibling()
+    if prev then
+      table.insert(children, 1, node:prev_sibling())
+    else
+      table.insert(children, 1, '')
+    end
+    if next then
+      table.insert(children, node:next_sibling())
+    else
+      table.insert(children, '')
+    end
+  end
+end
+
 ---Get list-like table with children of node
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
@@ -259,6 +303,26 @@ function M.calc_indent(tsj)
   local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
   local common_indent = si + sw
   return tsj:is_last() and si or common_indent
+end
+
+---Returned range of node considering the presence of brackets
+---@param tsn userdata
+function M.range(tsn)
+  local p = M.get_preset(tsn, 'split')
+  local sr, sc, er, ec = tsn:range()
+
+  if p and p.node_without_brackets then
+    local prev = tsn:prev_sibling()
+    local next = tsn:next_sibling()
+    if prev then
+      sr, sc, _, _ = prev:range()
+    end
+    if next then
+      _, _, er, ec = next:range()
+    end
+  end
+
+  return sr, sc, er, ec
 end
 
 return M

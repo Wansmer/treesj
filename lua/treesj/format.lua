@@ -30,7 +30,7 @@ function M._format(mode)
     return
   end
 
-  local sr, sc, er, ec = node:range()
+  local sr, sc, er, ec = u.range(node)
   local MODE = mode or sr == er and SPLIT or JOIN
 
   if settings.check_syntax_error and node:has_error() then

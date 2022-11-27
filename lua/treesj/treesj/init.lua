@@ -48,6 +48,10 @@ function TreeSJ:build_tree()
   local children = u.collect_children(self:tsnode())
   local prev
 
+  if self:witout_brackets() then
+    u.update_for_no_brackets(self:tsnode(), children)
+  end
+
   for _, child in ipairs(children) do
     local tsj = TreeSJ.new(child, self)
 
@@ -67,6 +71,11 @@ function TreeSJ:build_tree()
     table.insert(self._children, tsj)
     prev = tsj
   end
+end
+
+function TreeSJ:witout_brackets()
+  return self:has_preset() and self:preset('split').node_without_brackets
+    or false
 end
 
 function TreeSJ:up_indent()
@@ -249,9 +258,8 @@ end
 ---Checking if the text of current node contains at 'preset.omit'
 ---@return boolean
 function TreeSJ:is_omit()
-  -- TODO: rewrite for both modes (NO HARDCODE JOIN)
-  local p = self:parent_preset('join')
-  return p and vim.tbl_contains(p.omit, self:type()) or false
+  local omit = u.get_nested_key_value(self:parent_preset(), 'omit')
+  return omit and vim.tbl_contains(omit, self:type()) or false
 end
 
 ---Return formatted lines of TreeSJ
