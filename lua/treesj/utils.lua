@@ -133,27 +133,6 @@ function M.get_nested_key_value(tbl, target_key)
   return nil
 end
 
----Add first and last node to children list for non-bracket blocks
----@param node userdata TSNode instance
----@param children table
-function M.update_for_no_brackets(node, children)
-  local p = M.get_preset(node)
-  if p and M.get_nested_key_value(p, 'node_without_brackets') then
-    local prev = node:prev_sibling()
-    local next = node:next_sibling()
-    if prev then
-      table.insert(children, 1, node:prev_sibling())
-    else
-      table.insert(children, 1, '')
-    end
-    if next then
-      table.insert(children, node:next_sibling())
-    else
-      table.insert(children, '')
-    end
-  end
-end
-
 ---Get list-like table with children of node
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
@@ -291,7 +270,6 @@ function M.get_whitespace(tsj)
     s_count = p.space_in_brackets and 1 or 0
     return (' '):rep(s_count)
   end
-
   return (' '):rep(s_count)
 end
 
@@ -308,20 +286,30 @@ function M.calc_indent(tsj)
   return tsj:is_last() and si or common_indent
 end
 
+---Get base nodes for first/last fake node in non-bracket blocks
+---@param tsn userdata TSNode instance
+---@return userdata|nil, userdata|nil
+function M.get_non_bracket_first_last(tsn)
+  local first = tsn:prev_sibling() or tsn:parent():prev_sibling()
+  local last = tsn:next_sibling() or tsn:parent():next_sibling()
+  return first, last
+end
+
 ---Returned range of node considering the presence of brackets
 ---@param tsn userdata
 function M.range(tsn)
   local p = M.get_preset(tsn, 'split')
   local sr, sc, er, ec = tsn:range()
 
-  if p and p.node_without_brackets then
-    local prev = tsn:prev_sibling()
-    local next = tsn:next_sibling()
-    if prev then
-      sr, sc, _, _ = prev:range()
+  if p and p.non_bracket_node then
+    local first, last = M.get_non_bracket_first_last(tsn)
+    if first then
+      local r = { first:range() }
+      sr, sc, _, _ = r[3], r[4]
     end
-    if next then
-      _, _, er, ec = next:range()
+    if last then
+      local r = { last:range() }
+      _, _, er, ec = _, _, r[1], r[2]
     end
   end
 

@@ -6,7 +6,7 @@ return {
   parameters = u.set_preset_for_args(),
   block = u.set_preset_for_statement({
     both = {
-      node_without_brackets = true,
+      non_bracket_node = true,
     },
     join = {
       force_insert = '',

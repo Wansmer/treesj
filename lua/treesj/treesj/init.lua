@@ -5,6 +5,7 @@ local tu = require('treesj.treesj.utils')
 ---@class TreeSJ
 ---@field _root boolean If the current node is the root
 ---@field _tsnode userdata TSNode instance
+---@field _fake table Fake first/last node for non-bracket blocks
 ---@field _parent TreeSJ|nil TreeSJ instance. Parent of current TreeSJ node
 ---@field _prev TreeSJ|nil TreeSJ instance. Previous sibling of current TreeSJ node
 ---@field _next TreeSJ|nil TreeSJ instance. Next sibling of current TreeSJ node
@@ -18,10 +19,11 @@ local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
----@param tsnode userdata TSNode instance
+---@param tsnode userdata|table TSNode instance
 ---@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as root
 function TreeSJ.new(tsnode, parent)
-  local preset = u.get_self_preset(tsnode)
+  local is_tsnode = type(tsnode) == 'userdata'
+  local preset = is_tsnode and u.get_self_preset(tsnode) or nil
   local sr = tsnode:range()
   local ri
   if not parent then
@@ -31,14 +33,16 @@ function TreeSJ.new(tsnode, parent)
   return setmetatable({
     _root = not parent,
     _tsnode = tsnode,
+    _fake = not is_tsnode,
     _parent = parent,
     _prev = nil,
     _next = nil,
     _preset = preset,
-    _text = u.get_node_text(tsnode),
-    _has_node_to_format = u.has_node_to_format(tsnode),
+    _text = is_tsnode and u.get_node_text(tsnode) or '',
+    _has_node_to_format = is_tsnode and u.has_node_to_format(tsnode) or false,
     _children = {},
-    _observed_range = tu.get_observed_range(tsnode),
+    _observed_range = is_tsnode and tu.get_observed_range(tsnode)
+      or { tsnode:range() },
     _root_indent = ri,
   }, TreeSJ)
 end
@@ -48,8 +52,8 @@ function TreeSJ:build_tree()
   local children = u.collect_children(self:tsnode())
   local prev
 
-  if self:without_brackets() then
-    u.update_for_no_brackets(self:tsnode(), children)
+  if self:non_bracket() then
+    tu.update_for_non_brackets(self:tsnode(), children)
   end
 
   for _, child in ipairs(children) do
@@ -60,13 +64,14 @@ function TreeSJ:build_tree()
       tsj:prev():_set_next(tsj)
     end
 
-    -- TODO: add check for current mode
     if not tsj:is_ignore('split') and tsj:has_preset() then
       local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
       tsj._root_indent = tsj:up_indent() + sw
     end
 
-    tsj:build_tree()
+    if type(child) == 'userdata' then
+      tsj:build_tree()
+    end
 
     table.insert(self._children, tsj)
     prev = tsj
@@ -75,9 +80,9 @@ end
 
 ---Checking if the current treesj node is non-bracket block
 ---@return boolean
-function TreeSJ:without_brackets()
+function TreeSJ:non_bracket()
   return self:has_preset()
-      and u.get_nested_key_value(self:preset('split'), 'node_without_brackets')
+      and u.get_nested_key_value(self:preset('split'), 'non_bracket_node')
     or false
 end
 
@@ -194,7 +199,7 @@ end
 ---Get range of current node
 ---@return integer[]
 function TreeSJ:range()
-  if self:without_brackets() then
+  if self:non_bracket() then
     local sr, sc, er, ec
     sr, sc = self:child(1):tsnode():range()
     _, _, er, ec = self:child(#self._children):tsnode():range()

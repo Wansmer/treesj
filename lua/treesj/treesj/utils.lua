@@ -18,6 +18,42 @@ function M.get_observed_range(tsnode)
   return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
+---Makes fake first/last node for TreeSJ. Use for non-bracket blocks.
+---@param tsn userdata
+---@param pos string last|first
+local function fake_tsn(tsn, pos)
+  local fake = {}
+  fake.__index = fake
+  local sr, sc, er, ec = tsn:range()
+  function fake:range()
+    if pos == 'first' then
+      return er, ec, er, ec
+    else
+      return sr, sc, sr, sc
+    end
+  end
+  function fake:type()
+    return 'fake' .. pos
+  end
+  return fake
+end
+
+---Add first and last node to children list for non-bracket blocks
+---@param node userdata TSNode instance
+---@param children table
+function M.update_for_non_brackets(node, children)
+  local p = u.get_preset(node)
+  if p and u.get_nested_key_value(p, 'non_bracket_node') then
+    local first, last = u.get_non_bracket_first_last(node)
+    if first then
+      table.insert(children, 1, fake_tsn(first, 'first'))
+    end
+    if last then
+      table.insert(children, fake_tsn(last, 'last'))
+    end
+  end
+end
+
 ---Add some text to start of base text. If the base is table, prepend text to first element of table
 ---@param target_text string|string[]
 ---@param text string
@@ -37,7 +73,9 @@ end
 local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
   local text = child:text()
-  if type(text) == 'string' and vim.startswith(text, ' ') then
+  local skip_space = type(text) == 'string' and vim.startswith(text, ' ')
+    or u.is_empty(text)
+  if skip_space then
     spacing = ''
   end
   text = prepend_text(child:text(), spacing)
@@ -142,11 +180,10 @@ end
 function M._join(tsj)
   local lines = {}
 
-  local skip_framing = tsj:without_brackets() and tsj ~= tsj:root()
-
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
+      local last_in_root = tsj == tsj:root() and child:is_last() and child._fake
 
       if is_instruction_sep_need(child, p) then
         child:_update_text(child:text() .. p.force_insert)
@@ -155,9 +192,10 @@ function M._join(tsj)
       set_last_sep_if_need(child, p)
       set_whitespace(child)
 
-      if not (skip_framing and child:is_framing()) then
-        table.insert(lines, child:text())
+      if last_in_root then
+        child:_update_text(' ')
       end
+      table.insert(lines, child:text())
     else
       set_whitespace(child)
       table.insert(lines, child:text())
@@ -174,8 +212,6 @@ end
 function M._split(tsj)
   local lines = {}
 
-  local skip_framing = tsj:without_brackets() and tsj ~= tsj:root()
-
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local p = tsj:preset(SPLIT)
@@ -190,9 +226,6 @@ function M._split(tsj)
           lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
         end
       else
-        if skip_framing and child:is_framing() then
-          child:_update_text('')
-        end
         set_indent(child)
         table.insert(lines, child:text())
       end
