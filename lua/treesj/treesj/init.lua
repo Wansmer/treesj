@@ -5,7 +5,7 @@ local tu = require('treesj.treesj.utils')
 ---@class TreeSJ
 ---@field _root boolean If the current node is the root
 ---@field _tsnode userdata TSNode instance
----@field _fake table Fake first/last node for non-bracket blocks
+---@field _imitator table Imitator first/last node for non-bracket blocks
 ---@field _parent TreeSJ|nil TreeSJ instance. Parent of current TreeSJ node
 ---@field _prev TreeSJ|nil TreeSJ instance. Previous sibling of current TreeSJ node
 ---@field _next TreeSJ|nil TreeSJ instance. Next sibling of current TreeSJ node
@@ -33,7 +33,7 @@ function TreeSJ.new(tsnode, parent)
   return setmetatable({
     _root = not parent,
     _tsnode = tsnode,
-    _fake = not is_tsnode,
+    _imitator = not is_tsnode,
     _parent = parent,
     _prev = nil,
     _next = nil,
@@ -53,7 +53,7 @@ function TreeSJ:build_tree()
   local prev
 
   if self:non_bracket() then
-    tu.update_for_non_brackets(self:tsnode(), children)
+    tu.add_first_last_imitator(self:tsnode(), children)
   end
 
   for _, child in ipairs(children) do
@@ -69,7 +69,7 @@ function TreeSJ:build_tree()
       tsj._root_indent = tsj:up_indent() + sw
     end
 
-    if type(child) == 'userdata' then
+    if child:type() ~= 'imitator' then
       tsj:build_tree()
     end
 
@@ -82,7 +82,7 @@ end
 ---@return boolean
 function TreeSJ:non_bracket()
   return self:has_preset()
-      and u.get_nested_key_value(self:preset('split'), 'non_bracket_node')
+      and u.get_nested_key_value(self:preset(), 'non_bracket_node')
     or false
 end
 

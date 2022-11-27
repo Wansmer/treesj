@@ -18,38 +18,38 @@ function M.get_observed_range(tsnode)
   return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
----Makes fake first/last node for TreeSJ. Use for non-bracket blocks.
+---Makes first/last imitator node for TreeSJ. Using only for non-bracket blocks.
 ---@param tsn userdata
 ---@param pos string last|first
-local function fake_tsn(tsn, pos)
-  local fake = {}
-  fake.__index = fake
+local function imitate_tsn(tsn, pos)
+  local imitator = {}
+  imitator.__index = imitator
   local sr, sc, er, ec = tsn:range()
-  function fake:range()
+  function imitator:range()
     if pos == 'first' then
       return er, ec, er, ec
     else
       return sr, sc, sr, sc
     end
   end
-  function fake:type()
-    return 'fake' .. pos
+  function imitator:type()
+    return 'imitator'
   end
-  return fake
+  return imitator
 end
 
----Add first and last node to children list for non-bracket blocks
+---Add first and last imitator nodas to children list for non-bracket blocks
 ---@param node userdata TSNode instance
 ---@param children table
-function M.update_for_non_brackets(node, children)
+function M.add_first_last_imitator(node, children)
   local p = u.get_preset(node)
   if p and u.get_nested_key_value(p, 'non_bracket_node') then
     local first, last = u.get_non_bracket_first_last(node)
     if first then
-      table.insert(children, 1, fake_tsn(first, 'first'))
+      table.insert(children, 1, imitate_tsn(first, 'first'))
     end
     if last then
-      table.insert(children, fake_tsn(last, 'last'))
+      table.insert(children, imitate_tsn(last, 'last'))
     end
   end
 end
@@ -183,7 +183,9 @@ function M._join(tsj)
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
-      local last_in_root = tsj == tsj:root() and child:is_last() and child._fake
+      local last_in_root = tsj == tsj:root()
+        and child:is_last()
+        and child._imitator
 
       if is_instruction_sep_need(child, p) then
         child:_update_text(child:text() .. p.force_insert)

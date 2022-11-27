@@ -286,7 +286,7 @@ function M.calc_indent(tsj)
   return tsj:is_last() and si or common_indent
 end
 
----Get base nodes for first/last fake node in non-bracket blocks
+---Get base nodes for first/last imitator node in non-bracket blocks
 ---@param tsn userdata TSNode instance
 ---@return userdata|nil, userdata|nil
 function M.get_non_bracket_first_last(tsn)
