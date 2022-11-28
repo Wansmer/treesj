@@ -93,6 +93,7 @@ By default, TreeSJ has presets for these languages:
 - **Vue**;
 - **JSON**;
 - **PHP**;
+- **Ruby**;
 
 For adding your favorite language, add it to `langs` sections in your configuration. Also, see how [to implement fallback](https://github.com/Wansmer/treesj/discussions/19) to splitjoin.vim.
 
