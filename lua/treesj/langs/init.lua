@@ -9,6 +9,7 @@ local langs = {
   'scss',
   'tsx',
   'php',
+  'ruby',
 }
 
 local M = {}
