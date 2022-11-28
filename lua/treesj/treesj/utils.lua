@@ -72,13 +72,7 @@ end
 ---@param child TreeSJ
 local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
-  local text = child:text()
-  local skip_space = type(text) == 'string' and vim.startswith(text, ' ')
-    or u.is_empty(text)
-  if skip_space then
-    spacing = ''
-  end
-  text = prepend_text(child:text(), spacing)
+  local text = prepend_text(child:text(), spacing)
   child:_update_text(text)
 end
 
@@ -183,9 +177,6 @@ function M._join(tsj)
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
-      local last_in_root = tsj == tsj:root()
-        and child:is_last()
-        and child._imitator
 
       if is_instruction_sep_need(child, p) then
         child:_update_text(child:text() .. p.force_insert)
@@ -194,9 +185,6 @@ function M._join(tsj)
       set_last_sep_if_need(child, p)
       set_whitespace(child)
 
-      if last_in_root then
-        child:_update_text(' ')
-      end
       table.insert(lines, child:text())
     else
       set_whitespace(child)

@@ -243,39 +243,36 @@ function M.readable_range(range)
 end
 
 ---Checking if the previos and current nodes place on same line
----@param tsj TreeSJ Current TreeSJ instance
+---@param prev TreeSJ|nil Previous TreeSJ instance
+---@param curent TreeSJ Current TreeSJ instance
 ---@return boolean
-function M.is_on_same_line(tsj)
-  local prev = tsj:prev()
-  return prev and prev:range()[1] == tsj:range()[1] or false
+local function is_on_same_line(prev, curent)
+  return prev and prev:range()[3] == curent:range()[1] or false
 end
 
---TODO: rewtite
+---Get spacing between siblings (siblings must be placed by same line)
+---@param prev TreeSJ
+---@param current TreeSJ
+---@return integer
+local function get_sibling_spacing(prev, current)
+  return current:range()[2] - prev:range()[4]
+end
+
 ---Get whitespace between nodes
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
 function M.get_whitespace(tsj)
-  local prev = tsj:prev()
-  if tsj:is_first() or tsj:is_omit() or not prev then
-    return ''
-  end
-
-  local s_count = 1
   local p = tsj:parent():preset('join')
-  if not p then
-    local prev_range = { prev:tsnode():range() }
-    local tsj_range = { tsj:tsnode():range() }
-    if prev_range[3] == tsj_range[1] then
-      s_count = tsj_range[2] - prev_range[4]
-    end
-    return (' '):rep(s_count)
+  local s_count = p and p.space_separator or 1
+
+  if tsj:is_first() or tsj:is_omit() then
+    s_count = 0
+  elseif not p and is_on_same_line(tsj:prev(), tsj) then
+    s_count = get_sibling_spacing(tsj:prev(), tsj)
+  elseif p and (tsj:prev():is_first() or tsj:is_last()) then
+    s_count = p.space_in_brackets and 1 or 0
   end
 
-  s_count = p.space_separator or s_count
-  if tsj:prev():is_first() or tsj:is_last() then
-    s_count = p.space_in_brackets and 1 or 0
-    return (' '):rep(s_count)
-  end
   return (' '):rep(s_count)
 end
 
