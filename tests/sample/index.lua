@@ -56,3 +56,63 @@ local function test(
 )
   print(a, b, c)
 end
+
+-- RESULT OF JOIN (node "block" in if_statement), preset default
+if true then print(123) local a = b print(a) end
+
+-- RESULT OF SPLIT (node "block" in if_statement), preset default
+if true then
+  print(123)
+  local a = b
+  print(a)
+end
+
+-- RESULT OF JOIN (node "block" in function_declaration), preset default
+function foo () local test = { one = 'one', two = 'two' } return test end
+
+-- RESULT OF SPLIT (node "block" in function_declaration), preset default
+function foo ()
+  local test = { one = 'one', two = 'two' }
+  return test
+end
+
+-- RESULT OF JOIN (node "block" in function_declaration contains nested function)
+local function foo() local test = function() print(123) local function ins() return 'bar' end return 'foo' end return test() end
+
+-- RESULT OF RECURSIVE SPLIT (node "block" in function_declaration contains nested functions)
+local function foo()
+  local test = function()
+    print(123)
+    local function ins()
+      return 'bar'
+    end
+    return 'foo'
+  end
+  return test()
+end
+
+-- RESULT OF JOIN (node "table_constructor" with nested "block")
+local nest = { one = 'one', two = function() return 'two' end, three = 'three' }
+
+-- RESULT OF RECURSIVE SPLIT (node "table_constructor" with nested "block")
+local nest = {
+  one = 'one',
+  two = function()
+    return 'two'
+  end,
+  three = 'three',
+}
+
+-- RESULT OF JOIN (node "table_constructor" with nested "table_constructor")
+local nest = { one = 'one', two = { one = 'one', two = { one = 'one' } } }
+
+-- RESULT OF RECURSIVE SPLIT (node "table_constructor" with nested "table_constructor")
+local nest = {
+  one = 'one',
+  two = {
+    one = 'one',
+    two = {
+      one = 'one',
+    },
+  },
+}

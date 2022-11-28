@@ -54,6 +54,26 @@ local data_for_split = {
     result = { 46, 51 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "block" in if_statement, preset default',
+    cursor = { 61, 15 },
+    expected = { 63, 68 },
+    result = { 60, 65 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "block" in function_declaration, preset default',
+    cursor = { 71, 15 },
+    expected = { 73, 77 },
+    result = { 70, 74 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -105,6 +125,16 @@ local data_for_join = {
     cursor = { 54, 4 },
     expected = { 46, 47 },
     result = { 51, 52 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "block" in function_declaration contains nested functions, preset default',
+    cursor = { 83, 15 },
+    expected = { 79, 80 },
+    result = { 82, 83 },
     settings = {},
   },
 }

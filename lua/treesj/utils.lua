@@ -110,6 +110,29 @@ function M.get_nodes_for_lang(lang)
   return vim.tbl_keys(langs[lang])
 end
 
+---Recursively finding key in table and return its value if found or nil
+---@param tbl table|nil Dict-like table
+---@param target_key string Name of target key
+---@return any|nil
+function M.get_nested_key_value(tbl, target_key)
+  if not tbl or vim.tbl_islist(tbl) then
+    return nil
+  end
+  local found
+  for key, val in pairs(tbl) do
+    if key == target_key then
+      return val
+    end
+    if type(val) == 'table' and not vim.tbl_islist(val) then
+      found = M.get_nested_key_value(val, target_key)
+    end
+    if found then
+      return found
+    end
+  end
+  return nil
+end
+
 ---Get list-like table with children of node
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
@@ -221,6 +244,7 @@ function M.is_on_same_line(tsj)
   return prev and prev:range()[1] == tsj:range()[1] or false
 end
 
+--TODO: rewtite
 ---Get whitespace between nodes
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
@@ -233,8 +257,10 @@ function M.get_whitespace(tsj)
   local s_count = 1
   local p = tsj:parent():preset('join')
   if not p then
-    if prev:range()[3] == tsj:range()[1] then
-      s_count = tsj:range()[2] - prev:range()[4]
+    local prev_range = { prev:tsnode():range() }
+    local tsj_range = { tsj:tsnode():range() }
+    if prev_range[3] == tsj_range[1] then
+      s_count = tsj_range[2] - prev_range[4]
     end
     return (' '):rep(s_count)
   end
@@ -244,7 +270,6 @@ function M.get_whitespace(tsj)
     s_count = p.space_in_brackets and 1 or 0
     return (' '):rep(s_count)
   end
-
   return (' '):rep(s_count)
 end
 
@@ -259,6 +284,36 @@ function M.calc_indent(tsj)
   local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
   local common_indent = si + sw
   return tsj:is_last() and si or common_indent
+end
+
+---Get base nodes for first/last imitator node in non-bracket blocks
+---@param tsn userdata TSNode instance
+---@return userdata|nil, userdata|nil
+function M.get_non_bracket_first_last(tsn)
+  local first = tsn:prev_sibling() or tsn:parent():prev_sibling()
+  local last = tsn:next_sibling() or tsn:parent():next_sibling()
+  return first, last
+end
+
+---Returned range of node considering the presence of brackets
+---@param tsn userdata
+function M.range(tsn)
+  local p = M.get_preset(tsn, 'split')
+  local sr, sc, er, ec = tsn:range()
+
+  if p and p.non_bracket_node then
+    local first, last = M.get_non_bracket_first_last(tsn)
+    if first then
+      local r = { first:range() }
+      sr, sc, _, _ = r[3], r[4]
+    end
+    if last then
+      local r = { last:range() }
+      _, _, er, ec = _, _, r[1], r[2]
+    end
+  end
+
+  return sr, sc, er, ec
 end
 
 return M

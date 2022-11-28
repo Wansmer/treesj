@@ -18,6 +18,42 @@ function M.get_observed_range(tsnode)
   return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
+---Makes first/last imitator node for TreeSJ. Using only for non-bracket blocks.
+---@param tsn userdata
+---@param pos string last|first
+local function imitate_tsn(tsn, pos)
+  local imitator = {}
+  imitator.__index = imitator
+  local sr, sc, er, ec = tsn:range()
+  function imitator:range()
+    if pos == 'first' then
+      return er, ec, er, ec
+    else
+      return sr, sc, sr, sc
+    end
+  end
+  function imitator:type()
+    return 'imitator'
+  end
+  return imitator
+end
+
+---Add first and last imitator nodas to children list for non-bracket blocks
+---@param node userdata TSNode instance
+---@param children table
+function M.add_first_last_imitator(node, children)
+  local p = u.get_preset(node)
+  if p and u.get_nested_key_value(p, 'non_bracket_node') then
+    local first, last = u.get_non_bracket_first_last(node)
+    if first then
+      table.insert(children, 1, imitate_tsn(first, 'first'))
+    end
+    if last then
+      table.insert(children, imitate_tsn(last, 'last'))
+    end
+  end
+end
+
 ---Add some text to start of base text. If the base is table, prepend text to first element of table
 ---@param target_text string|string[]
 ---@param text string
@@ -36,7 +72,13 @@ end
 ---@param child TreeSJ
 local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
-  local text = prepend_text(child:text(), spacing)
+  local text = child:text()
+  local skip_space = type(text) == 'string' and vim.startswith(text, ' ')
+    or u.is_empty(text)
+  if skip_space then
+    spacing = ''
+  end
+  text = prepend_text(child:text(), spacing)
   child:_update_text(text)
 end
 
@@ -115,10 +157,20 @@ end
 local function merge_text_to_prev_line(lines, ...)
   local prev = lines[#lines]
   local text = table.concat({ ... })
+
+  if vim.trim(text) == '' or not prev then
+    return
+  end
+
+  local prev_text = type(prev) == 'table' and prev[#prev] or lines[#lines]
+  if vim.endswith(prev_text, ' ') then
+    text = vim.trim(text)
+  end
+
   if type(prev) == 'table' then
-    prev[#prev] = prev[#prev] .. text
-  elseif type(prev) == 'string' then
-    lines[#lines] = lines[#lines] .. text
+    prev[#prev] = prev_text .. text
+  else
+    lines[#lines] = prev_text .. text
   end
 end
 
@@ -131,6 +183,9 @@ function M._join(tsj)
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
+      local last_in_root = tsj == tsj:root()
+        and child:is_last()
+        and child._imitator
 
       if is_instruction_sep_need(child, p) then
         child:_update_text(child:text() .. p.force_insert)
@@ -139,6 +194,9 @@ function M._join(tsj)
       set_last_sep_if_need(child, p)
       set_whitespace(child)
 
+      if last_in_root then
+        child:_update_text(' ')
+      end
       table.insert(lines, child:text())
     else
       set_whitespace(child)
@@ -149,6 +207,7 @@ function M._join(tsj)
   return table.concat(lines)
 end
 
+--TODO: rewrite, no readable
 ---Make result lines for 'split'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string[]

@@ -5,6 +5,7 @@
 3. Create new file in `/tests/sample/` with name `index.${type_of_file}` - it
    will be file with examples of result `split` and `join`;
 4. Duplicate file `template.lua`, remane it to `${you_language}_spec.lua` and add describe and data for tests;
+5. Update list of supported languages in project [README.md](/README.md);
 
 ## Data for tests
 

@@ -164,4 +164,13 @@ M.set_preset_for_args = set_preset({
   },
 })
 
+M.set_preset_for_non_bracket = set_preset({
+  both = {
+    non_bracket_node = true,
+  },
+  join = {
+    space_in_brackets = true,
+  },
+})
+
 return M

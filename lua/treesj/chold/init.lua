@@ -114,7 +114,7 @@ end
 ---Calculate '_new_pos' when settings.cursor_behavior is 'hold' and mode is 'join'
 ---@param tsj TreeSJ TreeSJ instance
 function CHold:_calc_for_join(tsj)
-  local rr = u.readable_range(tsj:root():range())
+  local rr = u.readable_range(tsj:root():child(1):range())
 
   if cu.in_node_range(self, tsj) then
     self:_update_pos({
