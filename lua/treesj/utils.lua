@@ -72,10 +72,7 @@ end
 ---@return table|nil
 function M.get_self_preset(node)
   local p = M.get_preset(node)
-  if p then
-    if p.target_nodes then
-      return nil
-    end
+  if p and not p.target_nodes then
     return p
   end
   return nil
@@ -195,7 +192,7 @@ end
 
 ---Checking if the node contains descendants to format
 ---@param tsnode userdata TSNode instance
----@param root_preset|nil table Preset of root node for check 'recursive_ignore'
+---@param root_preset table|nil Preset of root node for check 'recursive_ignore'
 ---@return boolean
 function M.has_node_to_format(tsnode, root_preset)
   local function configured_and_must_be_formatted(tsn)
@@ -301,10 +298,11 @@ end
 ---Returned range of node considering the presence of brackets
 ---@param tsn userdata
 function M.range(tsn)
-  local p = M.get_preset(tsn, 'split')
+  local p = M.get_preset(tsn)
+  local non_bracket_node = M.get_nested_key_value(p, 'non_bracket_node')
   local sr, sc, er, ec = tsn:range()
 
-  if p and p.non_bracket_node then
+  if p and non_bracket_node then
     local first, last = M.get_non_bracket_first_last(tsn)
     if first then
       local r = { first:range() }
