@@ -195,14 +195,20 @@ end
 
 ---Checking if the node contains descendants to format
 ---@param tsnode userdata TSNode instance
+---@param root_preset|nil table Preset of root node for check 'recursive_ignore'
 ---@return boolean
-function M.has_node_to_format(tsnode)
-  local function configured_and_no_target(tsn)
+function M.has_node_to_format(tsnode, root_preset)
+  local function configured_and_must_be_formatted(tsn)
     local p = M.get_preset(tsn)
-    return M.tobool(p and not p.target_nodes)
+    local recursive_ignore =
+      M.get_nested_key_value(root_preset, 'recursive_ignore')
+    local ignore = recursive_ignore
+        and vim.tbl_contains(recursive_ignore, tsn:type())
+      or false
+    return M.tobool(p and not (p.target_nodes or ignore))
   end
 
-  return M.check_descendants(tsnode, configured_and_no_target)
+  return M.check_descendants(tsnode, configured_and_must_be_formatted)
 end
 
 ---Checking if the node contains disabled descendants to format

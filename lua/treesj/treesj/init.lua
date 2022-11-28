@@ -20,29 +20,33 @@ TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
 ---@param tsnode userdata|table TSNode instance
----@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as root
+---@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as a root
 function TreeSJ.new(tsnode, parent)
-  local is_tsnode = type(tsnode) == 'userdata'
-  local preset = is_tsnode and u.get_self_preset(tsnode) or nil
-  local sr = tsnode:range()
+  local root_preset = parent and parent:root():preset() or nil
+
+  local is_tsn = type(tsnode) == 'userdata'
+  local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
+  local preset = is_tsn and u.get_self_preset(tsnode) or nil
+  local text = is_tsn and u.get_node_text(tsnode) or ''
+  local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
+
   local ri
   if not parent then
-    ri = vim.fn.indent(sr + 1)
+    ri = vim.fn.indent(range[1] + 1)
   end
 
   return setmetatable({
     _root = not parent,
     _tsnode = tsnode,
-    _imitator = not is_tsnode,
+    _imitator = not is_tsn,
     _parent = parent,
     _prev = nil,
     _next = nil,
     _preset = preset,
-    _text = is_tsnode and u.get_node_text(tsnode) or '',
-    _has_node_to_format = is_tsnode and u.has_node_to_format(tsnode) or false,
+    _text = text,
+    _has_node_to_format = hntf,
     _children = {},
-    _observed_range = is_tsnode and tu.get_observed_range(tsnode)
-      or { tsnode:range() },
+    _observed_range = range,
     _root_indent = ri,
   }, TreeSJ)
 end
