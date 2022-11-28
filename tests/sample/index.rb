@@ -19,3 +19,21 @@ hash = {
   :bar => 'bar',
   [ 1, 2 ] => 2,
 }
+
+# RESULT OF JOIN (node "method_parameters", preset default)
+def test(a, b) end
+
+# RESULT OF SPLIT (node "method_parameters", preset default)
+def test(
+  a,
+  b
+) end
+
+# RESULT OF JOIN (node "argument_list", preset default)
+test(a, b)
+
+# RESULT OF JOIN (node "argument_list", preset default)
+test(
+  a,
+  b
+)
