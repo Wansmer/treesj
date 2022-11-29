@@ -116,3 +116,17 @@ local nest = {
     },
   },
 }
+
+-- RESULT OF JOIN (node "table_constructor" is empty, preset default)
+local empty = { }
+
+-- RESULT OF SPLIT (node "table_constructor" is empty, preset default)
+local empty = {
+}
+
+-- RESULT OF JOIN (node "table_constructor" is empty, preset with format_empty_node = false)
+local empty = { }
+
+-- RESULT OF SPLIT (node "table_constructor" is empty, preset with format_empty_node = false)
+local empty = {
+}
