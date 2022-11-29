@@ -31,6 +31,25 @@ function M.is_empty(val)
   end
 end
 
+---Checking if every item of list meets the condition.
+---Empty list or non-list table, returning false.
+---@param tbl table List-like table
+---@param cb function Callback for checking every item
+---@return boolean
+function M.every(tbl, cb)
+  if not vim.tbl_islist(tbl) or M.is_empty(tbl) then
+    return false
+  end
+
+  for _, item in ipairs(tbl) do
+    if not cb(item) then
+      return false
+    end
+  end
+
+  return true
+end
+
 ---Get lunguage for node
 ---@param node userdata TSNode instance
 ---@return string
@@ -72,10 +91,7 @@ end
 ---@return table|nil
 function M.get_self_preset(node)
   local p = M.get_preset(node)
-  if p then
-    if p.target_nodes then
-      return nil
-    end
+  if p and not p.target_nodes then
     return p
   end
   return nil
@@ -167,6 +183,26 @@ function M.get_node_text(node)
   return table.concat(trimed_lines, sep)
 end
 
+---Checking if the found node is empty
+---@param tsn userdata TSNode instance
+---@param preset table Preset for TSNode
+---@return boolean
+function M.is_empty_node(tsn, preset)
+  local framing_count = 2
+  local function is_omit(child)
+    return vim.tbl_contains(preset.omit, child:type())
+  end
+
+  local function is_named(child)
+    return child:named()
+  end
+
+  local cc = tsn:child_count()
+  local children = M.collect_children(tsn, is_named)
+  local contains_only_framing = cc == framing_count
+  return M.every(children, is_omit) or contains_only_framing
+end
+
 ---Recursively iterates over each one until the state is satisfied
 ---@param tsnode userdata TSNode instance
 ---@param cb function Callback: boolean
@@ -195,14 +231,20 @@ end
 
 ---Checking if the node contains descendants to format
 ---@param tsnode userdata TSNode instance
+---@param root_preset table|nil Preset of root node for check 'recursive_ignore'
 ---@return boolean
-function M.has_node_to_format(tsnode)
-  local function configured_and_no_target(tsn)
+function M.has_node_to_format(tsnode, root_preset)
+  local function configured_and_must_be_formatted(tsn)
     local p = M.get_preset(tsn)
-    return M.tobool(p and not p.target_nodes)
+    local recursive_ignore =
+      M.get_nested_key_value(root_preset, 'recursive_ignore')
+    local ignore = recursive_ignore
+        and vim.tbl_contains(recursive_ignore, tsn:type())
+      or false
+    return M.tobool(p and not (p.target_nodes or ignore))
   end
 
-  return M.check_descendants(tsnode, configured_and_no_target)
+  return M.check_descendants(tsnode, configured_and_must_be_formatted)
 end
 
 ---Checking if the node contains disabled descendants to format
@@ -237,39 +279,36 @@ function M.readable_range(range)
 end
 
 ---Checking if the previos and current nodes place on same line
----@param tsj TreeSJ Current TreeSJ instance
+---@param prev TreeSJ|nil Previous TreeSJ instance
+---@param curent TreeSJ Current TreeSJ instance
 ---@return boolean
-function M.is_on_same_line(tsj)
-  local prev = tsj:prev()
-  return prev and prev:range()[1] == tsj:range()[1] or false
+local function is_on_same_line(prev, curent)
+  return prev and prev:range()[3] == curent:range()[1] or false
 end
 
---TODO: rewtite
+---Get spacing between siblings (siblings must be placed by same line)
+---@param prev TreeSJ
+---@param current TreeSJ
+---@return integer
+local function get_sibling_spacing(prev, current)
+  return current:range()[2] - prev:range()[4]
+end
+
 ---Get whitespace between nodes
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
 function M.get_whitespace(tsj)
-  local prev = tsj:prev()
-  if tsj:is_first() or tsj:is_omit() or not prev then
-    return ''
-  end
-
-  local s_count = 1
   local p = tsj:parent():preset('join')
-  if not p then
-    local prev_range = { prev:tsnode():range() }
-    local tsj_range = { tsj:tsnode():range() }
-    if prev_range[3] == tsj_range[1] then
-      s_count = tsj_range[2] - prev_range[4]
-    end
-    return (' '):rep(s_count)
+  local s_count = p and p.space_separator or 1
+
+  if tsj:is_first() or tsj:is_omit() then
+    s_count = 0
+  elseif not p and is_on_same_line(tsj:prev(), tsj) then
+    s_count = get_sibling_spacing(tsj:prev(), tsj)
+  elseif p and (tsj:prev():is_first() or tsj:is_last()) then
+    s_count = p.space_in_brackets and 1 or 0
   end
 
-  s_count = p.space_separator or s_count
-  if tsj:prev():is_first() or tsj:is_last() then
-    s_count = p.space_in_brackets and 1 or 0
-    return (' '):rep(s_count)
-  end
   return (' '):rep(s_count)
 end
 
@@ -298,10 +337,11 @@ end
 ---Returned range of node considering the presence of brackets
 ---@param tsn userdata
 function M.range(tsn)
-  local p = M.get_preset(tsn, 'split')
+  local p = M.get_preset(tsn)
+  local non_bracket_node = M.get_nested_key_value(p, 'non_bracket_node')
   local sr, sc, er, ec = tsn:range()
 
-  if p and p.non_bracket_node then
+  if p and non_bracket_node then
     local first, last = M.get_non_bracket_first_last(tsn)
     if first then
       local r = { first:range() }

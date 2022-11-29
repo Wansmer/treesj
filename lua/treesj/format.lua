@@ -32,6 +32,13 @@ function M._format(mode)
 
   local sr, sc, er, ec = u.range(node)
   local MODE = mode or sr == er and SPLIT or JOIN
+  local p = u.get_preset(node, MODE)
+
+  if p and not p.format_empty_node then
+    if not p.non_bracket_node and u.is_empty_node(node, p) then
+      return
+    end
+  end
 
   if settings.check_syntax_error and node:has_error() then
     notify.warn(msg.contains_error, node:type(), MODE)
@@ -39,7 +46,6 @@ function M._format(mode)
   end
 
   if u.has_disabled_descendants(node, MODE) then
-    local p = u.get_preset(node, MODE)
     local no_format_with = p and vim.inspect(p.no_format_with) or ''
     notify.info(msg.no_format_with, MODE, node:type(), no_format_with)
     return

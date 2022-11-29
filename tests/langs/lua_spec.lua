@@ -74,6 +74,16 @@ local data_for_split = {
     result = { 70, 74 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "table_constructor" is empty, preset default',
+    cursor = { 121, 14 },
+    expected = { 123, 125 },
+    result = { 120, 122 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -135,6 +145,16 @@ local data_for_join = {
     cursor = { 83, 15 },
     expected = { 79, 80 },
     result = { 82, 83 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "table_constructor" is empty, preset default',
+    cursor = { 125, 0 },
+    expected = { 120, 121 },
+    result = { 123, 124 },
     settings = {},
   },
 }

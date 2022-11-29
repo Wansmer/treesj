@@ -72,13 +72,7 @@ end
 ---@param child TreeSJ
 local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
-  local text = child:text()
-  local skip_space = type(text) == 'string' and vim.startswith(text, ' ')
-    or u.is_empty(text)
-  if skip_space then
-    spacing = ''
-  end
-  text = prepend_text(child:text(), spacing)
+  local text = prepend_text(child:text(), spacing)
   child:_update_text(text)
 end
 
@@ -121,7 +115,7 @@ local function set_last_sep_if_need(child, p)
     return
   end
 
-  if child:next() and child:next():is_last() then
+  if not child:is_first() and child:next() and child:next():is_last() then
     local content = child:text()
     local text = type(content) == 'table' and content[#content] or content
 
@@ -152,8 +146,8 @@ local function set_indent(child)
 end
 
 ---Append text to last item in list. If last item is a table, merge to last of this table.
----@param lines table List-like table
----@vararg string
+---@param lines string|string[] List-like table
+---@vararg string|table
 local function merge_text_to_prev_line(lines, ...)
   local prev = lines[#lines]
   local text = table.concat({ ... })
@@ -183,9 +177,6 @@ function M._join(tsj)
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
-      local last_in_root = tsj == tsj:root()
-        and child:is_last()
-        and child._imitator
 
       if is_instruction_sep_need(child, p) then
         child:_update_text(child:text() .. p.force_insert)
@@ -194,9 +185,6 @@ function M._join(tsj)
       set_last_sep_if_need(child, p)
       set_whitespace(child)
 
-      if last_in_root then
-        child:_update_text(' ')
-      end
       table.insert(lines, child:text())
     else
       set_whitespace(child)
@@ -207,48 +195,62 @@ function M._join(tsj)
   return table.concat(lines)
 end
 
---TODO: rewrite, no readable
+---Handling for configured node when mode is SPLIT
+---@param tsj TreeSJ TreeSJ instance
+---@param child TreeSJ child of tsj
+---@param lines table List-like table
+local function process_configured(tsj, child, lines)
+  local p = tsj:preset(SPLIT)
+
+  set_last_sep_if_need(child, p)
+
+  if child:is_omit() then
+    merge_text_to_prev_line(lines, child:text())
+    -- TODO: add options for choise last indent
+    if child:is_last() then
+      local indent = u.calc_indent(child)
+      lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
+    end
+  else
+    set_indent(child)
+    table.insert(lines, child:text())
+  end
+end
+
+---Handling for node containing configured descendants
+---@param child TreeSJ Child of tsj with 'has_node_to_format'
+---@param lines table List-like table
+local function process_configured_container(child, lines)
+  local is_string = type(child:text()) == 'string'
+  local is_table = type(child:text()) == 'table'
+
+  if child:is_first() then
+    table.insert(lines, child:text())
+  elseif is_string then
+    set_whitespace(child)
+    merge_text_to_prev_line(lines, child:text())
+  elseif is_table and not u.is_empty(lines) then
+    set_whitespace(child)
+    merge_text_to_prev_line(lines, child:text()[1])
+    table.remove(child:text(), 1)
+
+    if not u.is_empty(child:text()) then
+      table.insert(lines, child:text())
+    end
+  end
+end
+
 ---Make result lines for 'split'
 ---@param tsj TreeSJ TreeSJ instance
----@return string[]
+---@return table
 function M._split(tsj)
   local lines = {}
 
   for child in tsj:iter_children() do
     if tsj:has_preset() then
-      local p = tsj:preset(SPLIT)
-
-      set_last_sep_if_need(child, p)
-
-      local text = child:text()
-      if child:is_omit() then
-        merge_text_to_prev_line(lines, text)
-        if child:is_last() then
-          local indent = u.calc_indent(child)
-          lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
-        end
-      else
-        set_indent(child)
-        table.insert(lines, child:text())
-      end
+      process_configured(tsj, child, lines)
     elseif tsj:has_to_format() then
-      local is_string = type(child:text()) == 'string'
-      local is_table = type(child:text()) == 'table'
-
-      if child:is_first() then
-        table.insert(lines, child:text())
-      elseif is_string then
-        set_whitespace(child)
-        merge_text_to_prev_line(lines, child:text())
-      elseif is_table and not u.is_empty(lines) then
-        set_whitespace(child)
-        merge_text_to_prev_line(lines, child:text()[1])
-        table.remove(child:text(), 1)
-
-        if not u.is_empty(child:text()) then
-          table.insert(lines, child:text())
-        end
-      end
+      process_configured_container(child, lines)
     else
       set_whitespace(child:text())
       table.insert(lines, child:text())
