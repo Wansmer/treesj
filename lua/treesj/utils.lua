@@ -31,6 +31,25 @@ function M.is_empty(val)
   end
 end
 
+---Checking if every item of list meets the condition.
+---Empty list or non-list table, returning false.
+---@param tbl table List-like table
+---@param cb function Callback for checking every item
+---@return boolean
+function M.every(tbl, cb)
+  if not vim.tbl_islist(tbl) then
+    return false
+  end
+
+  for _, item in ipairs(tbl) do
+    if not cb(item) then
+      return false
+    end
+  end
+
+  return true
+end
+
 ---Get lunguage for node
 ---@param node userdata TSNode instance
 ---@return string
@@ -162,6 +181,26 @@ function M.get_node_text(node)
     end
   end
   return table.concat(trimed_lines, sep)
+end
+
+function M.is_empty_block(tsn, preset)
+  local framing_count = 2
+  local function is_omit(child)
+    return vim.tbl_contains(preset.omit, child:type())
+  end
+
+  local function is_named(child)
+    return child:named()
+  end
+
+  local cc = tsn:child_count()
+  local ncc = tsn:named_child_count()
+  local children = M.collect_children(tsn, is_named)
+  local contains_only_framing = not preset.non_bracket_node
+    and (cc == framing_count and ncc == framing_count)
+  return ncc == 0
+    or M.every(children, is_omit)
+    or contains_only_framing
 end
 
 ---Recursively iterates over each one until the state is satisfied

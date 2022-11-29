@@ -17,6 +17,9 @@ return {
     -- boolean: Non-bracket nodes (e.g., with then end instead of {}|<>|[])
     -- NOTE: Must be same for both modes
     non_bracket_node = false,
+    -- If true, empty brackets, or only framing nodes, or node which only contains nodes from 'omit',
+    -- or contains only no-named nodes no will handling
+    format_empty_node = false,
   },
   -- Use only for join. If contains field from 'both',
   -- field here have higher priority

@@ -115,7 +115,7 @@ local function set_last_sep_if_need(child, p)
     return
   end
 
-  if child:next() and child:next():is_last() then
+  if not child:is_first() and child:next() and child:next():is_last() then
     local content = child:text()
     local text = type(content) == 'table' and content[#content] or content
 
