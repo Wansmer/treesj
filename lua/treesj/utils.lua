@@ -37,7 +37,7 @@ end
 ---@param cb function Callback for checking every item
 ---@return boolean
 function M.every(tbl, cb)
-  if not vim.tbl_islist(tbl) then
+  if not vim.tbl_islist(tbl) or M.is_empty(tbl) then
     return false
   end
 
