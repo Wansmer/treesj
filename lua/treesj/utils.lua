@@ -183,7 +183,11 @@ function M.get_node_text(node)
   return table.concat(trimed_lines, sep)
 end
 
-function M.is_empty_block(tsn, preset)
+---Checking if the found node is empty
+---@param tsn userdata TSNode instance
+---@param preset table Preset for TSNode
+---@return boolean
+function M.is_empty_node(tsn, preset)
   local framing_count = 2
   local function is_omit(child)
     return vim.tbl_contains(preset.omit, child:type())
@@ -194,13 +198,9 @@ function M.is_empty_block(tsn, preset)
   end
 
   local cc = tsn:child_count()
-  local ncc = tsn:named_child_count()
   local children = M.collect_children(tsn, is_named)
-  local contains_only_framing = not preset.non_bracket_node
-    and (cc == framing_count and ncc == framing_count)
-  return ncc == 0
-    or M.every(children, is_omit)
-    or contains_only_framing
+  local contains_only_framing = cc == framing_count
+  return M.every(children, is_omit) or contains_only_framing
 end
 
 ---Recursively iterates over each one until the state is satisfied

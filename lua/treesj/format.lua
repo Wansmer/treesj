@@ -35,7 +35,7 @@ function M._format(mode)
   local p = u.get_preset(node, MODE)
 
   if p and not p.format_empty_node then
-    if u.is_empty_block(node, p) then
+    if not p.non_bracket_node and u.is_empty_node(node, p) then
       return
     end
   end
