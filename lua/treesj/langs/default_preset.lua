@@ -36,7 +36,7 @@ return {
     no_insert_if = {},
     -- boolean: All nested configured nodes will process according to their presets
     recursive = true,
-    -- [string|function]: Type of configured node or function(returning boolean) for type of node that must be ignored
+    -- string: Type of configured node or function(returning boolean) for type of node that must be ignored
     recursive_ignore = {},
   },
   -- Use only for split. If contains field from 'both',
@@ -44,8 +44,12 @@ return {
   split = {
     -- boolean: All nested configured nodes will process according to their presets
     recursive = false,
-    -- [string|function]: Type of configured node or function(returning boolean) for type of node that must be ignored
+    -- string: Type of configured node or function(returning boolean) for type of node that must be ignored
     recursive_ignore = {},
+    -- string: Which indent must be on the last line of the formatted node.
+    -- 'normal' – indent equals of the indent from first line;
+    -- 'inner' – indent, like all inner nodes.
+    last_indent = 'normal',
   },
   -- If 'true', node will be completely removed from langs preset
   disable = false,

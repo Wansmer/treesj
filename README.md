@@ -179,6 +179,11 @@ local somenode = {
     -- [string]: Type of configured node that must be ignored 
     -- E.g., you probably don't want the parameters of each nested function to be expanded.
     recursive_ignore = {},
+
+    -- string: Which indent must be on the last line of the formatted node.
+    -- 'normal' – indent equals of the indent from first line;
+    -- 'inner' – indent, like all inner nodes.
+    last_indent = 'normal',
   },
   -- If 'true', node will be completely removed from langs preset
   disable = false,

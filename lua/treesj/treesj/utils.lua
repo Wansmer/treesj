@@ -206,11 +206,6 @@ local function process_configured(tsj, child, lines)
 
   if child:is_omit() then
     merge_text_to_prev_line(lines, child:text())
-    -- TODO: add options for choise last indent
-    if child:is_last() then
-      local indent = u.calc_indent(child)
-      lines[#lines] = (' '):rep(indent) .. vim.trim(lines[#lines])
-    end
   else
     set_indent(child)
     table.insert(lines, child:text())
