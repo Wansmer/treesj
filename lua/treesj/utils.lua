@@ -312,17 +312,37 @@ function M.get_whitespace(tsj)
   return (' '):rep(s_count)
 end
 
+---Checking if the current node is last with `is_omtit = false`
+---@param tsj TreeSJ TreeSJ instance
+---@return boolean
+local function is_last_no_omit(tsj)
+  local parent = tsj:parent()
+  if parent and parent:has_preset() then
+    local last_no_omit = parent:child(1)
+    for child in parent:iter_children() do
+      last_no_omit = not child:is_omit() and child or last_no_omit
+    end
+    return tsj == last_no_omit
+  end
+  return false
+end
+
 ---Computed indent for node when mode is 'split'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return integer
 function M.calc_indent(tsj)
-  if tsj:is_first() or (tsj:is_omit() and not tsj:is_last()) then
+  local parent = tsj:parent()
+  if tsj:is_first() or tsj:is_omit() or not parent then
     return 0
   end
-  local si = tsj:parent()._root_indent
-  local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
-  local common_indent = si + sw
-  return tsj:is_last() and si or common_indent
+
+  local pp = parent:preset('split')
+  local sratr_indent = parent._root_indent
+  local shiftwidth = vim.api.nvim_buf_get_option(0, 'shiftwidth')
+  local common_indent = sratr_indent + shiftwidth
+  local is_last = is_last_no_omit(tsj) and pp.last_indent == 'normal'
+
+  return is_last and sratr_indent or common_indent
 end
 
 ---Get base nodes for first/last imitator node in non-bracket blocks
