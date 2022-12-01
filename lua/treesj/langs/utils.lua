@@ -173,4 +173,16 @@ M.set_preset_for_non_bracket = set_preset({
   },
 })
 
+M.no_insert = {}
+
+function M.no_insert.if_penultimate(tsj)
+  local next = tsj:next()
+  return next and next:is_last() or false
+end
+
+function M.no_insert.if_second(tsj)
+  local prev = tsj:prev()
+  return prev and prev:is_first() or false
+end
+
 return M

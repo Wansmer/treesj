@@ -93,7 +93,8 @@ local function is_instruction_sep_need(child, p)
   end
 
   local has = vim.endswith(child:text(), p.force_insert)
-  local need = not vim.tbl_contains(p.no_insert_if, child:type())
+  -- local need = not vim.tbl_contains(p.no_insert_if, child:type())
+  local need = not u.check_match(p.no_insert_if, child)
 
   return need and not has
 end

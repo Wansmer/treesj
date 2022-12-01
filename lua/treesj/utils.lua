@@ -50,6 +50,25 @@ function M.every(tbl, cb)
   return true
 end
 
+---Checking if some item of list meets the condition.
+---Empty list or non-list table, returning false.
+---@param tbl table List-like table
+---@param cb function Callback for checking every item
+---@return boolean
+function M.some(tbl, cb)
+  if not vim.tbl_islist(tbl) or M.is_empty(tbl) then
+    return false
+  end
+
+  for _, item in ipairs(tbl) do
+    if cb(item) then
+      return true
+    end
+  end
+
+  return false
+end
+
 ---Get lunguage for node
 ---@param node userdata TSNode instance
 ---@return string
@@ -382,6 +401,23 @@ function M.range(tsn)
   end
 
   return sr, sc, er, ec
+end
+
+local function is_func(item)
+  return type(item) == 'function'
+end
+
+function M.check_match(tbl, tjs)
+  local contains = vim.tbl_contains(tbl, tjs:type())
+  local cbs = vim.tbl_filter(is_func, tbl)
+
+  if not contains and #cbs > 0 then
+    return M.some(cbs, function(cb)
+      return cb(tjs)
+    end)
+  else
+    return contains
+  end
 end
 
 return M
