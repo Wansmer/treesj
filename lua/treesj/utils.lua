@@ -407,6 +407,10 @@ local function is_func(item)
   return type(item) == 'function'
 end
 
+---Checking if tsj meets condition in list of string and functions
+---Returned 'true' if type of tsj contains among strings or some of 'function(tsj)' returned 'true'
+---@param tbl table List with 'string' and 'function'
+---@param tjs TreeSJ TreeSJ instance
 function M.check_match(tbl, tjs)
   local contains = vim.tbl_contains(tbl, tjs:type())
   local cbs = vim.tbl_filter(is_func, tbl)
