@@ -11,6 +11,7 @@ local langs = {
   'php',
   'ruby',
   'go',
+  'java',
 }
 
 local M = {}
