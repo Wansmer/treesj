@@ -37,3 +37,22 @@ test(
   a,
   b
 )
+
+# RESULT OF JOIN (node "string_array", preset default)
+%w[ foo bar baz ]
+
+# RESULT OF split (node "string_array", preset default)
+%w[
+  foo
+  bar
+  baz
+]
+
+# RESULT OF JOIN (node "body_statement", preset default)
+def double(x) puts "meth"; return x * 2 end
+
+# RESULT OF JOIN (node "body_statement", preset default)
+def double(x)
+  puts "meth";
+  return x * 2
+end
