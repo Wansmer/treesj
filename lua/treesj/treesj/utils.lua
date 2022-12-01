@@ -93,7 +93,7 @@ local function is_instruction_sep_need(child, p)
   end
 
   local has = vim.endswith(child:text(), p.force_insert)
-  local need = not vim.tbl_contains(p.no_insert_if, child:type())
+  local need = not u.check_match(p.no_insert_if, child)
 
   return need and not has
 end
@@ -204,6 +204,7 @@ local function process_configured(tsj, child, lines)
   set_last_sep_if_need(child, p)
 
   if child:is_omit() then
+    set_whitespace(child)
     merge_text_to_prev_line(lines, child:text())
   else
     set_indent(child)

@@ -282,7 +282,7 @@ end
 ---@return boolean
 function TreeSJ:is_omit()
   local omit = u.get_nested_key_value(self:parent_preset(), 'omit')
-  return omit and vim.tbl_contains(omit, self:type()) or false
+  return omit and u.check_match(omit, self) or false
 end
 
 ---Checking if the current TreeSJ is node-imitator

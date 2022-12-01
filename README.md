@@ -133,7 +133,7 @@ local somenode = {
     -- boolean: Set last separator or not
     last_separator = false,
 
-    -- string[]: Nodes in list will be joined for previous node
+    -- list[string|function]: Nodes in list will be joined for previous node
     -- (e.g. tag_name in HTML start_tag or separator (',') in JS object) 
     -- NOTE: Must be same for both modes
     omit = {},
@@ -159,7 +159,7 @@ local somenode = {
     -- Will auto add to option 'omit' for 'both'
     force_insert = '',
 
-    -- string[]: The insert symbol will be omitted if node contains in this list 
+    -- list[string|function]: The insert symbol will be omitted if node contains in this list 
     -- (e.g. function_declaration inside statement_block in JS no require instruction separator (';'))
     no_insert_if = {},
 

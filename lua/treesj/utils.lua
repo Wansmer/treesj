@@ -50,6 +50,25 @@ function M.every(tbl, cb)
   return true
 end
 
+---Checking if some item of list meets the condition.
+---Empty list or non-list table, returning false.
+---@param tbl table List-like table
+---@param cb function Callback for checking every item
+---@return boolean
+function M.some(tbl, cb)
+  if not vim.tbl_islist(tbl) or M.is_empty(tbl) then
+    return false
+  end
+
+  for _, item in ipairs(tbl) do
+    if cb(item) then
+      return true
+    end
+  end
+
+  return false
+end
+
 ---Get lunguage for node
 ---@param node userdata TSNode instance
 ---@return string
@@ -309,9 +328,9 @@ function M.get_whitespace(tsj)
   local p = tsj:parent():preset('join')
   local s_count = p and p.space_separator or 1
 
-  if tsj:is_first() or tsj:is_omit() then
+  if tsj:is_first() then
     s_count = 0
-  elseif not p and is_on_same_line(tsj:prev(), tsj) then
+  elseif (not p or tsj:is_omit()) and is_on_same_line(tsj:prev(), tsj) then
     s_count = get_sibling_spacing(tsj:prev(), tsj)
   elseif p and (tsj:prev():is_first() or tsj:is_last()) then
     s_count = p.space_in_brackets and 1 or 0
@@ -382,6 +401,27 @@ function M.range(tsn)
   end
 
   return sr, sc, er, ec
+end
+
+local function is_func(item)
+  return type(item) == 'function'
+end
+
+---Checking if tsj meets condition in list of string and functions
+---Returned 'true' if type of tsj contains among strings or some of 'function(tsj)' returned 'true'
+---@param tbl table List with 'string' and 'function'
+---@param tjs TreeSJ TreeSJ instance
+function M.check_match(tbl, tjs)
+  local contains = vim.tbl_contains(tbl, tjs:type())
+  local cbs = vim.tbl_filter(is_func, tbl)
+
+  if not contains and #cbs > 0 then
+    return M.some(cbs, function(cb)
+      return cb(tjs)
+    end)
+  else
+    return contains
+  end
 end
 
 return M
