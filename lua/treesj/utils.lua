@@ -149,6 +149,14 @@ function M.get_nested_key_value(tbl, target_key)
   return nil
 end
 
+---Returned true if node is not empty
+---@param tsn userdata TSNode instance
+---@return boolean
+function M.skip_empty_nodes(tsn)
+  local text = query.get_node_text(tsn, 0)
+  return not M.is_empty(text)
+end
+
 ---Get list-like table with children of node
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)

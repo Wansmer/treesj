@@ -76,6 +76,7 @@ local function set_whitespace(child)
   child:_update_text(text)
 end
 
+-- TODO: rewrite
 ---Checking if need to set instruction separator
 ---@param child TreeSJ TreeSJ instance
 ---@param p table Preset
@@ -84,16 +85,14 @@ local function is_instruction_sep_need(child, p)
     return false
   end
 
-  if child:is_framing() or u.is_empty(p.force_insert) then
+  local next = child:next()
+  local is_next_sep = next and next:text() == p.force_insert or false
+
+  if child:is_framing() or u.is_empty(p.force_insert) or is_next_sep then
     return false
   end
 
-  local text = child:text()
-  if type(text) == 'table' then
-    text = text[#text]
-  end
-
-  local has = vim.endswith(text, p.force_insert)
+  local has = vim.endswith(child:text(), p.force_insert)
   local need = not vim.tbl_contains(p.no_insert_if, child:type())
 
   return need and not has

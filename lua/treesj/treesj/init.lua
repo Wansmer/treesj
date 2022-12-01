@@ -53,7 +53,7 @@ end
 
 ---Recursive parse current node children and building TreeSJ
 function TreeSJ:build_tree()
-  local children = u.collect_children(self:tsnode())
+  local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
   local prev
 
   if self:non_bracket() then
