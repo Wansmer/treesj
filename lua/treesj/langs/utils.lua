@@ -174,15 +174,22 @@ M.set_preset_for_non_bracket = set_preset({
 })
 
 M.no_insert = {}
+M.omit = {}
 
-function M.no_insert.if_penultimate(tsj)
+local function if_penultimate(tsj)
   local next = tsj:next()
   return next and next:is_last() or false
 end
 
-function M.no_insert.if_second(tsj)
+local function if_second(tsj)
   local prev = tsj:prev()
   return prev and prev:is_first() or false
 end
+
+M.no_insert.if_penultimate = if_penultimate
+M.no_insert.if_second = if_second
+
+M.omit.if_penultimate = if_penultimate
+M.omit.if_second = if_second
 
 return M

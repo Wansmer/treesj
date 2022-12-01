@@ -205,6 +205,7 @@ local function process_configured(tsj, child, lines)
   set_last_sep_if_need(child, p)
 
   if child:is_omit() then
+    set_whitespace(child)
     merge_text_to_prev_line(lines, child:text())
   else
     set_indent(child)
