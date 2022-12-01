@@ -10,6 +10,7 @@ local langs = {
   'tsx',
   'php',
   'ruby',
+  'go',
 }
 
 local M = {}
