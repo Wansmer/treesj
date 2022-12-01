@@ -72,6 +72,8 @@ local data_for_join = {
 }
 ```
 
+**NOTE**: If count of test in one file more than 16, it can be processed very slow. In this case, it will be good to place tests for split and join to separate files (e.g., like tests for javascript)
+
 ## Execution
 
 1. File with examples will be open with minimal vim config, cursor will be set to row and column according `data.cursor`;
