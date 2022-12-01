@@ -5,7 +5,7 @@ local tu = require('treesj.treesj.utils')
 ---@class TreeSJ
 ---@field _root boolean If the current node is the root
 ---@field _tsnode userdata TSNode instance
----@field _imitator table Imitator first/last node for non-bracket blocks
+---@field _imitator boolean Imitator first/last node for non-bracket blocks
 ---@field _parent TreeSJ|nil TreeSJ instance. Parent of current TreeSJ node
 ---@field _prev TreeSJ|nil TreeSJ instance. Previous sibling of current TreeSJ node
 ---@field _next TreeSJ|nil TreeSJ instance. Next sibling of current TreeSJ node
@@ -70,7 +70,7 @@ function TreeSJ:build_tree()
 
     if not tsj:is_ignore('split') and tsj:has_preset() then
       local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
-      tsj._root_indent = tsj:up_indent() + sw
+      tsj._root_indent = tsj:get_prev_indent() + sw
     end
 
     if child:type() ~= 'imitator' then
@@ -91,12 +91,12 @@ function TreeSJ:non_bracket()
 end
 
 ---Get indent from previous configured ancestor node
-function TreeSJ:up_indent()
+function TreeSJ:get_prev_indent()
   if self:parent():has_preset() and not self:parent():is_ignore('split') then
     return self:parent()._root_indent
   end
   if self:parent() then
-    return self:parent():up_indent()
+    return self:parent():get_prev_indent()
   end
 end
 
@@ -110,10 +110,7 @@ end
 ---Get root of TreeSJ
 ---@return TreeSJ TreeSJ instance
 function TreeSJ:root()
-  if self._root then
-    return self
-  end
-  return self:parent():root()
+  return self._root and self or self:parent():root()
 end
 
 ---Merge TreeSJ to one line for replace start text
@@ -288,11 +285,17 @@ function TreeSJ:is_omit()
   return omit and vim.tbl_contains(omit, self:type()) or false
 end
 
+---Checking if the current TreeSJ is node-imitator
+---@return boolean
+function TreeSJ:is_imitator()
+  return self._imitator
+end
+
 ---Return formatted lines of TreeSJ
 ---@return string[]
 function TreeSJ:get_lines()
   local text = self:text()
-  return type(text) == 'table' and vim.tbl_flatten(text) or { text }
+  return type(text) == 'table' and text or { text }
 end
 
 ---Iterate all TreeSJ instance children

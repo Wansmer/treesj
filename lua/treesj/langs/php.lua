@@ -8,12 +8,12 @@ return {
   }),
   arguments = u.set_preset_for_args({
     split = {
-      last_separator = ',',
+      last_separator = true,
     },
   }),
   formal_parameters = u.set_preset_for_args({
     split = {
-      last_separator = ',',
+      last_separator = true,
     },
   }),
   compound_statement = u.set_preset_for_statement({
