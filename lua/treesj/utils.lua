@@ -172,7 +172,7 @@ end
 ---@param tsn userdata TSNode instance
 ---@return boolean
 function M.skip_empty_nodes(tsn)
-  local text = query.get_node_text(tsn, 0)
+  local text = vim.trim(query.get_node_text(tsn, 0))
   return not M.is_empty(text)
 end
 

@@ -12,6 +12,7 @@ local langs = {
   'ruby',
   'go',
   'java',
+  'pug',
 }
 
 local M = {}
