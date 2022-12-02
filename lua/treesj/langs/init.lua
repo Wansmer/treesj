@@ -13,6 +13,7 @@ local langs = {
   'go',
   'java',
   'pug',
+  'svelte',
 }
 
 local M = {}
