@@ -54,6 +54,26 @@ local data_for_split = {
     result = { 50, 54 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "annotation_argument_list", preset default',
+    cursor = { 62, 24 },
+    expected = { 65, 70 },
+    result = { 61, 66 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "enum_body", preset default',
+    cursor = { 73, 26 },
+    expected = { 75, 80 },
+    result = { 72, 77 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -105,6 +125,26 @@ local data_for_join = {
     cursor = { 55, 18 },
     expected = { 50, 51 },
     result = { 53, 54 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "annotation_argument_list", preset default',
+    cursor = { 67, 14 },
+    expected = { 61, 63 },
+    result = { 65, 67 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "enum_body", preset default',
+    cursor = { 78, 6 },
+    expected = { 72, 73 },
+    result = { 75, 76 },
     settings = {},
   },
 }
