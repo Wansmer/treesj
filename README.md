@@ -92,6 +92,7 @@ By default, TreeSJ has presets for these languages:
 - **HTML**;
 - **Pug**;
 - **Vue**;
+- **Svelte**;
 - **JSON**;
 - **PHP**;
 - **Ruby**;
