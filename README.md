@@ -90,6 +90,7 @@ By default, TreeSJ has presets for these languages:
 - **CSS**;
 - **SCSS**;
 - **HTML**;
+- **Pug**;
 - **Vue**;
 - **JSON**;
 - **PHP**;
