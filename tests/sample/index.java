@@ -57,3 +57,24 @@ class Bicycle {
     );
   }
 }
+
+// RESULT OF JOIN (node "annotation_argument_list", preset default)
+@Anotatition(id = 2868724, desc = "anotation")
+module ano.ta { }
+
+// RESULT OF JOIN (node "annotation_argument_list", preset default)
+@Anotatition(
+  id = 2868724,
+  desc = "anotation"
+)
+module ano.ta { }
+
+// RESULT OF JOIN (node "enum_body", preset default)
+enum HandSign { SCISSOR, PAPER, STONE }
+
+// RESULT OF JOIN (node "enum_body", preset default)
+enum HandSign {
+  SCISSOR,
+  PAPER,
+  STONE,
+}
