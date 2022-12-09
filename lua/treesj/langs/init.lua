@@ -14,6 +14,7 @@ local langs = {
   'java',
   'pug',
   'svelte',
+  'rust',
 }
 
 local M = {}
