@@ -35,6 +35,7 @@ return {
       no_insert_if = { u.no_insert.if_penultimate },
     },
   }),
+  use_list = u.set_preset_for_list(),
   array_expression = u.set_preset_for_list(),
   let_declaration = {
     target_nodes = {
@@ -51,6 +52,11 @@ return {
   enum_item = {
     target_nodes = {
       'enum_variant_list',
+    },
+  },
+  use_declaration = {
+    target_nodes = {
+      'use_list',
     },
   },
   trait_item = {

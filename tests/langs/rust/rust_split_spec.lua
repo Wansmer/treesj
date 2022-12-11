@@ -114,6 +114,16 @@ local data_for_split = {
     result = { 90, 94 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "use_list", preset default',
+    cursor = { 108, 19 },
+    expected = { 109, 115 },
+    result = { 107, 113 },
+    settings = {},
+  },
 }
 
 describe('TreeSJ SPLIT:', function()

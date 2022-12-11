@@ -114,6 +114,16 @@ local data_for_join = {
     result = { 97, 98 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "use_list", preset default',
+    cursor = { 112, 4 },
+    expected = { 107, 108 },
+    result = { 109, 110 },
+    settings = {},
+  },
 }
 
 describe('TreeSJ JOIN:', function()

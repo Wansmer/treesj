@@ -103,3 +103,13 @@ match bar {
     FooBar { x: n, y: OptionalI32::AnI32(m) } if n == m =>
         println!("The numbers are the same"),
 }
+
+// RESULT OF JOIN (node "use_list", preset default)
+use path::to::{ This, Is, Use, List };
+// RESULT OF SPLIT (node "use_list", preset default)
+use path::to::{
+    This,
+    Is,
+    Use,
+    List,
+};
