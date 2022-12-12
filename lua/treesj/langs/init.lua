@@ -15,6 +15,7 @@ local langs = {
   'pug',
   'svelte',
   'rust',
+  'python',
 }
 
 local M = {}

@@ -96,6 +96,7 @@ By default, TreeSJ has presets for these languages:
 - **JSON**;
 - **PHP**;
 - **Ruby**;
+- **Python**;
 - **Go**;
 - **Java**;
 - **Rust**;
