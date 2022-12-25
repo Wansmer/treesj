@@ -76,7 +76,7 @@ Also, TreeSJ provide user commands:
 
 1. `:TSJToggle` - toggle node under cursor (split if one-line and join if multiline);
 2. `:TSJSplit` - split node under cursor;
-3. `:TSJJoin` - split node under cursor;
+3. `:TSJJoin` - join node under cursor;
 
 ### Languages configuration
 
