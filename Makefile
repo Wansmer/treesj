@@ -1,11 +1,14 @@
+preinstall-ts-parsers:
+	nvim --headless -u tests/minimal.lua -c "TSUpdate | qa"
+
 test:
-	nvim --headless --noplugin -u tests/minimal.vim -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal.vim'}"
+	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests {minimal_init = 'tests/minimal.lua'}"
 
 test-langs:
-	nvim --headless --noplugin -u tests/minimal.vim -c "PlenaryBustedDirectory tests/langs/ {minimal_init = 'tests/minimal.vim'}"
+	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/langs {minimal_init = 'tests/minimal.lua'}"
 
 test-chold:
-	nvim --headless --noplugin -u tests/minimal.vim -c "PlenaryBustedDirectory tests/chold/ {minimal_init = 'tests/minimal.vim'}"
+	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/chold {minimal_init = 'tests/minimal.lua'}"
 
 lint-fix:
-	stylua ./lua/treesj/
+	stylua ./lua/treesj

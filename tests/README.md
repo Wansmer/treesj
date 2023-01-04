@@ -1,7 +1,7 @@
 # How to add a new language and create tests for it
 
 1. Add preset for new language to `/lua/treesj/langs/%{name_of_language}.lua`;
-2. Update `langs` list in [/lua/treesj/langs/init.lua](/lua/treesj/langs/init.lua);
+2. Update `configured_langs` list in [/lua/treesj/langs/init.lua](/lua/treesj/langs/init.lua);
 3. Create new file in `/tests/sample/` with name `index.${type_of_file}` - it
    will be file with examples of result `split` and `join`;
 4. Duplicate file `template.lua`, remane it to `${you_language}_spec.lua` and add describe and data for tests;

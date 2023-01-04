@@ -1,4 +1,5 @@
 .DS_Store
 /plugin
 todo.md
+/.tests
 **/**/tmp.*
