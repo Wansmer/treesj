@@ -1,4 +1,6 @@
-local langs = {
+local M = {}
+
+M.configured_langs = {
   'javascript',
   'typescript',
   'lua',
@@ -18,11 +20,9 @@ local langs = {
   'python',
 }
 
-local M = {}
-
 M.presets = {}
 
-for _, lang in ipairs(langs) do
+for _, lang in ipairs(M.configured_langs) do
   M.presets[lang] = require('treesj.langs.' .. lang)
 end
 
