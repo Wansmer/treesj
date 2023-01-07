@@ -20,14 +20,15 @@ TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
 ---@param tsnode userdata|table TSNode instance
----@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as a root
-function TreeSJ.new(tsnode, parent)
+---@param parent? TreeSJ|nil TreeSJ instance. When parent not passed, the node is recognized as a root
+---@param preset? table TreeSJ instance. When parent not passed, the node is recognized as a root
+function TreeSJ.new(tsnode, parent, preset)
   local root_preset = parent and parent:root():preset() or nil
 
   local is_tsn = type(tsnode) == 'userdata'
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
-  local preset = is_tsn and u.get_self_preset(tsnode) or nil
-  local text = is_tsn and u.get_node_text(tsnode) or ''
+  preset = preset or (is_tsn and u.get_self_preset(tsnode) or nil)
+  local text = is_tsn and u.get_node_text(tsnode) or tsnode.text
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
@@ -59,6 +60,17 @@ function TreeSJ:build_tree()
   if self:non_bracket() then
     tu.add_first_last_imitator(self:tsnode(), children)
   end
+
+  local p = self:preset('split')
+  if p and p.field then
+    children = {
+      tu.imitate_tsn(self:tsnode(), 'first', '{'),
+      self:tsnode(),
+      tu.imitate_tsn(self:tsnode(), 'last', '}'),
+    }
+  end
+
+  vim.pretty_print(children)
 
   for _, child in ipairs(children) do
     local tsj = TreeSJ.new(child, self)

@@ -57,7 +57,7 @@ end
 
 ---Return the closest configured node if found or nil
 ---@param node userdata|nil TSNode instance
----@return userdata
+---@return table
 function M.get_configured_node(node)
   if not node then
     error(msg.node_not_received, 0)
@@ -74,23 +74,36 @@ function M.get_configured_node(node)
     error(msg.no_configured_node:format(start_node_type, lang), 0)
   end
 
--- TODO: tmp, deleted
-  if has_target_field(node) then
-    local target = u.get_preset(node).target_field
-    vim.pretty_print(node:field(target)[1]:type(), type(node:field(target)[1]))
-  end
-
+  local preset = u.get_preset(node)
   local target_node_ancestor
-  if u.has_targets(node) then
+
+  if preset and preset.target_field then
+    local target = node:field(preset.target_field)
+    if target and #target > 0 then
+      node = target[1]
+      preset = u.get_preset({ type = preset.target_field, lang = lang })
+    end
+  elseif u.has_targets(node) then
     target_node_ancestor = node:type()
     node = M.search_inside_node(node)
     if not node then
       -- TODO: send node parrent to search up
       error(msg.no_contains_target_node:format(target_node_ancestor), 0)
     end
+    preset = u.get_preset(node)
   end
 
-  return node
+  -- local target_node_ancestor
+  -- if u.has_targets(node) then
+  --   target_node_ancestor = node:type()
+  --   node = M.search_inside_node(node)
+  --   if not node then
+  --     -- TODO: send node parrent to search up
+  --     error(msg.no_contains_target_node:format(target_node_ancestor), 0)
+  --   end
+  -- end
+
+  return { node, preset }
 end
 
 return M

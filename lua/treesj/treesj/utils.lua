@@ -21,8 +21,11 @@ end
 ---Makes first/last imitator node for TreeSJ. Using only for non-bracket blocks.
 ---@param tsn userdata
 ---@param pos string last|first
-local function imitate_tsn(tsn, pos)
-  local imitator = {}
+---@param text? string last|first
+function M.imitate_tsn(tsn, pos, text)
+  local imitator = {
+    text = text or '',
+  }
   imitator.__index = imitator
   local sr, sc, er, ec = tsn:range()
   function imitator:range()
@@ -46,10 +49,10 @@ function M.add_first_last_imitator(node, children)
   if p and u.get_nested_key_value(p, 'non_bracket_node') then
     local first, last = u.get_non_bracket_first_last(node)
     if first then
-      table.insert(children, 1, imitate_tsn(first, 'first'))
+      table.insert(children, 1, M.imitate_tsn(first, 'first'))
     end
     if last then
-      table.insert(children, imitate_tsn(last, 'last'))
+      table.insert(children, M.imitate_tsn(last, 'last'))
     end
   end
 end
