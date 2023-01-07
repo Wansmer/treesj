@@ -18,6 +18,7 @@ M.configured_langs = {
   'svelte',
   'rust',
   'python',
+  'r',
 }
 
 M.presets = {}
