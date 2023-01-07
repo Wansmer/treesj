@@ -49,6 +49,12 @@ function M.search_inside_node(node, targets)
   return nil
 end
 
+-- TODO: tmp, deleted
+local function has_target_field(node)
+  local target = u.get_preset(node).target_field
+  return target and node:field(target)
+end
+
 ---Return the closest configured node if found or nil
 ---@param node userdata|nil TSNode instance
 ---@return userdata
@@ -66,6 +72,12 @@ function M.get_configured_node(node)
   node = M.search_node_up(node, lang)
   if not node then
     error(msg.no_configured_node:format(start_node_type, lang), 0)
+  end
+
+-- TODO: tmp, deleted
+  if has_target_field(node) then
+    local target = u.get_preset(node).target_field
+    vim.pretty_print(node:field(target)[1]:type(), type(node:field(target)[1]))
   end
 
   local target_node_ancestor

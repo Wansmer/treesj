@@ -45,6 +45,10 @@ function M._premerge(preset)
     return { disable = preset.disable }
   end
 
+  if preset.target_field and preset.target_field ~= '' then
+    return { target_field = preset.target_field }
+  end
+
   if preset.target_nodes and not vim.tbl_isempty(preset.target_nodes) then
     return { target_nodes = convert_to_dict(preset.target_nodes) }
   end

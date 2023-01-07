@@ -9,7 +9,44 @@ return {
   arguments = u.set_preset_for_args(),
   named_imports = u.set_preset_for_dict(),
   export_clause = u.set_preset_for_dict(),
+  arrow_function = {
+    target_field = 'body',
+  },
   statement_block = u.set_preset_for_statement({
+    join = {
+      no_insert_if = {
+        'function_declaration',
+        'try_statement',
+        'if_statement',
+      },
+    },
+  }),
+  body = u.set_preset_for_statement({
+    type = 'field',
+    split = {
+      transform = {
+        cond = function(node)
+          return true
+        end,
+        -- remove = {
+        --   '{',
+        --   '}'
+        -- },
+        add = {
+          ['{'] = 1,
+          ['}'] = function(node)
+            local count = node:child_count()
+            return count + 1
+          end,
+        },
+        foreach = function(tsj_child)
+          local next = tsj_child:next()
+          if next and next:is_last() then
+            tsj_child:_update_text('return ' .. tsj_child:text())
+          end
+        end,
+      },
+    },
     join = {
       no_insert_if = {
         'function_declaration',
