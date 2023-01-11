@@ -16,12 +16,32 @@ return {
   parenthesized_expression = u.set_preset_for_args({}),
   list_comprehension = u.set_preset_for_args(),
   set_comprehension = u.set_preset_for_args(),
+  dictionary_comprehension = u.set_preset_for_args(),
   assignment = {
     target_nodes = {
       'tuple',
       'list',
       'dictionary',
       'set',
+      'argument_list',
+      'list_comprehension',
+      'set_comprehension',
+      'dictionary_comprehension',
+    },
+  },
+  decorator = {
+    target_nodes = {
+      'argument_list',
+    },
+  },
+  raise_statement = {
+    target_nodes = {
+      'argument_list',
+    },
+  },
+  call = {
+    target_nodes = {
+      'argument_list',
     },
   },
 }
