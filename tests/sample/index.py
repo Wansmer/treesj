@@ -18,7 +18,7 @@ other_li = [
 
 # RESULT OF JOIN (node "set", preset default)
 some_set = {1, 1, 2, 2, 3, 4}
-# RESULT OF JOIN (node "set", preset default)
+# RESULT OF SPLIT (node "set", preset default)
 some_set = {
     1,
     1,
@@ -30,7 +30,7 @@ some_set = {
 
 # RESULT OF JOIN (node "tuple", preset default)
 tup = (1, 2, 3)
-# RESULT OF JOIN (node "tuple", preset default)
+# RESULT OF SPLIT (node "tuple", preset default)
 tup = (
     1,
     2,
@@ -77,11 +77,83 @@ def create_adder(
 
 # RESULT OF JOIN (node "set_comprehension", preset default)
 {x for x in 'abcddeef' if x not in 'abc'}
-# RESULT OF JOIN (node "set_comprehension", preset default)
+# RESULT OF SPLIT (node "set_comprehension", preset default)
 {
     x
     for x in 'abcddeef'
     if x not in 'abc'
 }
+
+# RESULT OF JOIN (node "dictionary_comprehension")
+{k: v for k, v in items}
+
+# RESULT OF SPLIT (node "dictionary_comprehension")
+{
+    k: v
+    for k, v in items
+}
+
+# RESULT OF JOIN (node "decorator")
+@app.delete("/{id}", status_code=204)
+
+# RESULT OF SPLIT (node "decorator")
+@app.delete(
+    "/{id}",
+    status_code=204
+)
+
+# RESULT OF JOIN (node "raise_statement")
+raise HTTPException(status_code=404, detail=f"ID {id} does not exists")
+
+# RESULT OF SPLIT (node "raise_statement")
+raise HTTPException(
+    status_code=404,
+    detail=f"ID {id} does not exists"
+)
+
+# RESULT OF JOIN (node "call")
+session.delete(existing_id)
+
+# RESULT OF SPLIT (node "call")
+session.delete(
+    existing_id
+)
+
+# RESULT OF JOIN (node "assignment" (argument_list))
+existing_id = session.get(Table, id)
+
+# RESULT OF SPLIT (node "assignment" (argument_list))
+existing_id = session.get(
+    Table,
+    id
+)
+
+# RESULT OF JOIN (node "assignment" (list_comprehension))
+lc = [item for item in range(1, 4)]
+
+# RESULT OF SPLIT (node "assignment" (list_comprehension))
+lc = [
+    item
+    for item in range(1, 4)
+]
+
+# RESULT OF JOIN (node "assignment" (set_comprehension))
+sc = {elem for elem in range(1, 4)}
+
+# RESULT OF SPLIT (node "assignment" (set_comprehension))
+sc = {
+    elem
+    for elem in range(1, 4)
+}
+
+# RESULT OF JOIN (node "assignment" (dictionary_comprehension))
+dc = {k: v for k, v in items}
+
+# RESULT OF SPLIT (node "assignment" (dictionary_comprehension))
+dc = {
+    k: v
+    for k, v in items
+}
+
 
 # code from https://learnxinyminutes.com/docs/python/
