@@ -69,7 +69,7 @@ function TreeSJ:build_tree()
     end
 
     if not tsj:is_ignore('split') and tsj:has_preset() then
-      local sw = vim.api.nvim_buf_get_option(0, 'shiftwidth')
+      local sw = vim.fn.shiftwidth()
       tsj._root_indent = tsj:get_prev_indent() + sw
     end
 

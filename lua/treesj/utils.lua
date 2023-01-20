@@ -365,7 +365,7 @@ function M.calc_indent(tsj)
 
   local pp = parent:preset('split')
   local sratr_indent = parent._root_indent
-  local shiftwidth = vim.api.nvim_buf_get_option(0, 'shiftwidth')
+  local shiftwidth = vim.fn.shiftwidth()
   local common_indent = sratr_indent + shiftwidth
   local is_last = is_last_no_omit(tsj) and pp.last_indent == 'normal'
 
