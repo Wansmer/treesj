@@ -29,7 +29,7 @@ some_set = {
 }
 
 # RESULT OF JOIN (node "tuple", preset default)
-tup = (1, 2, 3)
+tup = (1, 2, 3,)
 # RESULT OF SPLIT (node "tuple", preset default)
 tup = (
     1,

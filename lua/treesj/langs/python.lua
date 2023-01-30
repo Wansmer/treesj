@@ -10,7 +10,12 @@ return {
   dictionary = no_space_in_brackets,
   list = no_space_in_brackets,
   set = no_space_in_brackets,
-  tuple = no_space_in_brackets,
+  tuple = u.set_preset_for_list({
+    join = {
+      space_in_brackets = false,
+      last_separator = true,
+    },
+  }),
   argument_list = u.set_preset_for_args(),
   parameters = u.set_preset_for_args(),
   parenthesized_expression = u.set_preset_for_args({}),
