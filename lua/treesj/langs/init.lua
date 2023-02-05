@@ -20,6 +20,7 @@ M.configured_langs = {
   'python',
   'r',
   'cpp',
+  'c',
 }
 
 M.presets = {}
