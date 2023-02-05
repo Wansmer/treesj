@@ -19,6 +19,7 @@ M.configured_langs = {
   'rust',
   'python',
   'r',
+  'cpp',
 }
 
 M.presets = {}
