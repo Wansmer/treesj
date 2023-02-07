@@ -140,7 +140,14 @@ end
 ---@param child TreeSJ TreeSJ instance
 local function set_indent(child)
   local indent = u.calc_indent(child)
-  local text = prepend_text(child:text(), (' '):rep(indent))
+  local sep = ' '
+
+  if not vim.bo.expandtab then
+    indent = indent / vim.fn.shiftwidth()
+    sep = '\t'
+  end
+
+  local text = prepend_text(child:text(), (sep):rep(indent))
   child:_update_text(text)
 end
 
