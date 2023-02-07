@@ -6,7 +6,7 @@ vim.opt.shiftwidth = 2
 vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.shadafile = 'NONE'
-vim.opt.expandtab = true
+vim.opt.expandtab = false
 
 vim.cmd([[set runtimepath=$VIMRUNTIME]])
 vim.opt.runtimepath:append(CWD)

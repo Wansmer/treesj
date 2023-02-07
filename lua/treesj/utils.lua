@@ -364,12 +364,12 @@ function M.calc_indent(tsj)
   end
 
   local pp = parent:preset('split')
-  local sratr_indent = parent._root_indent
+  local start_indent = parent._root_indent
   local shiftwidth = vim.fn.shiftwidth()
-  local common_indent = sratr_indent + shiftwidth
+  local common_indent = start_indent + shiftwidth
   local is_last = is_last_no_omit(tsj) and pp.last_indent == 'normal'
 
-  return is_last and sratr_indent or common_indent
+  return is_last and start_indent or common_indent
 end
 
 ---Get base nodes for first/last imitator node in non-bracket blocks
