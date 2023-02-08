@@ -80,7 +80,7 @@ M._set_default_keymaps = function()
   if M.settings and M.settings.use_default_keymaps then
     local treesj = require('treesj')
     for _, cmd in ipairs(commands) do
-      vim.keymap.set(cmd.mode, cmd.keys, treesj[cmd.func], { desc = cmd.desc })
+      vim.keymap.set(cmd.mode, cmd.keys, treesj[cmd.func], { desc = cmd.desc, expr = true })
     end
   end
 end
