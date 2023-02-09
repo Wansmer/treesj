@@ -20,6 +20,8 @@ local DEFAULT_SETTINGS = {
   -- Notify about possible problems or not
   notify = true,
   langs = lu._prepare_presets(langs.presets),
+  -- Use `dot` for repeat action
+  dot_repeat = true,
 }
 
 local commands = {
