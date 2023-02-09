@@ -4,7 +4,7 @@ Neovim plugin for splitting/joining blocks of code like arrays, hashes, statemen
 
 Inspired by and partly repeats the functionality of [splitjoin.vim](https://github.com/AndrewRadev/splitjoin.vim).
 
-> *⚡Disclaimer: The plugin is under active development. Documentation will be added when all planned features are implemented. Feel free to open an issue or PR 💪*
+> _⚡Disclaimer: The plugin is under active development. Documentation will be added when all planned features are implemented. Feel free to open an issue or PR 💪_
 
 <https://user-images.githubusercontent.com/46977173/201088511-b336cec5-cec4-437f-95b3-0208c83377fd.mov>
 
@@ -16,7 +16,8 @@ Inspired by and partly repeats the functionality of [splitjoin.vim](https://gith
 - **Make cursor sticky**: The cursor follows the text on which it was called;
 - **Autodetect mode**: Toggle-mode present. Split or join blocks by same key mapping;
 - **Do it recursively**: Expand or collapse all nested nodes? Yes, you can;
-- **Recognize nested languages**: Filetype doesn't matter, detect language with treesitter.
+- **Recognize nested languages**: Filetype doesn't matter, detect language with treesitter;
+- **Repeat formatting with `dot`**: `.` support for each action.
 
 ## Requirements
 
@@ -69,6 +70,8 @@ tsj.setup({
   -- Notify about possible problems or not
   notify = true,
   langs = langs,
+  -- Use `dot` for repeat action
+  dot_repeat = true,
 })
 ```
 
@@ -142,7 +145,7 @@ local somenode = {
     last_separator = false,
 
     -- list[string|function]: Nodes in list will be joined for previous node
-    -- (e.g. tag_name in HTML start_tag or separator (',') in JS object) 
+    -- (e.g. tag_name in HTML start_tag or separator (',') in JS object)
     -- NOTE: Must be same for both modes
     omit = {},
     -- boolean: Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
@@ -167,14 +170,14 @@ local somenode = {
     -- Will auto add to option 'omit' for 'both'
     force_insert = '',
 
-    -- list[string|function]: The insert symbol will be omitted if node contains in this list 
+    -- list[string|function]: The insert symbol will be omitted if node contains in this list
     -- (e.g. function_declaration inside statement_block in JS no require instruction separator (';'))
     no_insert_if = {},
 
     -- boolean: All nested configured nodes will process according to their presets
     recursive = true,
 
-    -- [string]: Type of configured node that must be ignored 
+    -- [string]: Type of configured node that must be ignored
     recursive_ignore = {},
   },
 
@@ -184,7 +187,7 @@ local somenode = {
     -- boolean: All nested configured nodes will process according to their presets
     recursive = false,
 
-    -- [string]: Type of configured node that must be ignored 
+    -- [string]: Type of configured node that must be ignored
     -- E.g., you probably don't want the parameters of each nested function to be expanded.
     recursive_ignore = {},
 
@@ -258,10 +261,10 @@ local css = require('treesj.langs.css')
 
 local langs = {
   scss = u.merge_preset(css, {--[[
-    Here you can override existing nodes 
+    Here you can override existing nodes
     or add language-specific nodes
 ]]})
-} 
+}
 ```
 
 ## How it works
@@ -271,27 +274,23 @@ If the current node is not configured, TreeSJ checks the parent node, and so on,
 
 Presets for node can be two types:
 
-1. With preset for self           - if this type is found, the node will be formatted;
+1. With preset for self - if this type is found, the node will be formatted;
 2. With referens for nested nodes - in this case, search will be continued among this node descendants;
 
 **Example**:
 
 > "|" - meaning cursor
 
-```javascript
-const arr = [ 1, 2, 3 ]
-```
-
 ```txt
 // with preset for self
 const arr = [ 1, |2, 3 ];
-                 |      
+                 |
     first node is 'number' - not configured,
     parent node is 'array' - configured and will be split
 
 // with referens
 cons|t arr = [ 1, 2, 3 ];
-    |      
+    |
   first node is 'variable_declarator' - not configured,
   parent node is 'lexical_declaration' - configured and has reference
   { target_nodes = { 'array', 'object' } },
