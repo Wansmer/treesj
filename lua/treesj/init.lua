@@ -8,11 +8,6 @@ M.setup = function(opts)
   settings._create_commands()
 end
 
-local function set_opfunc(dir)
-  vim.opt.operatorfunc = "v:lua.require'treesj'.__" .. dir
-  return 'g@l'
-end
-
 M.__toggle = function()
   require('treesj.format')._format()
 end
@@ -25,16 +20,29 @@ M.__join = function()
   require('treesj.format')._format('join')
 end
 
+local function set_opfunc_and_format(dir)
+  vim.opt.operatorfunc = "v:lua.require'treesj'.__" .. dir
+  vim.cmd.normal('g@l')
+end
+
+local function format(dir)
+  if settings.settings.dot_repeat then
+    set_opfunc_and_format(dir)
+  else
+    M['__' .. dir]()
+  end
+end
+
 M.toggle = function()
-  return set_opfunc('toggle')
+  format('toggle')
 end
 
 M.join = function()
-  return set_opfunc('join')
+  format('join')
 end
 
 M.split = function()
-  return set_opfunc('split')
+  format('split')
 end
 
 return M
