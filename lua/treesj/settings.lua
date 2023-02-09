@@ -20,6 +20,8 @@ local DEFAULT_SETTINGS = {
   -- Notify about possible problems or not
   notify = true,
   langs = lu._prepare_presets(langs.presets),
+  -- Use `dot` for repeat action
+  dot_repeat = true,
 }
 
 local commands = {
@@ -80,7 +82,7 @@ M._set_default_keymaps = function()
   if M.settings and M.settings.use_default_keymaps then
     local treesj = require('treesj')
     for _, cmd in ipairs(commands) do
-      vim.keymap.set(cmd.mode, cmd.keys, treesj[cmd.func], { desc = cmd.desc, expr = true })
+      vim.keymap.set(cmd.mode, cmd.keys, treesj[cmd.func], { desc = cmd.desc })
     end
   end
 end
