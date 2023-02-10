@@ -22,7 +22,7 @@ end
 
 local function set_opfunc_and_format(dir)
   vim.opt.operatorfunc = "v:lua.require'treesj'.__" .. dir
-  vim.cmd.normal('g@l')
+  vim.api.nvim_feedkeys('g@l', 'nx', true)
 end
 
 local function format(dir)
