@@ -1,0 +1,20 @@
+[
+  // language: jsonc
+  // result of SPLIT
+  {
+    "object": {
+      "split": "split",
+      "join": "join"
+    },
+    "array": [
+      "split",
+      "join"
+    ]
+  },
+  // language: jsonc
+  // result of JOIN
+  {
+    "object": { "split": "split", "join": "join" },
+    "array": [ "split", "join" ]
+  }
+]

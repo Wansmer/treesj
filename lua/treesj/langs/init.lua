@@ -6,6 +6,7 @@ M.configured_langs = {
   'lua',
   'html',
   'json',
+  'jsonc',
   'vue',
   'css',
   'scss',
