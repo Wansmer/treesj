@@ -108,6 +108,7 @@ By default, TreeSJ has presets for these languages:
 - **Rust**;
 - **R**;
 - **C/C++**;
+- **Nix**;
 
 For adding your favorite language, add it to `langs` sections in your configuration. Also, see how [to implement fallback](https://github.com/Wansmer/treesj/discussions/19) to splitjoin.vim.
 
