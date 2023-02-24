@@ -56,3 +56,11 @@ def double(x)
   puts "meth";
   return x * 2
 end
+
+# RESULT OF JOIN (node "do_block to block", preset default)
+x.each { |y| puts y }
+
+# RESULT OF SPLIT (node "block to do_block", preset default)
+x.each do |y|
+  puts y
+end
