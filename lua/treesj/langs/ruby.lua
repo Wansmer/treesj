@@ -5,6 +5,32 @@ return {
   hash = u.set_preset_for_list(),
   method_parameters = u.set_preset_for_args(),
   argument_list = u.set_preset_for_args(),
+  block = u.set_preset_for_dict({
+    split = {
+      omit = { 'block_parameters' },
+      separator = '',
+      foreach = function(child)
+        local replace = { ['{'] = 'do', ['}'] = 'end' }
+        local text = child:text()
+        if replace[text] then
+          child:_update_text(replace[text])
+        end
+      end,
+    },
+  }),
+  do_block = u.set_preset_for_dict({
+    join = {
+      separator = '',
+      recursive = false,
+      foreach = function(child)
+        local replace = { ['do'] = '{', ['end'] = '}' }
+        local text = child:text()
+        if replace[text] then
+          child:_update_text(replace[text])
+        end
+      end,
+    },
+  }),
   string_array = u.set_preset_for_list({
     split = {
       last_separator = false,
