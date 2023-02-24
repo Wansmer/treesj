@@ -1,0 +1,19 @@
+# RESULT OF JOIN (node "array", preset default)
+numbers = [ 0.1, 0.2, 0.5, 1, 2, 5 ]
+# RESULT OF SPLIT (node "array", preset default)
+numbers = [
+  0.1,
+  0.2,
+  0.5,
+  1,
+  2,
+  5
+]
+
+# RESULT OF JOIN (node "array" (mix type), preset default)
+arrays = [ [ 1, 2 ], { x = 1, y = 2 } ]
+# RESULT OF JOIN (node "array" (mix type), preset default)
+arrays = [
+  [ 1, 2 ],
+  { x = 1, y = 2 }
+]

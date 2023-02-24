@@ -22,6 +22,7 @@ M.configured_langs = {
   'r',
   'cpp',
   'c',
+  'toml',
 }
 
 M.presets = {}
