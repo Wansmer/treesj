@@ -184,6 +184,11 @@ function M._join(tsj)
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
 
+      local cb = p.foreach
+      if cb then
+        cb(child)
+      end
+
       if is_instruction_sep_need(child, p) then
         child:_update_text(child:text() .. p.force_insert)
       end
@@ -250,6 +255,11 @@ function M._split(tsj)
 
   for child in tsj:iter_children() do
     if tsj:has_preset() then
+      local cb = tsj:preset('split').foreach
+      if cb then
+        cb(child)
+      end
+
       process_configured(tsj, child, lines)
     elseif tsj:has_to_format() then
       process_configured_container(child, lines)

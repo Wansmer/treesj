@@ -156,6 +156,9 @@ local somenode = {
     -- If true, empty brackets, empty tags, or node which only contains nodes from 'omit' no will handling
     -- (ignored, when non_bracket_node = true)
     format_empty_node = true,
+    -- function|nil function (child: TreeSJ): void
+    -- Custom callback for transforming text of children nodes. Can be different for split and join
+    foreach = nil,
   },
 
   -- Use only for join. If contains field from 'both',
