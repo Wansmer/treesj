@@ -386,7 +386,13 @@ end
 function M.range(tsn)
   local p = M.get_preset(tsn)
   local non_bracket_node = M.get_nested_key_value(p, 'non_bracket_node')
-  local sr, sc, er, ec = tsn:range()
+
+  -- Some parsers give incorrect range, when `tsn:range()` (e.g. `yaml`).
+  -- That's why using range of first and last children.
+  local first_child = tsn:child(0)
+  local last_child = tsn:child(tsn:child_count() - 1)
+  local sr, sc = first_child:range()
+  local _, _, er, ec = last_child:range()
 
   if p and non_bracket_node then
     local first, last = M.get_non_bracket_first_last(tsn)
