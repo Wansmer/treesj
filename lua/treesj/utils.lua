@@ -389,10 +389,12 @@ function M.range(tsn)
 
   -- Some parsers give incorrect range, when `tsn:range()` (e.g. `yaml`).
   -- That's why using range of first and last children.
-  local first_child = tsn:child(0)
-  local last_child = tsn:child(tsn:child_count() - 1)
-  local sr, sc = first_child:range()
-  local _, _, er, ec = last_child:range()
+  -- local first_child = tsn:child(0)
+  -- local last_child = tsn:child(tsn:child_count() - 1)
+  -- local sr, sc = first_child:range()
+  -- local _, _, er, ec = last_child:range()
+
+  local sr, sc, er, ec = tsn:range()
 
   if p and non_bracket_node then
     local first, last = M.get_non_bracket_first_last(tsn)
