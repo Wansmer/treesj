@@ -52,7 +52,7 @@ function M._format(mode)
   end
 
   local treesj = TreeSJ.new(node)
-  treesj:build_tree()
+  treesj:build_tree(MODE)
   treesj[MODE](treesj)
   local replacement = treesj:get_lines()
 

@@ -23,6 +23,8 @@ return {
     -- function|nil function (child: TreeSJ): void
     -- Custom callback for transforming text of children nodes. Can be different for split and join
     foreach = nil,
+    -- nil|table { left = string, right = string }
+    add_framing_nodes = nil,
   },
   -- Use only for join. If contains field from 'both',
   -- field here have higher priority

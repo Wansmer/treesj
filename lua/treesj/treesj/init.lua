@@ -27,7 +27,7 @@ function TreeSJ.new(tsnode, parent)
   local is_tsn = type(tsnode) == 'userdata'
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
   local preset = is_tsn and u.get_self_preset(tsnode) or nil
-  local text = is_tsn and u.get_node_text(tsnode) or ''
+  local text = tsnode:type() == 'imitator' and tsnode:text() or u.get_node_text(tsnode)
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
@@ -52,12 +52,17 @@ function TreeSJ.new(tsnode, parent)
 end
 
 ---Recursive parse current node children and building TreeSJ
-function TreeSJ:build_tree()
+---@param mode string
+function TreeSJ:build_tree(mode)
   local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
   local prev
 
-  if self:non_bracket() then
-    tu.add_first_last_imitator(self:tsnode(), children)
+  local framing = self:preset() and self:preset(mode).add_framing_nodes
+
+  if self:non_bracket() or framing then
+    local left = framing and framing.left
+    local right = framing and framing.right
+    tu.add_first_last_imitator(self:tsnode(), children, left, right)
   end
 
   for _, child in ipairs(children) do
