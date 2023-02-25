@@ -4,9 +4,6 @@ preinstall-ts-parsers:
 test-langs:
 	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/langs {minimal_init = 'tests/minimal.lua'}"
 
-test-langs-rb:
-	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/langs/ruby_spec.lua {minimal_init = 'tests/minimal.lua'}"
-
 test-langs-tab:
 	nvim --headless -u tests/minimal_tab.lua -c "PlenaryBustedDirectory tests/langs_tab {minimal_init = 'tests/minimal_tab.lua'}"
 
