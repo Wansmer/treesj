@@ -278,7 +278,9 @@ function M._split(tsj)
         cb(child)
       end
 
-      process_configured(tsj, child, lines)
+      if not child._remove then
+        process_configured(tsj, child, lines)
+      end
     elseif tsj:has_to_format() then
       process_configured_container(child, lines)
     else

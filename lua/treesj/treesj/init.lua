@@ -27,7 +27,8 @@ function TreeSJ.new(tsnode, parent)
   local is_tsn = type(tsnode) == 'userdata'
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
   local preset = is_tsn and u.get_self_preset(tsnode) or nil
-  local text = tsnode:type() == 'imitator' and tsnode:text() or u.get_node_text(tsnode)
+  local text = tsnode:type() == 'imitator' and tsnode:text()
+    or u.get_node_text(tsnode)
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
@@ -48,6 +49,7 @@ function TreeSJ.new(tsnode, parent)
     _children = {},
     _observed_range = range,
     _root_indent = ri,
+    _remove = false,
   }, TreeSJ)
 end
 
@@ -62,7 +64,6 @@ function TreeSJ:build_tree(mode)
   if self:non_bracket() or framing then
     local left = framing and framing.left
     local right = framing and framing.right
-    print('Left: ', left, 'right: ', right)
     tu.add_first_last_imitator(self:tsnode(), children, left, right)
   end
 
@@ -80,7 +81,7 @@ function TreeSJ:build_tree(mode)
     end
 
     if child:type() ~= 'imitator' then
-      tsj:build_tree()
+      tsj:build_tree(mode)
     end
 
     table.insert(self._children, tsj)
@@ -295,6 +296,12 @@ end
 ---@return boolean
 function TreeSJ:is_imitator()
   return self._imitator
+end
+
+---Checking if the current TreeSJ is node-imitator
+---@return boolean
+function TreeSJ:remove()
+  self._remove = true
 end
 
 ---Return formatted lines of TreeSJ
