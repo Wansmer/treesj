@@ -10,10 +10,12 @@ return {
       omit = { 'block_parameters' },
       separator = '',
       foreach = function(child)
-        local replace = { ['{'] = 'do', ['}'] = 'end' }
         local text = child:text()
-        if replace[text] then
-          child:_update_text(replace[text])
+        if child:is_framing() and type(text) == 'string' then
+          local replace = { ['{'] = 'do', ['}'] = 'end' }
+          if replace[text] then
+            child:_update_text(replace[text])
+          end
         end
       end,
     },
@@ -23,10 +25,12 @@ return {
       separator = '',
       recursive = false,
       foreach = function(child)
-        local replace = { ['do'] = '{', ['end'] = '}' }
         local text = child:text()
-        if replace[text] then
-          child:_update_text(replace[text])
+        if child:is_framing() and type(text) == 'string' then
+          local replace = { ['do'] = '{', ['end'] = '}' }
+          if replace[text] then
+            child:_update_text(replace[text])
+          end
         end
       end,
     },
@@ -49,5 +53,8 @@ return {
   },
   assignment = {
     target_nodes = { 'array', 'hash' },
+  },
+  call = {
+    target_nodes = { 'block', 'do_block' },
   },
 }
