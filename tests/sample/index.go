@@ -53,3 +53,11 @@ learnErrorHandling(
   2,
   3,
 )
+
+// RESULT OF JOIN (block "import_spec_list to import_spec", preset default)
+import "fmt"
+
+// RESULT OF SPLIT (block "import_spec to import_spec_list", preset default)
+import (
+  "fmt"
+)

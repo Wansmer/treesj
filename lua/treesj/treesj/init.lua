@@ -15,6 +15,7 @@ local tu = require('treesj.treesj.utils')
 ---@field _children TreeSJ[] List of children
 ---@field _observed_range integer[] Range of node consider whitespaces
 ---@field _root_indent integer|nil Start indent to calculate other insdent when split
+---@field _remove boolean Marker if node should be removed from tree
 local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
@@ -27,7 +28,8 @@ function TreeSJ.new(tsnode, parent)
   local is_tsn = type(tsnode) == 'userdata'
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
   local preset = is_tsn and u.get_self_preset(tsnode) or nil
-  local text = is_tsn and u.get_node_text(tsnode) or ''
+  local text = tsnode:type() == 'imitator' and tsnode:text()
+    or u.get_node_text(tsnode)
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
@@ -48,16 +50,22 @@ function TreeSJ.new(tsnode, parent)
     _children = {},
     _observed_range = range,
     _root_indent = ri,
+    _remove = false,
   }, TreeSJ)
 end
 
 ---Recursive parse current node children and building TreeSJ
-function TreeSJ:build_tree()
+---@param mode string
+function TreeSJ:build_tree(mode)
   local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
   local prev
 
-  if self:non_bracket() then
-    tu.add_first_last_imitator(self:tsnode(), children)
+  local framing = self:preset() and self:preset(mode).add_framing_nodes
+
+  if self:non_bracket() or framing then
+    local left = framing and framing.left
+    local right = framing and framing.right
+    tu.add_first_last_imitator(self:tsnode(), children, left, right)
   end
 
   for _, child in ipairs(children) do
@@ -74,7 +82,7 @@ function TreeSJ:build_tree()
     end
 
     if child:type() ~= 'imitator' then
-      tsj:build_tree()
+      tsj:build_tree(mode)
     end
 
     table.insert(self._children, tsj)
@@ -289,6 +297,12 @@ end
 ---@return boolean
 function TreeSJ:is_imitator()
   return self._imitator
+end
+
+---Checking if the current TreeSJ is node-imitator
+---@return boolean
+function TreeSJ:remove()
+  self._remove = true
 end
 
 ---Return formatted lines of TreeSJ

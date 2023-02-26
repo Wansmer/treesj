@@ -23,6 +23,7 @@ M.configured_langs = {
   'cpp',
   'c',
   'toml',
+  'yaml',
 }
 
 M.presets = {}

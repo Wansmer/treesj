@@ -381,12 +381,29 @@ function M.get_non_bracket_first_last(tsn)
   return first, last
 end
 
+---Get real end_row and end_column of node
+---@param tsn userdata
+---@return integer, integer
+local function get_last_sym_range(tsn)
+  local len = tsn:child_count()
+  while len > 0 do
+    tsn = tsn:child(len - 1)
+    len = tsn:child_count()
+  end
+  local _, _, er, ec = tsn:range()
+  return er, ec
+end
+
 ---Returned range of node considering the presence of brackets
 ---@param tsn userdata
 function M.range(tsn)
   local p = M.get_preset(tsn)
   local non_bracket_node = M.get_nested_key_value(p, 'non_bracket_node')
-  local sr, sc, er, ec = tsn:range()
+
+  -- Some parsers give incorrect range, when `tsn:range()` (e.g. `yaml`).
+  -- That's why using end_row and end_column of last children text.
+  local sr, sc = tsn:range()
+  local er, ec = get_last_sym_range(tsn)
 
   if p and non_bracket_node then
     local first, last = M.get_non_bracket_first_last(tsn)

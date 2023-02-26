@@ -16,6 +16,7 @@ M.msg = {
   extra_longer = 'Cannot "join" node longer than %s symbols. Check your settings to change it.',
   version_not_support = 'Current version of neovim is "0.%s". TreeSJ requires version "0.8" or higher',
   node_not_received = 'Node not received',
+  node_is_disable = 'Action "%s" for node "%s" is disabled in preset',
 }
 
 ---Wraper for vim.notify and nvim-notify

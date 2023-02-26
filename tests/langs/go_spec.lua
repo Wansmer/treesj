@@ -54,6 +54,16 @@ local data_for_split = {
     result = { 47, 52 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", block "import_spec to import_spec_list", preset default',
+    cursor = { 58, 11 },
+    expected = { 60, 63 },
+    result = { 57, 60 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -105,6 +115,16 @@ local data_for_join = {
     cursor = { 54, 3 },
     expected = { 47, 48 },
     result = { 50, 51 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", block "import_spec_list to import_spec", preset default',
+    cursor = { 61, 8 },
+    expected = { 57, 58 },
+    result = { 60, 61 },
     settings = {},
   },
 }

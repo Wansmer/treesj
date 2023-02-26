@@ -19,12 +19,26 @@ function M.get_observed_range(tsnode)
 end
 
 ---Makes first/last imitator node for TreeSJ. Using only for non-bracket blocks.
----@param tsn userdata
+---@param tsn userdata|nil
+---@param parent userdata
 ---@param pos string last|first
-local function imitate_tsn(tsn, pos)
+---@param text? string
+local function imitate_tsn(tsn, parent, pos, text)
+  text = text or ''
+
   local imitator = {}
   imitator.__index = imitator
-  local sr, sc, er, ec = tsn:range()
+  local sr, sc, er, ec
+  if tsn then
+    sr, sc, er, ec = tsn:range()
+  elseif pos == 'first' then
+    sr, sc = parent:range()
+    er, ec = sr, sc
+  elseif pos == 'last' then
+    _, _, er, ec = parent:range()
+    sr, sc = er, ec
+  end
+
   function imitator:range()
     if pos == 'first' then
       return er, ec, er, ec
@@ -32,25 +46,29 @@ local function imitate_tsn(tsn, pos)
       return sr, sc, sr, sc
     end
   end
+
   function imitator:type()
     return 'imitator'
   end
+
+  function imitator:text()
+    return text
+  end
+
   return imitator
 end
 
 ---Add first and last imitator nodas to children list for non-bracket blocks
 ---@param node userdata TSNode instance
 ---@param children table
-function M.add_first_last_imitator(node, children)
+---@param left? string
+---@param right? string
+function M.add_first_last_imitator(node, children, left, right)
   local p = u.get_preset(node)
   if p and u.get_nested_key_value(p, 'non_bracket_node') then
     local first, last = u.get_non_bracket_first_last(node)
-    if first then
-      table.insert(children, 1, imitate_tsn(first, 'first'))
-    end
-    if last then
-      table.insert(children, imitate_tsn(last, 'last'))
-    end
+    table.insert(children, 1, imitate_tsn(first, node, 'first', left))
+    table.insert(children, imitate_tsn(last, node, 'last', right))
   end
 end
 
@@ -189,14 +207,16 @@ function M._join(tsj)
         cb(child)
       end
 
-      if is_instruction_sep_need(child, p) then
-        child:_update_text(child:text() .. p.force_insert)
+      if not child._remove then
+        if is_instruction_sep_need(child, p) then
+          child:_update_text(child:text() .. p.force_insert)
+        end
+
+        set_last_sep_if_need(child, p)
+        set_whitespace(child)
+
+        table.insert(lines, child:text())
       end
-
-      set_last_sep_if_need(child, p)
-      set_whitespace(child)
-
-      table.insert(lines, child:text())
     else
       set_whitespace(child)
       table.insert(lines, child:text())
@@ -260,7 +280,9 @@ function M._split(tsj)
         cb(child)
       end
 
-      process_configured(tsj, child, lines)
+      if not child._remove then
+        process_configured(tsj, child, lines)
+      end
     elseif tsj:has_to_format() then
       process_configured_container(child, lines)
     else

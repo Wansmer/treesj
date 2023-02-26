@@ -40,6 +40,14 @@ function M._format(mode)
     end
   end
 
+  local enable = p
+    and (type(p.enable) == 'boolean' and p.enable or p.enable(node))
+
+  if not enable then
+    notify.info(msg.node_is_disable, MODE, node:type())
+    return
+  end
+
   if settings.check_syntax_error and node:has_error() then
     notify.warn(msg.contains_error, node:type(), MODE)
     return
@@ -52,7 +60,7 @@ function M._format(mode)
   end
 
   local treesj = TreeSJ.new(node)
-  treesj:build_tree()
+  treesj:build_tree(MODE)
   treesj[MODE](treesj)
   local replacement = treesj:get_lines()
 
