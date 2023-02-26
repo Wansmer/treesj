@@ -15,6 +15,7 @@ local tu = require('treesj.treesj.utils')
 ---@field _children TreeSJ[] List of children
 ---@field _observed_range integer[] Range of node consider whitespaces
 ---@field _root_indent integer|nil Start indent to calculate other insdent when split
+---@field _remove boolean Marker if node should be removed from tree
 local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
