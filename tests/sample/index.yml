@@ -1,6 +1,6 @@
 obj: { one: one, two: two }
 
-obj:
+obj: 
   one: one
   two: two
 
@@ -10,11 +10,7 @@ array:
   - one
   - two
 
-mixed: 
-  pair: true
-  array:
-    - value1
-    - value2
+mixed: { pair: true, array:  [ value1, value2 ] }
 
 mixed: 
   pair: true
