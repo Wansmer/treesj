@@ -11,16 +11,11 @@ return {
       separator = ';',
       last_separator = true,
     },
-    -- split = {
-    --   recursive = true,
-    -- },
   }),
-  -- binding_set = u.set_preset_for_dict({
-  --   disable = true
-  -- })
   formals = u.set_preset_for_args({
     join = {
       space_in_brackets = true,
     },
   }),
+  let_expression = u.set_preset_for_non_bracket(),
 }

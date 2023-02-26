@@ -39,4 +39,16 @@
     , ...
     }:
     { };
+
+  # RESULT OF JOIN (nix "let_expression", preset default)
+  bla =
+    let x=1; y=2; in x+y;
+
+  # RESULT OF SPLIT (nix "let_expression", preset default)
+  blub =
+    let
+      x = 1;
+      y = 2;
+    in
+    x + y;
 }
