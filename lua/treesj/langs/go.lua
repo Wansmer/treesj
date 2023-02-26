@@ -19,6 +19,29 @@ return {
       },
     },
   }),
+  import_spec = u.set_preset_for_args({
+    both = {
+      enable = function(tsn)
+        return tsn:parent():type() ~= 'import_spec_list'
+      end,
+    },
+    split = {
+      non_bracket_node = true,
+      add_framing_nodes = { left = ' (', right = ')' },
+    },
+  }),
+  import_spec_list = u.set_preset_for_args({
+    join = {
+      enable = function(tsn)
+        return tsn:named_child_count() < 2
+      end,
+      foreach = function(tsj)
+        if tsj:is_framing() then
+          tsj:_update_text('')
+        end
+      end,
+    },
+  }),
   function_declaration = {
     target_nodes = { 'block' },
   },
