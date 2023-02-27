@@ -24,6 +24,7 @@ M.configured_langs = {
   'c',
   'toml',
   'yaml',
+  'nix',
 }
 
 M.presets = {}

@@ -2,7 +2,7 @@ local M = {}
 
 local DEFAULT_PRESET = require('treesj.langs.default_preset')
 
----Return metged preset. Wrapper for tbl_deep_extend with 'force' mode
+---Return merged preset. Wrapper for tbl_deep_extend with 'force' mode
 ---@param base table Base preset
 ---@param override table Preset for override
 ---@return table
