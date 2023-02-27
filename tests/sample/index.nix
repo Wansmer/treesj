@@ -1,10 +1,10 @@
 { foo, ... }:
 {
   bar = [
-    # RESULT OF JOIN (nix "list", preset default)
+    # RESULT OF JOIN (nix "list_expression", preset default)
     [ 1 2 3 4 "a" "b" ]
 
-    # RESULT OF SPLIT (nix "list", preset default)
+    # RESULT OF SPLIT (nix "list_expression", preset default)
     [
       1
       2
