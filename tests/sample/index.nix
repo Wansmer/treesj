@@ -28,21 +28,22 @@
 
   # RESULT OF JOIN (nix "formals", preset default)
   func1 =
-    { foo, bar, blub, ... }:
+    { foo , bar , blub , ... }:
     { };
 
   # RESULT OF SPLIT (nix "formals", preset default)
   func2 =
     { foo
-    , bar
-    , blub
-    , ...
+      , bar
+      , blub
+      , ...
     }:
     { };
 
   # RESULT OF JOIN (nix "let_expression", preset default)
   bla =
-    let x=1; y=2; in x+y;
+    let x = 1; y = 2; in
+    x + y;
 
   # RESULT OF SPLIT (nix "let_expression", preset default)
   blub =
