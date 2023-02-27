@@ -327,8 +327,9 @@ end
 function M.get_whitespace(tsj)
   local p = tsj:parent():preset('join')
   local s_count = p and p.space_separator or 1
+  local is_sep = (p and p.separator ~= '') and tsj:text() == p.separator
 
-  if tsj:is_first() then
+  if tsj:is_first() or is_sep then
     s_count = 0
   elseif (not p or tsj:is_omit()) and is_on_same_line(tsj:prev(), tsj) then
     s_count = get_sibling_spacing(tsj:prev(), tsj)
