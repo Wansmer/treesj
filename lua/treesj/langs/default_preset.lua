@@ -56,8 +56,12 @@ return {
     recursive_ignore = {},
     -- string: Which indent must be on the last line of the formatted node.
     -- 'normal' – indent equals of the indent from first line;
-    -- 'inner' – indent, like all inner nodes.
+    -- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
     last_indent = 'normal',
+    -- string: Which indent must be on the last line of the formatted node.
+    -- 'normal' – indent equals of the indent from first line;
+    -- 'inner' – indent, like all inner nodes.
+    inner_indent = 'inner',
   },
   -- If 'true', node will be completely removed from langs preset
   disable = false,
