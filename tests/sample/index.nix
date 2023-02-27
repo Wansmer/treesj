@@ -14,10 +14,10 @@
       "b"
     ]
 
-    # RESULT OF JOIN (nix "attrset_expression", preset default)
+    # RESULT OF JOIN (nix "binding_set", preset default)
     { a = 1; b = 2; c = "c"; }
 
-    # RESULT OF SPLIT (nix "attrset_expression", preset default)
+    # RESULT OF SPLIT (nix "binding_set", preset default)
     {
       a = 1;
       b = 2;
