@@ -369,8 +369,9 @@ function M.calc_indent(tsj)
   local shiftwidth = vim.fn.shiftwidth()
   local common_indent = start_indent + shiftwidth
   local is_last = is_last_no_omit(tsj) and pp.last_indent == 'normal'
+  local is_same = pp.inner_indent == 'normal'
 
-  return is_last and start_indent or common_indent
+  return (is_last or is_same) and start_indent or common_indent
 end
 
 ---Get base nodes for first/last imitator node in non-bracket blocks
