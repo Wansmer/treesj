@@ -34,16 +34,6 @@ local data_for_split = {
     result = { 30, 36 },
     settings = {},
   },
-  {
-    path = PATH,
-    mode = 'split',
-    lang = LANG,
-    desc = 'lang "%s", node "let_expression", preset default',
-    cursor = { 45, 7 },
-    expected = { 49, 54  },
-    result = { 44, 49 },
-    settings = {},
-  },
 }
 
 local data_for_join = {
@@ -75,16 +65,6 @@ local data_for_join = {
     cursor = { 37, 3 },
     expected = { 30, 31 },
     result = { 35, 36 },
-    settings = {},
-  },
-  {
-    path = PATH,
-    mode = 'join',
-    lang = LANG,
-    desc = 'lang "%s", node "let_expression", preset default',
-    cursor = { 50, 9 },
-    expected = { 44, 46  },
-    result = { 49, 51 },
     settings = {},
   },
 }

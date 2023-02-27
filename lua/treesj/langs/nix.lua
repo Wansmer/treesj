@@ -16,15 +16,13 @@ return {
       last_separator = true,
     },
   }),
-  let_expression = {
-    target_nodes = { 'binding_set' },
-  },
   formals = u.set_preset_for_args({
     both = {
       omit = { 'formal', 'ellipses' }
     },
     split = {
       separator = '',
+      inner_indent = 'normal',
     },
     join = {
       separator = ',',
