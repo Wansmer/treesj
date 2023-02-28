@@ -249,6 +249,8 @@ function M._join(tsj)
     end
   end
 
+  collapse_spacing(lines)
+
   return table.concat(lines)
 end
 
@@ -291,6 +293,23 @@ local function process_configured_container(child, lines)
       table.insert(lines, child:text())
     end
   end
+end
+
+---Remove empty strings except first and last
+---@param lines string[]
+---@return string[]
+function M.remove_empty_middle_lines(lines)
+  local first = table.remove(lines, 1)
+  local last = table.remove(lines, #lines)
+  local remover = function(str)
+    if type(str) == 'string' then
+      return vim.trim(str) ~= ''
+    else
+      return true
+    end
+  end
+
+  return vim.tbl_flatten({ first, vim.tbl_filter(remover, lines), last })
 end
 
 ---Make result lines for 'split'

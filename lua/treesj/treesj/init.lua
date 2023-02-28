@@ -165,7 +165,9 @@ function TreeSJ:split()
       end
     end
 
-    self:_update_text(vim.tbl_flatten(tu._split(self)))
+    local lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
+
+    self:_update_text(lines)
   end
 end
 
