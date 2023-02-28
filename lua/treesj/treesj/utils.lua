@@ -207,6 +207,17 @@ local function merge_text_to_prev_line(lines, to_merge)
   end
 end
 
+---Collapse extra spacing: if elem ends with space and next elem starts with space
+---@param lines string[]
+local function collapse_spacing(lines)
+  for i, str in ipairs(lines) do
+    local next = lines[i + 1]
+    if next and (vim.endswith(str, ' ') and vim.startswith(next, ' ')) then
+      lines[i] = string.gsub(str, ' $', '')
+    end
+  end
+end
+
 ---Make result line for 'join'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
