@@ -77,7 +77,11 @@ function TreeSJ:build_tree(mode)
     end
 
     if not tsj:is_ignore('split') and tsj:has_preset() then
-      local sw = vim.fn.shiftwidth()
+      local is_norm = tsj:root():preset('split').inner_indent == 'normal'
+      local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
+
+      local sw = need_sw and vim.fn.shiftwidth() or 0
+
       tsj._root_indent = tsj:get_prev_indent() + sw
     end
 
@@ -105,6 +109,16 @@ function TreeSJ:get_prev_indent()
   end
   if self:parent() then
     return self:parent():get_prev_indent()
+  end
+end
+
+---Get indent from previous configured ancestor node
+function TreeSJ:get_prev_indent_node()
+  if self:parent():has_preset() and not self:parent():is_ignore('split') then
+    return self:parent()
+  end
+  if self:parent() then
+    return self:parent():get_prev_indent_node()
   end
 end
 
