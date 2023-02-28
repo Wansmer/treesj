@@ -34,6 +34,26 @@ local data_for_split = {
     result = { 30, 36 },
     settings = {},
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "let_expression", preset default',
+    cursor = { 45, 6 },
+    expected = { 48, 53 },
+    result = { 44, 49 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "let_expression" with "attrset_expression", preset default',
+    cursor = { 57, 6 },
+    expected = { 60, 69 },
+    result = { 56, 65 },
+    settings = {},
+  },
 }
 
 local data_for_join = {
@@ -65,6 +85,26 @@ local data_for_join = {
     cursor = { 37, 3 },
     expected = { 30, 31 },
     result = { 35, 36 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "let_expression", preset default',
+    cursor = { 49, 6 },
+    expected = { 44, 45 },
+    result = { 48, 49 },
+    settings = {},
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "let_expression" with "attrset_expression", preset default',
+    cursor = { 61, 6 },
+    expected = { 56, 57 },
+    result = { 60, 61 },
     settings = {},
   },
 }

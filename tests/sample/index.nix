@@ -1,10 +1,10 @@
 { foo, ... }:
 {
   bar = [
-    # RESULT OF JOIN (nix "list_expression", preset default)
+    # RESULT OF JOIN (node "list_expression", preset default)
     [ 1 2 3 4 "a" "b" ]
 
-    # RESULT OF SPLIT (nix "list_expression", preset default)
+    # RESULT OF SPLIT (node "list_expression", preset default)
     [
       1
       2
@@ -14,10 +14,10 @@
       "b"
     ]
 
-    # RESULT OF JOIN (nix "binding_set", preset default)
+    # RESULT OF JOIN (node "binding_set", preset default)
     { a = 1; b = 2; c = "c"; }
 
-    # RESULT OF SPLIT (nix "binding_set", preset default)
+    # RESULT OF SPLIT (node "binding_set", preset default)
     {
       a = 1;
       b = 2;
@@ -26,12 +26,12 @@
 
   ];
 
-  # RESULT OF JOIN (nix "formals", preset default)
+  # RESULT OF JOIN (node "formals", preset default)
   func1 =
     { foo, bar, blub, ... }:
     { };
 
-  # RESULT OF SPLIT (nix "formals", preset default)
+  # RESULT OF SPLIT (node "formals", preset default)
   func2 =
     { foo
     , bar
@@ -39,4 +39,32 @@
     , ...
     }:
     { };
+
+  # RESULT OF JOIN (node "let_expression", preset default)
+  bla =
+    let x=1; y=2; in x + y;
+
+  # RESULT OF SPLIT (node "let_expression", preset default)
+  bla =
+    let
+      x=1;
+      y=2;
+    in
+    x + y;
+
+  # RESULT OF JOIN (node "let_expression" with "attrset_expression", preset default)
+  bla =
+    let x=1; y=2; in { a = 1; b = 2; c = "c"; };
+
+  # RESULT OF SPLIT (node "let_expression" with "attrset_expression", preset default)
+  bla =
+    let
+      x=1;
+      y=2;
+    in
+    {
+      a = 1;
+      b = 2;
+      c = "c";
+    };
 }
