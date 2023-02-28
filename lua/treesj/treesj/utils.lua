@@ -170,14 +170,23 @@ local function set_indent(child)
 end
 
 ---Append text to last item in list. If last item is a table, merge to last of this table.
+---If `to_merge` is a table, merge the first element of `to_merge` to the last element of `lines`
+---and push the rest elements to the end of `lines`.
 ---@param lines string|string[] List-like table
----@vararg string|table
-local function merge_text_to_prev_line(lines, ...)
+---@param to_merge string|table
+local function merge_text_to_prev_line(lines, to_merge)
   local prev = lines[#lines]
-  local text = table.concat({ ... })
-
-  if vim.trim(text) == '' or not prev then
+  if not prev or not to_merge then
     return
+  end
+
+  local text = ''
+  local is_tbl = type(to_merge) == 'table'
+
+  if is_tbl then
+    text = table.remove(to_merge, 1)
+  else
+    text = to_merge
   end
 
   local prev_text = type(prev) == 'table' and prev[#prev] or lines[#lines]
@@ -185,10 +194,27 @@ local function merge_text_to_prev_line(lines, ...)
     text = vim.trim(text)
   end
 
-  if type(prev) == 'table' then
-    prev[#prev] = prev_text .. text
-  else
-    lines[#lines] = prev_text .. text
+  if vim.trim(text) ~= '' then
+    if type(prev) == 'table' then
+      prev[#prev] = prev_text .. text
+    else
+      lines[#lines] = prev_text .. text
+    end
+  end
+
+  if is_tbl then
+    lines[#lines + 1] = to_merge
+  end
+end
+
+---Collapse extra spacing: if elem ends with space and next elem starts with space
+---@param lines string[]
+local function collapse_spacing(lines)
+  for i, str in ipairs(lines) do
+    local next = lines[i + 1]
+    if next and (vim.endswith(str, ' ') and vim.startswith(next, ' ')) then
+      lines[i] = string.gsub(str, ' $', '')
+    end
   end
 end
 
@@ -222,6 +248,8 @@ function M._join(tsj)
       table.insert(lines, child:text())
     end
   end
+
+  collapse_spacing(lines)
 
   return table.concat(lines)
 end
@@ -265,6 +293,23 @@ local function process_configured_container(child, lines)
       table.insert(lines, child:text())
     end
   end
+end
+
+---Remove empty strings except first and last
+---@param lines string[]
+---@return string[]
+function M.remove_empty_middle_lines(lines)
+  local first = table.remove(lines, 1)
+  local last = table.remove(lines, #lines)
+  local remover = function(str)
+    if type(str) == 'string' then
+      return vim.trim(str) ~= ''
+    else
+      return true
+    end
+  end
+
+  return vim.tbl_flatten({ first, vim.tbl_filter(remover, lines), last })
 end
 
 ---Make result lines for 'split'

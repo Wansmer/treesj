@@ -77,7 +77,11 @@ function TreeSJ:build_tree(mode)
     end
 
     if not tsj:is_ignore('split') and tsj:has_preset() then
-      local sw = vim.fn.shiftwidth()
+      local is_norm = tsj:root():preset('split').inner_indent == 'normal'
+      local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
+
+      local sw = need_sw and vim.fn.shiftwidth() or 0
+
       tsj._root_indent = tsj:get_prev_indent() + sw
     end
 
@@ -151,7 +155,9 @@ function TreeSJ:split()
       end
     end
 
-    self:_update_text(vim.tbl_flatten(tu._split(self)))
+    local lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
+
+    self:_update_text(lines)
   end
 end
 
