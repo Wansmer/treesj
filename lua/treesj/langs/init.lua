@@ -25,6 +25,7 @@ M.configured_langs = {
   'toml',
   'yaml',
   'nix',
+  'kotlin',
 }
 
 M.presets = {}
