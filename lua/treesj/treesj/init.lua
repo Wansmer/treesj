@@ -20,17 +20,21 @@ local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
----@param tsnode userdata|table TSNode instance
+---@param tsn_data table TSNode data { tsnode = TSNode|table, preset = table|nil, lang = string }
 ---@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as a root
-function TreeSJ.new(tsnode, parent)
+function TreeSJ.new(tsn_data, parent)
   local root_preset = parent and parent:root():preset() or nil
 
-  local is_tsn = type(tsnode) == 'userdata'
-  local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
-  local preset = is_tsn and u.get_self_preset(tsnode) or nil
-  local text = tsnode:type() == 'imitator' and tsnode:text()
-    or u.get_node_text(tsnode)
-  local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
+  local is_tsn = type(tsn_data.tsnode) == 'userdata'
+  local hntf = is_tsn and u.has_node_to_format(tsn_data.tsnode, root_preset)
+    or false
+  local preset = is_tsn
+      and u.get_self_preset(tsn_data.tsnode:type(), tsn_data.lang)
+    or nil
+  local text = tsn_data.tsnode:type() == 'imitator' and tsn_data.tsnode:text()
+    or u.get_node_text(tsn_data.tsnode)
+  local range = is_tsn and tu.get_observed_range(tsn_data.tsnode)
+    or { tsn_data.tsnode:range() }
 
   local ri
   if not parent then
@@ -39,7 +43,8 @@ function TreeSJ.new(tsnode, parent)
 
   return setmetatable({
     _root = not parent,
-    _tsnode = tsnode,
+    _tsnode = tsn_data.tsnode,
+    _lang = tsn_data.lang,
     _imitator = not is_tsn,
     _parent = parent,
     _prev = nil,
@@ -69,7 +74,12 @@ function TreeSJ:build_tree(mode)
   end
 
   for _, child in ipairs(children) do
-    local tsj = TreeSJ.new(child, self)
+    local tsn_data = {
+      tsnode = child,
+      preset = u.get_self_preset(child, self._lang),
+      lang = self._lang,
+    }
+    local tsj = TreeSJ.new(tsn_data, self)
 
     tsj:_set_prev(prev)
     if tsj:prev() then

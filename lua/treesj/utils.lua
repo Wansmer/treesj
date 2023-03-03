@@ -88,28 +88,31 @@ end
 
 ---Return the preset for received node.
 ---If mode passed, return preset for specified mode
----@param node userdata TSNode instance
+---@param node string TSNode type
+---@param lang? string TSNode lang. Requires if `node` is string
 ---@param mode? string Current mode (split|join)
 ---@return table|nil
-function M.get_preset(node, mode)
-  local lang = M.get_node_lang(node)
-  if not M.is_lang_support(lang) then
+function M.get_preset(node, lang, mode)
+  if lang and not M.is_lang_support(lang) then
     return nil
   end
-  local preset = langs[lang]
-  local type = node:type()
-  if preset[type] then
-    return mode and preset[type][mode] or preset[type]
+
+  local presets = langs[lang]
+  local preset = presets and presets[node]
+
+  if preset then
+    return preset[mode] or preset
   else
     return nil
   end
 end
 
 ---Return the preset for current node if it no contains field 'target_nodes'
----@param node userdata TSNode instance
+---@param node string TSNode type
+---@param lang string TSNode lang
 ---@return table|nil
-function M.get_self_preset(node)
-  local p = M.get_preset(node)
+function M.get_self_preset(node, lang)
+  local p = M.get_preset(node, lang)
   if p and not p.target_nodes then
     return p
   end
@@ -117,25 +120,29 @@ function M.get_self_preset(node)
 end
 
 ---Checking if node is configured
----@param node userdata TSNode instance
+---@param node userdata|string TSNode instance
+---@param mode? string Mode
+---@param lang? string TSNode lang
 ---@return boolean
-function M.has_preset(node)
-  return M.tobool(M.get_preset(node))
+function M.has_preset(node, mode, lang)
+  return M.tobool(M.get_preset(node:type(), lang, mode))
 end
 
 ---Checking if node preset has option 'target_nodes'
----@param node userdata TSNode instance
+---@param node string TSNode type
 ---@return boolean
-function M.has_targets(node)
-  local target = M.get_preset(node).target_nodes
-  return target and not M.is_empty(target)
+function M.has_targets(node, lang)
+  return M.tobool(M.get_targets(node, lang))
 end
 
 ---Return list-like table with keys of option 'target_nodes'
----@param node userdata TSNode instance
----@return table
-function M.get_targets(node)
-  return M.get_preset(node).target_nodes
+---@param node string TSNode type
+---@param lang string TSNode lang
+---@return table|nil
+function M.get_targets(node, lang)
+  local p = M.get_preset(node, lang)
+  local targets = p and p.target_nodes
+  return (targets and not M.is_empty(targets)) and targets
 end
 
 ---Return list-like table with all configured nodes for language
@@ -262,7 +269,8 @@ end
 ---@return boolean
 function M.has_node_to_format(tsnode, root_preset)
   local function configured_and_must_be_formatted(tsn)
-    local p = M.get_preset(tsn)
+    local lang = M.get_node_lang(tsn)
+    local p = M.get_preset(tsn:type(), lang)
     local recursive_ignore =
       M.get_nested_key_value(root_preset, 'recursive_ignore')
     local ignore = recursive_ignore
@@ -279,7 +287,8 @@ end
 ---@param mode string Current mode (split|join)
 ---@return boolean
 function M.has_disabled_descendants(tsnode, mode)
-  local p = M.get_preset(tsnode, mode)
+    local lang = M.get_node_lang(tsnode)
+  local p = M.get_preset(tsnode:type(), lang, mode)
   if not p then
     return false
   end
@@ -398,8 +407,8 @@ end
 
 ---Returned range of node considering the presence of brackets
 ---@param tsn userdata
-function M.range(tsn)
-  local p = M.get_preset(tsn)
+---@param p? table
+function M.range(tsn, p)
   local non_bracket_node = M.get_nested_key_value(p, 'non_bracket_node')
 
   -- Some parsers give incorrect range, when `tsn:range()` (e.g. `yaml`).

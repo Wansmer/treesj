@@ -13,9 +13,9 @@ function M.search_node_up(node, lang)
     return nil
   end
 
-  if not u.has_preset(node) then
+  if not u.get_preset(node:type(), lang) then
     node = node:parent()
-    return M.search_node_up(node, lang, processed)
+    return M.search_node_up(node, lang)
   end
 
   return node
@@ -24,60 +24,74 @@ end
 ---Recursively searches for a configured node inside the current node and
 ---returns the first configured node found
 ---@param node userdata TSNode instance
----@param targets? table List of target node types
+---@param lang string TSNode lang
+---@param targets table List of target node types
 ---@return userdata|nil
-function M.search_inside_node(node, targets)
+function M.search_inside_node(node, lang, targets)
   if not node then
     return nil
   end
 
   local target_node
-  targets = targets or u.get_targets(node)
+  -- targets = targets or u.get_targets(node:type(), lang)
 
   for child in node:iter_children() do
-    local target_preset = targets[child:type()]
-    if target_preset then
+    local use_preset = targets[child:type()]
+
+    if use_preset then
       target_node = child
     else
-      target_node = M.search_inside_node(child, targets)
+      target_node = M.search_inside_node(child, lang, targets)
     end
 
-    if target_node and u.has_preset(target_node) then
+    if target_node then
       return target_node
     end
   end
 
-  return nil
+  return target_node
 end
 
 function M.search_node(node, lang)
-  local processed = {}
+  local viewed = {}
 
   while node do
     node = M.search_node_up(node, lang)
-    local has_targets = node and u.has_targets(node)
-    local not_processed = node and not vim.tbl_contains(processed, node)
-    local preset = {}
+    if not node then
+      return nil
+    end
+
+    local has_targets = u.has_targets(node:type(), lang)
+    local not_processed = not vim.tbl_contains(viewed, node)
 
     if has_targets and not_processed then
       local with_target = node
-      table.insert(processed, with_target)
-      node = M.search_inside_node(node)
+      local targets = u.get_targets(node:type(), lang)
 
-      if not node then
-        node = with_target:parent()
+      table.insert(viewed, with_target)
+      node = M.search_inside_node(node, lang, targets)
+
+      if node and u.get_preset(targets[node:type()], lang) then
+        local res = {
+          tsnode = node,
+          preset = u.get_preset(targets[node:type()], lang),
+          lang = lang,
+        }
+        return res
       else
-        return node
+        node = with_target:parent()
       end
     else
-      return node
+      local res =
+        { tsnode = node, preset = u.get_preset(node:type(), lang), lang = lang }
+      return res
     end
   end
 end
 
 ---Return the closest configured node if found or nil
 ---@param node userdata|nil TSNode instance
----@return userdata
+---@return table
 function M.get_configured_node(node)
   if not node then
     error(msg.node_not_received, 0)
@@ -89,13 +103,13 @@ function M.get_configured_node(node)
   end
 
   local start_node_type = node:type()
-  node = M.search_node(node, lang)
+  local data = M.search_node(node, lang)
 
-  if not node then
+  if not data or not data.tsnode then
     error(msg.no_configured_node:format(start_node_type, lang), 0)
   end
 
-  return node
+  return data
 end
 
 return M
