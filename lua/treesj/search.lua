@@ -15,7 +15,7 @@ function M.search_node_up(node, lang)
 
   if not u.has_preset(node) then
     node = node:parent()
-    return M.search_node_up(node, lang)
+    return M.search_node_up(node, lang, processed)
   end
 
   return node
@@ -35,7 +35,8 @@ function M.search_inside_node(node, targets)
   targets = targets or u.get_targets(node)
 
   for child in node:iter_children() do
-    if vim.tbl_contains(targets, child:type()) then
+    local target_preset = targets[child:type()]
+    if target_preset then
       target_node = child
     else
       target_node = M.search_inside_node(child, targets)
@@ -47,6 +48,31 @@ function M.search_inside_node(node, targets)
   end
 
   return nil
+end
+
+function M.search_node(node, lang)
+  local processed = {}
+
+  while node do
+    node = M.search_node_up(node, lang)
+    local has_targets = node and u.has_targets(node)
+    local not_processed = node and not vim.tbl_contains(processed, node)
+    local preset = {}
+
+    if has_targets and not_processed then
+      local with_target = node
+      table.insert(processed, with_target)
+      node = M.search_inside_node(node)
+
+      if not node then
+        node = with_target:parent()
+      else
+        return node
+      end
+    else
+      return node
+    end
+  end
 end
 
 ---Return the closest configured node if found or nil
@@ -63,19 +89,10 @@ function M.get_configured_node(node)
   end
 
   local start_node_type = node:type()
-  node = M.search_node_up(node, lang)
+  node = M.search_node(node, lang)
+
   if not node then
     error(msg.no_configured_node:format(start_node_type, lang), 0)
-  end
-
-  local target_node_ancestor
-  if u.has_targets(node) then
-    target_node_ancestor = node:type()
-    node = M.search_inside_node(node)
-    if not node then
-      -- TODO: send node parrent to search up
-      error(msg.no_contains_target_node:format(target_node_ancestor), 0)
-    end
   end
 
   return node

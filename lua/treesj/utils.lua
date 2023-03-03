@@ -135,7 +135,7 @@ end
 ---@param node userdata TSNode instance
 ---@return table
 function M.get_targets(node)
-  return vim.tbl_keys(M.get_preset(node).target_nodes)
+  return M.get_preset(node).target_nodes
 end
 
 ---Return list-like table with all configured nodes for language
