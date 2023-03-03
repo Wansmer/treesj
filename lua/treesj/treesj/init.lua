@@ -5,6 +5,7 @@ local tu = require('treesj.treesj.utils')
 ---@class TreeSJ
 ---@field _root boolean If the current node is the root
 ---@field _tsnode userdata TSNode instance
+---@field _lang string TSNode language
 ---@field _imitator boolean Imitator first/last node for non-bracket blocks
 ---@field _parent TreeSJ|nil TreeSJ instance. Parent of current TreeSJ node
 ---@field _prev TreeSJ|nil TreeSJ instance. Previous sibling of current TreeSJ node
@@ -20,21 +21,15 @@ local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
----@param tsn_data table TSNode data { tsnode = TSNode|table, preset = table|nil, lang = string }
----@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as a root
+---@param tsn_data table TSNode data { tsnode = TSNode|table, preset = table|nil, lang = string, parent = TreeSJ|nil}
 function TreeSJ.new(tsn_data, parent)
-  local root_preset = parent and parent:root():preset() or nil
+  local root_preset = tsn_data.parent and tsn_data.parent:root():preset() or nil
+  local tsnode = tsn_data.tsnode
 
-  local is_tsn = type(tsn_data.tsnode) == 'userdata'
-  local hntf = is_tsn and u.has_node_to_format(tsn_data.tsnode, root_preset)
-    or false
-  local preset = is_tsn
-      and u.get_self_preset(tsn_data.tsnode:type(), tsn_data.lang)
-    or nil
-  local text = tsn_data.tsnode:type() == 'imitator' and tsn_data.tsnode:text()
-    or u.get_node_text(tsn_data.tsnode)
-  local range = is_tsn and tu.get_observed_range(tsn_data.tsnode)
-    or { tsn_data.tsnode:range() }
+  local is_tsn = tsnode:type() ~= 'imitator'
+  local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
+  local text = is_tsn and u.get_node_text(tsn_data.tsnode) or tsnode:text()
+  local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
   if not parent then
@@ -42,14 +37,14 @@ function TreeSJ.new(tsn_data, parent)
   end
 
   return setmetatable({
-    _root = not parent,
-    _tsnode = tsn_data.tsnode,
+    _root = not tsn_data.parent,
+    _tsnode = tsnode,
     _lang = tsn_data.lang,
     _imitator = not is_tsn,
-    _parent = parent,
+    _parent = tsn_data.parent,
     _prev = nil,
     _next = nil,
-    _preset = preset,
+    _preset = tsn_data.preset,
     _text = text,
     _has_node_to_format = hntf,
     _children = {},
@@ -76,10 +71,12 @@ function TreeSJ:build_tree(mode)
   for _, child in ipairs(children) do
     local tsn_data = {
       tsnode = child,
-      preset = u.get_self_preset(child, self._lang),
+      preset = u.get_self_preset(child:type(), self._lang),
       lang = self._lang,
+      parent = self,
     }
-    local tsj = TreeSJ.new(tsn_data, self)
+
+    local tsj = TreeSJ.new(tsn_data)
 
     tsj:_set_prev(prev)
     if tsj:prev() then

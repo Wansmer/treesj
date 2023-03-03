@@ -33,7 +33,6 @@ function M.search_inside_node(node, lang, targets)
   end
 
   local target_node
-  -- targets = targets or u.get_targets(node:type(), lang)
 
   for child in node:iter_children() do
     local use_preset = targets[child:type()]
@@ -45,48 +44,55 @@ function M.search_inside_node(node, lang, targets)
     end
 
     if target_node then
-      return target_node
+      break
     end
   end
 
   return target_node
 end
 
+---Get target node and node data
+---@param node userdata TSNode instance
+---@param lang string TSNode language
+---@return table|nil
 function M.search_node(node, lang)
   local viewed = {}
+  local tsn_data = { lang = lang, parent = nil }
+  local preset
 
   while node do
     node = M.search_node_up(node, lang)
-    if not node then
+    preset = node and u.get_preset(node:type(), lang)
+
+    if not node or not preset then
       return nil
     end
 
-    local has_targets = u.has_targets(node:type(), lang)
-    local not_processed = not vim.tbl_contains(viewed, node)
+    local targets = preset.target_nodes
 
-    if has_targets and not_processed then
+    local has_targets = targets and not vim.tbl_isempty(targets)
+    local not_viewed = not vim.tbl_contains(viewed, node)
+
+    if has_targets and not_viewed then
       local with_target = node
-      local targets = u.get_targets(node:type(), lang)
-
       table.insert(viewed, with_target)
+
       node = M.search_inside_node(node, lang, targets)
 
-      if node and u.get_preset(targets[node:type()], lang) then
-        local res = {
-          tsnode = node,
-          preset = u.get_preset(targets[node:type()], lang),
-          lang = lang,
-        }
-        return res
+      local use_preset = node and u.get_preset(targets[node:type()], lang)
+
+      if use_preset then
+        preset = use_preset
+        break
       else
         node = with_target:parent()
       end
     else
-      local res =
-        { tsnode = node, preset = u.get_preset(node:type(), lang), lang = lang }
-      return res
+      break
     end
   end
+
+  return vim.tbl_extend('force', tsn_data, { tsnode = node, preset = preset })
 end
 
 ---Return the closest configured node if found or nil

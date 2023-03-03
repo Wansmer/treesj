@@ -88,68 +88,41 @@ end
 
 ---Return the preset for received node.
 ---If mode passed, return preset for specified mode
----@param node string TSNode type
+---@param tsn_type string TSNode type
 ---@param lang? string TSNode lang. Requires if `node` is string
 ---@param mode? string Current mode (split|join)
 ---@return table|nil
-function M.get_preset(node, lang, mode)
+function M.get_preset(tsn_type, lang, mode)
   if lang and not M.is_lang_support(lang) then
     return nil
   end
 
   local presets = langs[lang]
-  local preset = presets and presets[node]
+  local preset = presets and presets[tsn_type]
 
-  if preset then
-    return preset[mode] or preset
-  else
-    return nil
-  end
+  return preset and (preset[mode] or preset)
 end
 
 ---Return the preset for current node if it no contains field 'target_nodes'
----@param node string TSNode type
+---@param tsn_type string TSNode type
 ---@param lang string TSNode lang
 ---@return table|nil
-function M.get_self_preset(node, lang)
-  local p = M.get_preset(node, lang)
+function M.get_self_preset(tsn_type, lang)
+  local p = M.get_preset(tsn_type, lang)
   if p and not p.target_nodes then
     return p
   end
   return nil
 end
 
----Checking if node is configured
----@param node userdata|string TSNode instance
----@param mode? string Mode
----@param lang? string TSNode lang
----@return boolean
-function M.has_preset(node, mode, lang)
-  return M.tobool(M.get_preset(node:type(), lang, mode))
-end
-
----Checking if node preset has option 'target_nodes'
----@param node string TSNode type
----@return boolean
-function M.has_targets(node, lang)
-  return M.tobool(M.get_targets(node, lang))
-end
-
 ---Return list-like table with keys of option 'target_nodes'
----@param node string TSNode type
+---@param tsn_type string TSNode type
 ---@param lang string TSNode lang
 ---@return table|nil
-function M.get_targets(node, lang)
-  local p = M.get_preset(node, lang)
+function M.get_targets(tsn_type, lang)
+  local p = M.get_preset(tsn_type, lang)
   local targets = p and p.target_nodes
   return (targets and not M.is_empty(targets)) and targets
-end
-
----Return list-like table with all configured nodes for language
----@param lang string Language
----@return table
-function M.get_nodes_for_lang(lang)
-  return vim.tbl_keys(langs[lang])
 end
 
 ---Recursively finding key in table and return its value if found or nil
@@ -287,7 +260,7 @@ end
 ---@param mode string Current mode (split|join)
 ---@return boolean
 function M.has_disabled_descendants(tsnode, mode)
-    local lang = M.get_node_lang(tsnode)
+  local lang = M.get_node_lang(tsnode)
   local p = M.get_preset(tsnode:type(), lang, mode)
   if not p then
     return false
