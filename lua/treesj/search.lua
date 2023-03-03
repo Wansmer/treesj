@@ -35,7 +35,8 @@ function M.search_inside_node(node, lang, targets)
   local target_node
 
   for child in node:iter_children() do
-    local use_preset = targets[child:type()]
+    local target_type = targets[child:type()]
+    local use_preset = target_type and u.get_self_preset(target_type, lang)
 
     if use_preset then
       target_node = child
@@ -79,7 +80,7 @@ function M.search_node(node, lang)
 
       node = M.search_inside_node(node, lang, targets)
 
-      local use_preset = node and u.get_preset(targets[node:type()], lang)
+      local use_preset = node and u.get_self_preset(targets[node:type()], lang)
 
       if use_preset then
         preset = use_preset

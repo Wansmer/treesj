@@ -61,6 +61,7 @@ function M._format(mode)
     return
   end
 
+  print('Node: ', node:type())
   local treesj = TreeSJ.new(tsn_data)
   treesj:build_tree(MODE)
   treesj[MODE](treesj)
