@@ -65,6 +65,11 @@ function TreeSJ:build_tree(mode)
   if self:non_bracket() or framing then
     local left = framing and framing.left
     local right = framing and framing.right
+
+    if framing and framing.mode == 'pack' then
+      children = { self:tsnode() }
+    end
+
     tu.add_first_last_imitator(self:tsnode(), children, left, right)
   end
 

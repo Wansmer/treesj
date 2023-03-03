@@ -23,25 +23,25 @@ end
 
 ---Recursively searches for a configured node inside the current node and
 ---returns the first configured node found
----@param node userdata TSNode instance
+---@param node userdata|nil TSNode instance
 ---@param lang string TSNode lang
 ---@param targets table List of target node types
----@return userdata|nil
+---@return userdata|nil, table|nil
 function M.search_inside_node(node, lang, targets)
   if not node then
-    return nil
+    return nil, nil
   end
 
-  local target_node
+  local target_node, use_preset
 
   for child in node:iter_children() do
     local target_type = targets[child:type()]
-    local use_preset = target_type and u.get_self_preset(target_type, lang)
+    use_preset = target_type and u.get_self_preset(target_type, lang)
 
     if use_preset then
       target_node = child
     else
-      target_node = M.search_inside_node(child, lang, targets)
+      target_node, use_preset = M.search_inside_node(child, lang, targets)
     end
 
     if target_node then
@@ -49,7 +49,7 @@ function M.search_inside_node(node, lang, targets)
     end
   end
 
-  return target_node
+  return target_node, use_preset
 end
 
 ---Get target node and node data
@@ -65,7 +65,7 @@ function M.search_node(node, lang)
     node = M.search_node_up(node, lang)
     preset = node and u.get_preset(node:type(), lang)
 
-    if not node or not preset then
+    if not node then
       return nil
     end
 
@@ -78,12 +78,13 @@ function M.search_node(node, lang)
       local with_target = node
       table.insert(viewed, with_target)
 
-      node = M.search_inside_node(node, lang, targets)
+      node, preset = M.get_node_from_field(node, lang, targets)
 
-      local use_preset = node and u.get_self_preset(targets[node:type()], lang)
+      if not node then
+        node, preset = M.search_inside_node(with_target, lang, targets)
+      end
 
-      if use_preset then
-        preset = use_preset
+      if node then
         break
       else
         node = with_target:parent()
@@ -94,6 +95,18 @@ function M.search_node(node, lang)
   end
 
   return vim.tbl_extend('force', tsn_data, { tsnode = node, preset = preset })
+end
+
+function M.get_node_from_field(node, lang, targets)
+  for node_type, use_preset in pairs(targets) do
+    local fields = node:field(node_type)
+    local preset = u.get_self_preset(use_preset, lang)
+
+    if not vim.tbl_isempty(fields) and preset then
+      return fields[1], preset
+    end
+  end
+  return nil, nil
 end
 
 ---Return the closest configured node if found or nil

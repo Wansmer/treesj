@@ -9,6 +9,18 @@ return {
   arguments = u.set_preset_for_args(),
   named_imports = u.set_preset_for_dict(),
   export_clause = u.set_preset_for_dict(),
+  -- body = u.set_preset_for_statement({
+  --   both = {
+  --     non_bracket_node = true,
+  --   },
+  --   split = {
+  --     add_framing_nodes = {
+  --       left = ' {',
+  --       right = '}',
+  --       mode = 'pack',
+  --     },
+  --   },
+  -- }),
   statement_block = u.set_preset_for_statement({
     join = {
       no_insert_if = {
@@ -18,6 +30,9 @@ return {
       },
     },
   }),
+  -- arrow_function = {
+  --   target_nodes = { 'body' },
+  -- },
   lexical_declaration = {
     target_nodes = { 'array', 'object' },
   },

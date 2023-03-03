@@ -64,13 +64,9 @@ end
 ---@param left? string
 ---@param right? string
 function M.add_first_last_imitator(node, children, left, right)
-  local lang = u.get_node_lang(node)
-  local p = u.get_preset(node:type(), lang)
-  if p and u.get_nested_key_value(p, 'non_bracket_node') then
-    local first, last = u.get_non_bracket_first_last(node)
-    table.insert(children, 1, imitate_tsn(first, node, 'first', left))
-    table.insert(children, imitate_tsn(last, node, 'last', right))
-  end
+  local first, last = u.get_non_bracket_first_last(node)
+  table.insert(children, 1, imitate_tsn(first, node, 'first', left))
+  table.insert(children, imitate_tsn(last, node, 'last', right))
 end
 
 ---Add some text to start of base text. If the base is table, prepend text to first element of table
