@@ -191,5 +191,64 @@ M.no_insert.if_second = if_second
 
 M.omit.if_penultimate = if_penultimate
 M.omit.if_second = if_second
+M.filter = {}
+
+M.filter.skip_nodes = function(nodes)
+  return function(tsn)
+    return not vim.tbl_contains(nodes, tsn:type())
+  end
+end
+
+M.filter.skip_nodes_if_one_named = function(nodes)
+  return function(tsn)
+    if tsn:parent():named_child_count() == 1 then
+      return not vim.tbl_contains(nodes, tsn:type())
+    end
+    return true
+  end
+end
+
+M.node_has = {}
+M.node = {}
+M.container = {}
+
+M.container.has_parent = function(node, parent_type)
+  if not node then
+    return nil
+  end
+
+  node = node:parent()
+
+  if node:parent() and node:parent():type() == parent_type then
+    return true
+  end
+
+  return false
+end
+
+M.node_has.ancestor = function(node, ancestor_type)
+  if not node then
+    return nil
+  end
+
+  if not node:type() == ancestor_type then
+    node = node:parent()
+    return M.has_ancestor(node, ancestor_type)
+  end
+
+  return node
+end
+
+M.node_has.parent = function(node, parent_type)
+  if not node then
+    return nil
+  end
+
+  if node:parent() and node:parent():type() == parent_type then
+    return true
+  end
+
+  return false
+end
 
 return M

@@ -160,13 +160,18 @@ end
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
 ---@param node userdata TSNode instance
----@param filter? function Function for filtering output list
+---@param filter? function[] List of function for filtering output list
 ---@return table
 function M.collect_children(node, filter)
+  filter = filter or {}
+  table.insert(filter, M.skip_empty_nodes)
   local children = {}
 
   for child in node:iter_children() do
-    if not filter or filter(child) then
+    local fn = function(cb)
+      return cb(child)
+    end
+    if M.every(filter, fn) then
       table.insert(children, child)
     end
   end
