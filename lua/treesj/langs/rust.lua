@@ -54,7 +54,7 @@ return {
   }),
   value = u.set_preset_for_statement({
     both = {
-      non_bracket_node = true,
+      non_bracket_node = false,
     },
     split = {
       add_framing_nodes = {
