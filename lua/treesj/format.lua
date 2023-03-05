@@ -24,30 +24,44 @@ function M._format(mode)
     return
   end
 
-  local found, tsn_data = pcall(search.get_configured_node, start_node)
-  if not found then
-    notify.warn(tsn_data)
-    return
-  end
+  local found, tsn_data, node, p, sr, sc, er, ec, MODE
+  local viewed = {}
 
-  local node = tsn_data.tsnode
-  local p = tsn_data.preset
-  local sr, sc, er, ec = u.range(node, p)
-  local MODE = mode or sr == er and SPLIT or JOIN
-  p = p[MODE]
+  -- If the node is marked as "disabled", continue searching from its parent.
+  while true do
+    found, tsn_data = pcall(search.get_configured_node, start_node)
+    if not found then
+      notify.warn(tsn_data)
+      return
+    end
+
+    -- If the found node has already been rejected, then finish
+    if vim.tbl_contains(viewed, tsn_data.tsnode) then
+      notify.info(msg.node_is_disable, MODE, node:type())
+      return
+    end
+
+    node = tsn_data.tsnode
+    p = tsn_data.preset
+    sr, sc, er, ec = u.range(node, p)
+    MODE = mode or sr == er and SPLIT or JOIN
+    p = p[MODE]
+
+    local enable = p
+      and (type(p.enable) == 'boolean' and p.enable or p.enable(node))
+
+    if not enable then
+      table.insert(viewed, node)
+      start_node = node:parent()
+    else
+      break
+    end
+  end
 
   if p and not p.format_empty_node then
     if not p.non_bracket_node and u.is_empty_node(node, p) then
       return
     end
-  end
-
-  local enable = p
-    and (type(p.enable) == 'boolean' and p.enable or p.enable(node))
-
-  if not enable then
-    notify.info(msg.node_is_disable, MODE, node:type())
-    return
   end
 
   if settings.check_syntax_error and node:has_error() then
