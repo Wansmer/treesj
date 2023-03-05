@@ -12,8 +12,8 @@ return {
   binding_set = u.set_preset_for_dict({
     both = {
       non_bracket_node = true,
-      separator = ';',
-      last_separator = true,
+      separator = '',
+      force_insert = ';',
     },
   }),
   formals = u.set_preset_for_args({

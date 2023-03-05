@@ -25,7 +25,7 @@ function TreeSJ.new(tsn_data)
   local root_preset = tsn_data.parent and tsn_data.parent:root():preset() or nil
   local tsnode = tsn_data.tsnode
 
-  local is_tsn = tsnode:type() ~= 'imitator'
+  local is_tsn = tu.is_tsnode(tsnode)
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
   local text = is_tsn and u.get_node_text(tsn_data.tsnode) or tsnode:text()
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
@@ -73,6 +73,24 @@ function TreeSJ:build_tree(mode)
     tu.add_first_last_imitator(self:tsnode(), children, left, right)
   end
 
+  -- Here starts before_build_tree
+
+  if preset and preset.separator ~= '' then
+    local len = #children
+    local penult = children[len - 1]
+    if penult and not (penult == children[1]) then
+      if penult:type() == preset.separator and not preset.last_separator then
+        table.remove(children, len - 1)
+      elseif penult:type() ~= preset.separator and preset.last_separator then
+        table.insert(
+          children,
+          len,
+          tu.imitate_tsn(penult, self:tsnode(), 'end', preset.separator)
+        )
+      end
+    end
+  end
+
   for _, child in ipairs(children) do
     local tsn_data = {
       tsnode = child,
@@ -97,7 +115,8 @@ function TreeSJ:build_tree(mode)
       tsj._root_indent = tsj:get_prev_indent() + sw
     end
 
-    if child:type() ~= 'imitator' then
+    -- if child:type() ~= 'imitator' then
+    if tu.is_tsnode(child) then
       tsj:build_tree(mode)
     end
 

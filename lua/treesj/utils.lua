@@ -210,7 +210,7 @@ function M.is_empty_node(tsn, preset)
   end
 
   local cc = tsn:child_count()
-  local children = M.collect_children(tsn, is_named)
+  local children = M.collect_children(tsn, { is_named })
   local contains_only_framing = cc == framing_count
   return M.every(children, is_omit) or contains_only_framing
 end

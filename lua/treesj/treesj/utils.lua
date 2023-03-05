@@ -5,6 +5,27 @@ local SPLIT = 'split'
 
 local M = {}
 
+---Collapse extra spacing: if elem ends with space and next elem starts with space
+---@param lines string[]
+---@return string[]
+local function collapse_spacing(lines)
+  for i, str in ipairs(lines) do
+    str = str:gsub('^%s+', ' '):gsub('%s+$', ' ')
+    local next = lines[i + 1]
+    if next and vim.endswith(str, ' ') and vim.startswith(next, ' ') then
+      lines[i] = string.gsub(str, ' $', '')
+    end
+  end
+  return lines
+end
+
+---Checking if tsn is TSNode instance. False if it imitator of tsn
+---@param tsn userdata|table
+---@return boolean
+function M.is_tsnode(tsn)
+  return type(tsn) == 'userdata'
+end
+
 ---Return observed range by tsnode
 ---@param tsnode userdata TSNode instance
 ---@return integer[]
@@ -48,7 +69,7 @@ function M.imitate_tsn(tsn, parent, pos, text)
   end
 
   function imitator:type()
-    return 'imitator'
+    return text
   end
 
   function imitator:text()
@@ -76,9 +97,9 @@ end
 local function prepend_text(target_text, text)
   if type(target_text) == 'table' then
     target_text = vim.list_extend({}, target_text, 1, #target_text)
-    target_text[1] = text .. target_text[1]
+    target_text[1] = table.concat(collapse_spacing({ text, target_text[1] }))
   else
-    target_text = text .. target_text
+    target_text = table.concat(collapse_spacing({ text, target_text }))
   end
   return target_text
 end
@@ -204,17 +225,6 @@ local function merge_text_to_prev_line(lines, to_merge)
   end
 end
 
----Collapse extra spacing: if elem ends with space and next elem starts with space
----@param lines string[]
-local function collapse_spacing(lines)
-  for i, str in ipairs(lines) do
-    local next = lines[i + 1]
-    if next and (vim.endswith(str, ' ') and vim.startswith(next, ' ')) then
-      lines[i] = string.gsub(str, ' $', '')
-    end
-  end
-end
-
 ---Make result line for 'join'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
@@ -234,7 +244,7 @@ function M._join(tsj)
         child:_update_text(child:text() .. p.force_insert)
       end
 
-      set_last_sep_if_need(child, p)
+      -- set_last_sep_if_need(child, p)
       set_whitespace(child)
 
       table.insert(lines, child:text())
@@ -244,7 +254,7 @@ function M._join(tsj)
     end
   end
 
-  collapse_spacing(lines)
+  lines = collapse_spacing(lines)
 
   return table.concat(lines)
 end
@@ -256,7 +266,7 @@ end
 local function process_configured(tsj, child, lines)
   local p = tsj:preset(SPLIT)
 
-  set_last_sep_if_need(child, p)
+  -- set_last_sep_if_need(child, p)
 
   if child:is_omit() then
     set_whitespace(child)

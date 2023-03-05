@@ -6,7 +6,7 @@ return {
   initializer_list = utils.set_preset_for_list(),
   compound_statement = utils.set_preset_for_statement({
     both = {
-      separator = ';',
+      force_insert = ';',
       last_separator = true,
       no_format_with = { 'compound_statement' },
       recursive = false,

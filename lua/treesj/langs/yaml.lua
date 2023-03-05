@@ -4,6 +4,8 @@ return {
   flow_sequence = u.set_preset_for_list({
     split = {
       last_separator = false,
+      force_insert = ',',
+      no_insert_if = { u.no_insert.if_penultimate },
       foreach = function(child)
         if child:is_first() or child:text() == ',' then
           child:_update_text('')
@@ -32,12 +34,13 @@ return {
     join = {
       non_bracket_node = true,
       add_framing_nodes = { left = ' [', right = ']' },
-      last_separator = false,
+      force_insert = ',',
+      no_insert_if = { u.no_insert.if_penultimate },
       foreach = function(child)
         local text = child:text()
         text = string.gsub(text, '^- ', '')
         if not child:is_framing() then
-          child:_update_text(text .. ',')
+          child:_update_text(text)
         end
       end,
     },
@@ -45,14 +48,9 @@ return {
   block_mapping = u.set_preset_for_list({
     join = {
       non_bracket_node = true,
+      force_insert = ',',
+      no_insert_if = { u.no_insert.if_penultimate },
       add_framing_nodes = { left = ' {', right = '}' },
-      last_separator = false,
-      foreach = function(child)
-        local text = child:text()
-        if not child:is_framing() then
-          child:_update_text(text .. ',')
-        end
-      end,
     },
   }),
 }
