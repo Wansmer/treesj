@@ -19,6 +19,32 @@ local function collapse_spacing(lines)
   return lines
 end
 
+---Add or remove last separator in node
+---@param children table List of children of root node
+---@param preset table
+---@return table
+function M.manage_last_separator(children, preset)
+  local len = #children
+  local penult = children[len - 1]
+
+  if penult and preset.separator ~= '' then
+    local sep = preset.separator
+    local has = penult:type() == sep
+    local need = preset.last_separator
+
+    if penult and not (penult == children[1]) then
+      if has and not need then
+        table.remove(children, len - 1)
+      elseif not has and need then
+        local imitator =
+          M.imitate_tsn(penult, penult:parent(), 'end', preset.separator)
+        table.insert(children, len, imitator)
+      end
+    end
+  end
+  return children
+end
+
 ---Checking if tsn is TSNode instance. False if it imitator of tsn
 ---@param tsn userdata|table
 ---@return boolean

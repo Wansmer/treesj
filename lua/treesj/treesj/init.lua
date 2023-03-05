@@ -74,21 +74,8 @@ function TreeSJ:build_tree(mode)
   end
 
   -- Here starts before_build_tree
-
-  if preset and preset.separator ~= '' then
-    local len = #children
-    local penult = children[len - 1]
-    if penult and not (penult == children[1]) then
-      if penult:type() == preset.separator and not preset.last_separator then
-        table.remove(children, len - 1)
-      elseif penult:type() ~= preset.separator and preset.last_separator then
-        table.insert(
-          children,
-          len,
-          tu.imitate_tsn(penult, self:tsnode(), 'end', preset.separator)
-        )
-      end
-    end
+  if preset then
+    children = tu.manage_last_separator(children, preset)
   end
 
   for _, child in ipairs(children) do

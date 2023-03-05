@@ -7,7 +7,6 @@ return {
   compound_statement = utils.set_preset_for_statement({
     both = {
       force_insert = ';',
-      last_separator = true,
       no_format_with = { 'compound_statement' },
       recursive = false,
     },
