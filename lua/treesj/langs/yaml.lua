@@ -8,7 +8,7 @@ return {
         if child:is_first() or child:text() == ',' then
           child:_update_text('')
         elseif child:is_last() then
-          child:remove()
+          child:_update_text('')
         else
           child:_update_text('- ' .. child:text())
         end
@@ -23,7 +23,7 @@ return {
         if child:is_first() or child:text() == ',' then
           child:_update_text('')
         elseif child:is_last() then
-          child:remove()
+          child:_update_text('')
         end
       end,
     },

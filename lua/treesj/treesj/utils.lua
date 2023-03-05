@@ -230,16 +230,14 @@ function M._join(tsj)
         cb(child)
       end
 
-      if not child._remove then
-        if is_instruction_sep_need(child, p) then
-          child:_update_text(child:text() .. p.force_insert)
-        end
-
-        set_last_sep_if_need(child, p)
-        set_whitespace(child)
-
-        table.insert(lines, child:text())
+      if is_instruction_sep_need(child, p) then
+        child:_update_text(child:text() .. p.force_insert)
       end
+
+      set_last_sep_if_need(child, p)
+      set_whitespace(child)
+
+      table.insert(lines, child:text())
     else
       set_whitespace(child)
       table.insert(lines, child:text())
@@ -322,9 +320,7 @@ function M._split(tsj)
         cb(child)
       end
 
-      if not child._remove then
-        process_configured(tsj, child, lines)
-      end
+      process_configured(tsj, child, lines)
     elseif tsj:has_to_format() then
       process_configured_container(child, lines)
     else

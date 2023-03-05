@@ -16,7 +16,6 @@ local tu = require('treesj.treesj.utils')
 ---@field _children TreeSJ[] List of children
 ---@field _observed_range integer[] Range of node consider whitespaces
 ---@field _root_indent integer|nil Start indent to calculate other insdent when split
----@field _remove boolean Marker if node should be removed from tree
 local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
@@ -50,7 +49,6 @@ function TreeSJ.new(tsn_data)
     _children = {},
     _observed_range = range,
     _root_indent = ri,
-    _remove = false,
   }, TreeSJ)
 end
 
@@ -317,12 +315,6 @@ end
 ---@return boolean
 function TreeSJ:is_imitator()
   return self._imitator
-end
-
----Checking if the current TreeSJ is node-imitator
----@return boolean
-function TreeSJ:remove()
-  self._remove = true
 end
 
 ---Return formatted lines of TreeSJ
