@@ -22,7 +22,7 @@ TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
 ---@param tsn_data table TSNode data { tsnode = TSNode|table, preset = table|nil, lang = string, parent = TreeSJ|nil}
-function TreeSJ.new(tsn_data, parent)
+function TreeSJ.new(tsn_data)
   local root_preset = tsn_data.parent and tsn_data.parent:root():preset() or nil
   local tsnode = tsn_data.tsnode
 
@@ -32,7 +32,7 @@ function TreeSJ.new(tsn_data, parent)
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
-  if not parent then
+  if not tsn_data.parent then
     ri = vim.fn.indent(range[1] + 1)
   end
 
@@ -57,16 +57,17 @@ end
 ---Recursive parse current node children and building TreeSJ
 ---@param mode string
 function TreeSJ:build_tree(mode)
-  local preset = self:preset(mode) or {}
-  local children = u.collect_children(self:tsnode(), preset.filter)
+  local preset = self:preset(mode)
+  local children = u.collect_children(self:tsnode(), preset and preset.filter)
   local prev
 
-  local framing = self:preset() and self:preset(mode).add_framing_nodes
+  local framing = preset and preset.add_framing_nodes
 
   if self:non_bracket() or framing then
     local left = framing and framing.left
     local right = framing and framing.right
 
+    -- TODO: find right condition
     if framing and framing.mode == 'pack' then
       children = { self:tsnode() }
     end
