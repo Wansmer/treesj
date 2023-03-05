@@ -11,4 +11,5 @@ return {
       last_separator = false,
     },
   }),
+  pair = { target_nodes = { 'object', 'array' } }
 }
