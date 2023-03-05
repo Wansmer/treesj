@@ -5,6 +5,7 @@ local tu = require('treesj.treesj.utils')
 ---@class TreeSJ
 ---@field _root boolean If the current node is the root
 ---@field _tsnode userdata TSNode instance
+---@field _lang string TSNode language
 ---@field _imitator boolean Imitator first/last node for non-bracket blocks
 ---@field _parent TreeSJ|nil TreeSJ instance. Parent of current TreeSJ node
 ---@field _prev TreeSJ|nil TreeSJ instance. Previous sibling of current TreeSJ node
@@ -20,31 +21,30 @@ local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
 ---New TreeSJ instance
----@param tsnode userdata|table TSNode instance
----@param parent? TreeSJ TreeSJ instance. When parent not passed, the node is recognized as a root
-function TreeSJ.new(tsnode, parent)
-  local root_preset = parent and parent:root():preset() or nil
+---@param tsn_data table TSNode data { tsnode = TSNode|table, preset = table|nil, lang = string, parent = TreeSJ|nil}
+function TreeSJ.new(tsn_data)
+  local root_preset = tsn_data.parent and tsn_data.parent:root():preset() or nil
+  local tsnode = tsn_data.tsnode
 
-  local is_tsn = type(tsnode) == 'userdata'
+  local is_tsn = tsnode:type() ~= 'imitator'
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
-  local preset = is_tsn and u.get_self_preset(tsnode) or nil
-  local text = tsnode:type() == 'imitator' and tsnode:text()
-    or u.get_node_text(tsnode)
+  local text = is_tsn and u.get_node_text(tsn_data.tsnode) or tsnode:text()
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
 
   local ri
-  if not parent then
+  if not tsn_data.parent then
     ri = vim.fn.indent(range[1] + 1)
   end
 
   return setmetatable({
-    _root = not parent,
+    _root = not tsn_data.parent,
     _tsnode = tsnode,
+    _lang = tsn_data.lang,
     _imitator = not is_tsn,
-    _parent = parent,
+    _parent = tsn_data.parent,
     _prev = nil,
     _next = nil,
-    _preset = preset,
+    _preset = tsn_data.preset,
     _text = text,
     _has_node_to_format = hntf,
     _children = {},
@@ -57,19 +57,33 @@ end
 ---Recursive parse current node children and building TreeSJ
 ---@param mode string
 function TreeSJ:build_tree(mode)
-  local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
+  local preset = self:preset(mode)
+  local children = u.collect_children(self:tsnode(), preset and preset.filter)
   local prev
 
-  local framing = self:preset() and self:preset(mode).add_framing_nodes
+  local framing = preset and preset.add_framing_nodes
 
   if self:non_bracket() or framing then
     local left = framing and framing.left
     local right = framing and framing.right
+
+    -- TODO: find right condition
+    if framing and framing.mode == 'pack' then
+      children = { self:tsnode() }
+    end
+
     tu.add_first_last_imitator(self:tsnode(), children, left, right)
   end
 
   for _, child in ipairs(children) do
-    local tsj = TreeSJ.new(child, self)
+    local tsn_data = {
+      tsnode = child,
+      preset = u.get_self_preset(child:type(), self._lang),
+      lang = self._lang,
+      parent = self,
+    }
+
+    local tsj = TreeSJ.new(tsn_data)
 
     tsj:_set_prev(prev)
     if tsj:prev() then

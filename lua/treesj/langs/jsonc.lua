@@ -1,14 +1,4 @@
 local u = require('treesj.langs.utils')
+local json = require('treesj.langs.json')
 
-return {
-  object = u.set_preset_for_dict({
-    split = {
-      last_separator = false,
-    },
-  }),
-  array = u.set_preset_for_list({
-    split = {
-      last_separator = false,
-    },
-  }),
-}
+return u.merge_preset(json, {})

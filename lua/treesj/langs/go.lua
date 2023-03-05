@@ -26,8 +26,7 @@ return {
       end,
     },
     split = {
-      non_bracket_node = true,
-      add_framing_nodes = { left = ' (', right = ')' },
+      add_framing_nodes = { left = '(', right = ')' },
     },
   }),
   import_spec_list = u.set_preset_for_args({
@@ -42,6 +41,7 @@ return {
       end,
     },
   }),
+  import_declaration = { target_nodes = { 'import_spec', 'import_spec_list' } },
   function_declaration = {
     target_nodes = { 'block' },
   },

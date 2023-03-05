@@ -42,7 +42,7 @@ local data = {
     path = PATH,
     mode = 'join',
     desc = 'cursor_behavior = "start", mode = "%s", pos inside block',
-    cursor = { 9, 4 },
+    cursor = { 8, 4 },
     expected = { 7, 12 },
     result = {},
     settings = { cursor_behavior = 'start' },
