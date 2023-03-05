@@ -23,7 +23,7 @@ end
 ---@param parent userdata
 ---@param pos string last|first
 ---@param text? string
-local function imitate_tsn(tsn, parent, pos, text)
+function M.imitate_tsn(tsn, parent, pos, text)
   text = text or ''
 
   local imitator = {}
@@ -65,8 +65,8 @@ end
 ---@param right? string
 function M.add_first_last_imitator(node, children, left, right)
   local first, last = u.get_non_bracket_first_last(node)
-  table.insert(children, 1, imitate_tsn(first, node, 'first', left))
-  table.insert(children, imitate_tsn(last, node, 'last', right))
+  table.insert(children, 1, M.imitate_tsn(first, node, 'first', left))
+  table.insert(children, M.imitate_tsn(last, node, 'last', right))
 end
 
 ---Add some text to start of base text. If the base is table, prepend text to first element of table

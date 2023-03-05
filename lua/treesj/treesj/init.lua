@@ -44,7 +44,7 @@ function TreeSJ.new(tsn_data, parent)
     _parent = tsn_data.parent,
     _prev = nil,
     _next = nil,
-    _preset = tsn_data.preset,
+    _preset = tsn_data.preset and vim.tbl_deep_extend('force', {}, tsn_data.preset) or nil,
     _text = text,
     _has_node_to_format = hntf,
     _children = {},
@@ -60,6 +60,10 @@ function TreeSJ:build_tree(mode)
   local preset = self:preset(mode) or {}
   local children = u.collect_children(self:tsnode(), preset.filter)
   local prev
+
+  if preset.lifecycle then
+    children = preset.lifecycle.collect_child(children, preset)
+  end
 
   local framing = self:preset() and self:preset(mode).add_framing_nodes
 
