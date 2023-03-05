@@ -9,33 +9,6 @@ return {
   arguments = u.set_preset_for_args(),
   named_imports = u.set_preset_for_dict(),
   export_clause = u.set_preset_for_dict(),
-  body = u.set_preset_for_statement({
-    both = {
-      non_bracket_node = true,
-    },
-    join = {
-      filter = {
-        function(tsn)
-          local nodes = { '{', '}' }
-          if tsn:parent():parent():type() == 'arrow_function' then
-            if tsn:parent():named_child_count() == 1 then
-              return not vim.tbl_contains(nodes, tsn:type())
-            end
-            return true
-          else
-            return true
-          end
-        end,
-      },
-    },
-    split = {
-      add_framing_nodes = {
-        left = ' {',
-        right = '}',
-        mode = 'pack',
-      },
-    },
-  }),
   statement_block = u.set_preset_for_statement({
     join = {
       no_insert_if = {
@@ -45,9 +18,6 @@ return {
       },
     },
   }),
-  arrow_function = {
-    target_nodes = { 'body' },
-  },
   lexical_declaration = {
     target_nodes = { 'array', 'object' },
   },

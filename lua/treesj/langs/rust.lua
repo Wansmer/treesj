@@ -30,43 +30,13 @@ return {
       last_separator = true,
     },
   }),
-  -- block = u.set_preset_for_statement({
-  --   join = {
-  --     no_insert_if = { u.no_insert.if_penultimate },
-  --   },
-  -- }),
-  use_list = u.set_preset_for_list(),
-  array_expression = u.set_preset_for_list(),
   block = u.set_preset_for_statement({
     join = {
       no_insert_if = { u.no_insert.if_penultimate },
-      filter = {
-        function(tsn)
-          if u.container.has_parent(tsn, 'match_arm') then
-            local skip = { '{', '}' }
-            return not vim.tbl_contains(skip, tsn:type())
-          else
-            return true
-          end
-        end,
-      },
     },
   }),
-  value = u.set_preset_for_statement({
-    both = {
-      non_bracket_node = false,
-    },
-    split = {
-      add_framing_nodes = {
-        left = '{',
-        right = '}',
-        mode = 'pack',
-      },
-    },
-  }),
-  match_arm = {
-    target_nodes = { 'value' },
-  },
+  use_list = u.set_preset_for_list(),
+  array_expression = u.set_preset_for_list(),
   let_declaration = {
     target_nodes = {
       'field_declaration_list',

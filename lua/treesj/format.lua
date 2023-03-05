@@ -35,7 +35,6 @@ function M._format(mode)
   local sr, sc, er, ec = u.range(node, p)
   local MODE = mode or sr == er and SPLIT or JOIN
   p = p[MODE]
-  vim.pretty_print('Mode:', MODE, mode, 'Node:', node:type())
 
   if p and not p.format_empty_node then
     if not p.non_bracket_node and u.is_empty_node(node, p) then
@@ -75,7 +74,6 @@ function M._format(mode)
   local cursor = NCHold.new()
   cursor:compute(treesj, MODE)
   local new_cursor = cursor:get_cursor()
-  treesj = nil
 
   vim.api.nvim_buf_set_text(0, sr, sc, er, ec, replacement)
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
