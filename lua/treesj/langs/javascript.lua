@@ -21,6 +21,9 @@ return {
   lexical_declaration = {
     target_nodes = { 'array', 'object' },
   },
+  pair = {
+    target_nodes = { 'array', 'object' },
+  },
   variable_declaration = {
     target_nodes = { 'array', 'object' },
   },
