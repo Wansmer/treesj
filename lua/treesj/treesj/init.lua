@@ -59,23 +59,17 @@ function TreeSJ:build_tree(mode)
   local children = u.collect_children(self:tsnode(), preset and preset.filter)
   local prev
 
-  local framing = preset and preset.add_framing_nodes
-
-  if self:non_bracket() or framing then
-    local left = framing and framing.left
-    local right = framing and framing.right
-
-    -- TODO: find right condition
-    if framing and framing.mode == 'pack' then
-      children = { self:tsnode() }
-    end
-
-    tu.add_first_last_imitator(self:tsnode(), children, left, right)
-  end
-
-  -- Here starts before_build_tree
+  -- LIFECYCLE: before_build_tree
   if preset then
-    children = tu.manage_last_separator(children, preset)
+    local apply = {
+      tu.add_framing_nodes,
+      tu.handle_last_separator,
+      preset.lifecycle and preset.lifecycle.before_build_tree,
+    }
+
+    for _, fn in ipairs(apply) do
+      children = fn(children, preset, self)
+    end
   end
 
   for _, child in ipairs(children) do
@@ -102,7 +96,6 @@ function TreeSJ:build_tree(mode)
       tsj._root_indent = tsj:get_prev_indent() + sw
     end
 
-    -- if child:type() ~= 'imitator' then
     if tu.is_tsnode(child) then
       tsj:build_tree(mode)
     end

@@ -23,7 +23,7 @@ end
 ---@param children table List of children of root node
 ---@param preset table
 ---@return table
-function M.manage_last_separator(children, preset)
+function M.handle_last_separator(children, preset)
   local len = #children
   local penult = children[len - 1]
 
@@ -42,6 +42,24 @@ function M.manage_last_separator(children, preset)
       end
     end
   end
+
+  return children
+end
+
+function M.add_framing_nodes(children, preset, tsj)
+  local framing = preset.add_framing_nodes
+  if preset.non_bracket_node or framing then
+    local left = framing and framing.left
+    local right = framing and framing.right
+
+    -- TODO: find right condition
+    if framing and framing.mode == 'pack' then
+      children = { tsj:tsnode() }
+    end
+
+    M.add_first_last_imitator(tsj:tsnode(), children, left, right)
+  end
+
   return children
 end
 
@@ -160,44 +178,6 @@ local function is_instruction_sep_need(child, p)
   return need and not has
 end
 
----Checking if the text need and not has or has and not need last separator
----@param text string Current text of child
----@param p table Preset
----@return boolean, boolean
-local function is_has_and_need(text, p)
-  return vim.endswith(text, p.separator), p.last_separator
-end
-
----Add or remove last separator
----@param child TreeSJ TreeSJ instance
----@param p table|nil Preset for parent
-local function set_last_sep_if_need(child, p)
-  if not p then
-    return
-  end
-
-  if not child:is_first() and child:next() and child:next():is_last() then
-    local content = child:text()
-    local text = type(content) == 'table' and content[#content] or content
-
-    local has, need = is_has_and_need(text, p)
-
-    if has and not need then
-      text = text:sub(1, #text - #p.separator)
-    elseif need and not has then
-      text = text .. p.separator
-    end
-
-    if type(content) == 'table' then
-      content[#content] = text
-    else
-      content = text
-    end
-
-    child:_update_text(content)
-  end
-end
-
 ---Set indent when 'split'
 ---@param child TreeSJ TreeSJ instance
 local function set_indent(child)
@@ -270,7 +250,6 @@ function M._join(tsj)
         child:_update_text(child:text() .. p.force_insert)
       end
 
-      -- set_last_sep_if_need(child, p)
       set_whitespace(child)
 
       table.insert(lines, child:text())
@@ -286,14 +265,9 @@ function M._join(tsj)
 end
 
 ---Handling for configured node when mode is SPLIT
----@param tsj TreeSJ TreeSJ instance
 ---@param child TreeSJ child of tsj
 ---@param lines table List-like table
-local function process_configured(tsj, child, lines)
-  local p = tsj:preset(SPLIT)
-
-  -- set_last_sep_if_need(child, p)
-
+local function process_configured(child, lines)
   if child:is_omit() then
     set_whitespace(child)
     merge_text_to_prev_line(lines, child:text())
@@ -352,11 +326,12 @@ function M._split(tsj)
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       local cb = tsj:preset('split').foreach
+
       if cb then
         cb(child)
       end
 
-      process_configured(tsj, child, lines)
+      process_configured(child, lines)
     elseif tsj:has_to_format() then
       process_configured_container(child, lines)
     else
