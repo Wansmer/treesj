@@ -62,20 +62,18 @@ function TreeSJ:build_tree(mode)
   local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
   local prev
 
-  -- LIFECYCLE: before_build_tree
+  -- NOTE: `self:preset()` didn't should be saving in variable because
+  -- it can be changing in life cycle function
   if self:preset(mode) then
-    children = tu.add_framing_nodes(children, self:preset(mode), self)
+    tu.add_framing_nodes(children, self:preset(mode), self)
 
-    if
-      self:preset(mode).lifecycle
-      and self:preset(mode).lifecycle.before_build_tree
-    then
-      children = self
-        :preset(mode).lifecycle
-        .before_build_tree(children, self:preset(mode), self)
+    -- LIFECYCLE: before_build_tree
+    if self:has_lifecycle('before_build_tree', mode) then
+      local fn = self:preset(mode).lifecycle.before_build_tree
+      children = fn(children, self:preset(mode), self)
     end
 
-    children = tu.handle_last_separator(children, self:preset(mode))
+    tu.handle_last_separator(children, self:preset(mode))
   end
 
   for _, child in ipairs(children) do
@@ -111,12 +109,21 @@ function TreeSJ:build_tree(mode)
   end
 
   -- LIFECYCLE: after_build_tree
-  if self:has_preset() then
-    local fn = self:preset(mode).lifecycle
-      and self:preset(mode).lifecycle.after_build_tree
-    if fn then
-      self._children = fn(self._children)
-    end
+  if self:has_lifecycle('after_build_tree', mode) then
+    local fn = self:preset(mode).lifecycle.after_build_tree
+    self._children = fn(self._children)
+  end
+end
+
+---Checking if current TreeSJ has lifecycle callback
+---@param cycle string Lifecycle name
+---@param mode string
+function TreeSJ:has_lifecycle(cycle, mode)
+  if self:has_preset() and self:preset(mode).lifecycle then
+    local fn = self:preset(mode).lifecycle[cycle]
+    return u.tobool(fn and vim.is_callable(fn))
+  else
+    return false
   end
 end
 

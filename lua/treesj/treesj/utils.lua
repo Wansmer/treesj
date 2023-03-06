@@ -23,7 +23,6 @@ end
 ---Add or remove last separator in node
 ---@param children table List of children of root node
 ---@param preset table
----@return table
 function M.handle_last_separator(children, preset)
   local len = #children
   local penult = children[len - 1]
@@ -43,8 +42,6 @@ function M.handle_last_separator(children, preset)
       end
     end
   end
-
-  return children
 end
 
 function M.add_framing_nodes(children, preset, tsj)
@@ -60,8 +57,6 @@ function M.add_framing_nodes(children, preset, tsj)
 
     M.add_first_last_imitator(tsj:tsnode(), children, left, right)
   end
-
-  return children
 end
 
 ---Checking if tsn is TSNode instance. False if it imitator of tsn
