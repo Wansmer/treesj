@@ -36,7 +36,7 @@ return {
       end,
       foreach = function(tsj)
         if tsj:is_framing() then
-          tsj:_update_text('')
+          tsj:update_text('')
         end
       end,
     },

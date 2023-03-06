@@ -14,7 +14,7 @@ return {
         if child:is_framing() and type(text) == 'string' then
           local replace = { ['{'] = 'do', ['}'] = 'end' }
           if replace[text] then
-            child:_update_text(replace[text])
+            child:update_text(replace[text])
           end
         end
       end,
@@ -29,7 +29,7 @@ return {
         if child:is_framing() and type(text) == 'string' then
           local replace = { ['do'] = '{', ['end'] = '}' }
           if replace[text] then
-            child:_update_text(replace[text])
+            child:update_text(replace[text])
           end
         end
       end,

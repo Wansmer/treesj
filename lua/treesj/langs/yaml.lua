@@ -1,5 +1,10 @@
 local u = require('treesj.langs.utils')
 
+local remove_last = function(children)
+  table.remove(children, #children)
+  return children
+end
+
 return {
   flow_sequence = u.set_preset_for_list({
     split = {
@@ -8,13 +13,16 @@ return {
       no_insert_if = { u.no_insert.if_penultimate },
       foreach = function(child)
         if child:is_first() or child:text() == ',' then
-          child:_update_text('')
+          child:update_text('')
         elseif child:is_last() then
-          child:_update_text('')
+          child:update_text('')
         else
-          child:_update_text('- ' .. child:text())
+          child:update_text('- ' .. child:text())
         end
       end,
+      lifecycle = {
+        after_build_tree = remove_last,
+      },
     },
   }),
   flow_mapping = u.set_preset_for_list({
@@ -23,11 +31,14 @@ return {
       recursive = true,
       foreach = function(child)
         if child:is_first() or child:text() == ',' then
-          child:_update_text('')
+          child:update_text('')
         elseif child:is_last() then
-          child:_update_text('')
+          child:update_text('')
         end
       end,
+      lifecycle = {
+        after_build_tree = remove_last,
+      },
     },
   }),
   block_sequence = u.set_preset_for_list({
@@ -40,7 +51,7 @@ return {
         local text = child:text()
         text = string.gsub(text, '^- ', '')
         if not child:is_framing() then
-          child:_update_text(text)
+          child:update_text(text)
         end
       end,
     },

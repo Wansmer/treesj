@@ -192,4 +192,44 @@ M.no_insert.if_second = if_second
 M.omit.if_penultimate = if_penultimate
 M.omit.if_second = if_second
 
+---Makes first/last imitator node for TreeSJ. Using only for non-bracket blocks.
+---@param tsn userdata|nil
+---@param parent userdata
+---@param pos string last|first
+---@param text? string
+function M.imitate_tsn(tsn, parent, pos, text)
+  text = text or ''
+
+  local imitator = {}
+  imitator.__index = imitator
+  local sr, sc, er, ec
+  if tsn then
+    sr, sc, er, ec = tsn:range()
+  elseif pos == 'first' then
+    sr, sc = parent:range()
+    er, ec = sr, sc
+  elseif pos == 'last' then
+    _, _, er, ec = parent:range()
+    sr, sc = er, ec
+  end
+
+  function imitator:range()
+    if pos == 'first' then
+      return er, ec, er, ec
+    else
+      return sr, sc, sr, sc
+    end
+  end
+
+  function imitator:type()
+    return text
+  end
+
+  function imitator:text()
+    return text
+  end
+
+  return imitator
+end
+
 return M
