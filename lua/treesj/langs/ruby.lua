@@ -24,15 +24,12 @@ return {
     join = {
       separator = '',
       recursive = false,
-      foreach = function(child)
-        local text = child:text()
-        if child:is_framing() and type(text) == 'string' then
+      lifecycle = {
+        after_build_tree = function(children)
           local replace = { ['do'] = '{', ['end'] = '}' }
-          if replace[text] then
-            child:update_text(replace[text])
-          end
-        end
-      end,
+          return u.helper.repacer(children, replace)
+        end,
+      },
     },
   }),
   string_array = u.set_preset_for_list({
