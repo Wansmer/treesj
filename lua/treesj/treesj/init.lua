@@ -65,7 +65,7 @@ function TreeSJ:build_tree(mode)
   -- NOTE: `self:preset()` didn't should be saving in variable because
   -- it can be changing in life cycle function
   if self:preset(mode) then
-    tu.add_framing_nodes(children, self:preset(mode), self)
+    children = tu.add_framing_nodes(children, self:preset(mode), self)
 
     -- LIFECYCLE: before_build_tree
     if self:has_lifecycle('before_build_tree', mode) then
@@ -73,7 +73,7 @@ function TreeSJ:build_tree(mode)
       children = fn(children, self:preset(mode), self)
     end
 
-    tu.handle_last_separator(children, self:preset(mode))
+    children = tu.handle_last_separator(children, self:preset(mode))
   end
 
   for _, child in ipairs(children) do
@@ -345,18 +345,7 @@ function TreeSJ:get_lines()
   return type(text) == 'table' and text or { text }
 end
 
-function TreeSJ:collect_text()
-  local res = {}
-  for child in self:iter_children() do
-    if child:has_preset() or child:has_to_format() then
-      table.insert(res, child:get_lines())
-    else
-      table.insert(res, child:text())
-    end
-  end
-  return res
-end
-
+---Mark current TreeSJ as removed
 function TreeSJ:remove()
   self._remove = true
 end

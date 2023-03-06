@@ -249,6 +249,13 @@ local function replace_text(children, replace)
   return children
 end
 
+local function remover(children, remove)
+  return vim.tbl_filter(function (child)
+    return not vim.tbl_contains(remove, child:type())
+  end, children)
+end
+
 M.helper.repacer = replace_text
+M.helper.remover = remover
 
 return M
