@@ -29,6 +29,8 @@ function TreeSJ.new(tsn_data)
   local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
   local text = is_tsn and u.get_node_text(tsn_data.tsnode) or tsnode:text()
   local range = is_tsn and tu.get_observed_range(tsnode) or { tsnode:range() }
+  local preset = tsn_data.preset
+    and vim.tbl_deep_extend('force', {}, tsn_data.preset)
 
   local ri
   if not tsn_data.parent then
@@ -43,7 +45,7 @@ function TreeSJ.new(tsn_data)
     _parent = tsn_data.parent,
     _prev = nil,
     _next = nil,
-    _preset = tsn_data.preset,
+    _preset = preset,
     _text = text,
     _has_node_to_format = hntf,
     _children = {},
@@ -61,15 +63,13 @@ function TreeSJ:build_tree(mode)
 
   -- LIFECYCLE: before_build_tree
   if preset then
-    local apply = {
-      tu.add_framing_nodes,
-      tu.handle_last_separator,
-      preset.lifecycle and preset.lifecycle.before_build_tree,
-    }
+    children = tu.add_framing_nodes(children, preset, self)
 
-    for _, fn in ipairs(apply) do
-      children = fn(children, preset, self)
+    if preset.lifecycle and preset.lifecycle.before_build_tree then
+      children = preset.lifecycle.before_build_tree(children, preset, self)
     end
+
+    children = tu.handle_last_separator(children, preset)
   end
 
   for _, child in ipairs(children) do
@@ -102,6 +102,14 @@ function TreeSJ:build_tree(mode)
 
     table.insert(self._children, tsj)
     prev = tsj
+  end
+
+  -- LIFECYCLE: after_build_tree
+  if preset then
+    local fn = preset.lifecycle and preset.lifecycle.after_build_tree
+    if fn then
+      self._children = fn(self._children)
+    end
   end
 end
 
@@ -149,7 +157,7 @@ function TreeSJ:join()
       end
     end
 
-    self:_update_text(tu._join(self))
+    self:update_text(tu._join(self))
   end
 end
 
@@ -168,7 +176,7 @@ function TreeSJ:split()
 
     local lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
 
-    self:_update_text(lines)
+    self:update_text(lines)
   end
 end
 
@@ -248,7 +256,7 @@ end
 
 ---Updated text of current node
 ---@param new_text string|string[]
-function TreeSJ:_update_text(new_text)
+function TreeSJ:update_text(new_text)
   self._text = new_text
 end
 

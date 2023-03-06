@@ -1,4 +1,5 @@
 local u = require('treesj.utils')
+local lu = require('treesj.langs.utils')
 
 local JOIN = 'join'
 local SPLIT = 'split'
@@ -37,7 +38,7 @@ function M.handle_last_separator(children, preset)
         table.remove(children, len - 1)
       elseif not has and need then
         local imitator =
-          M.imitate_tsn(penult, penult:parent(), 'end', preset.separator)
+          lu.imitate_tsn(penult, penult:parent(), 'end', preset.separator)
         table.insert(children, len, imitator)
       end
     end
@@ -88,41 +89,41 @@ end
 ---@param parent userdata
 ---@param pos string last|first
 ---@param text? string
-function M.imitate_tsn(tsn, parent, pos, text)
-  text = text or ''
-
-  local imitator = {}
-  imitator.__index = imitator
-  local sr, sc, er, ec
-  if tsn then
-    sr, sc, er, ec = tsn:range()
-  elseif pos == 'first' then
-    sr, sc = parent:range()
-    er, ec = sr, sc
-  elseif pos == 'last' then
-    _, _, er, ec = parent:range()
-    sr, sc = er, ec
-  end
-
-  function imitator:range()
-    if pos == 'first' then
-      return er, ec, er, ec
-    else
-      return sr, sc, sr, sc
-    end
-  end
-
-  function imitator:type()
-    return text
-  end
-
-  function imitator:text()
-    return text
-  end
-
-  return imitator
-end
-
+-- function M.imitate_tsn(tsn, parent, pos, text)
+--   text = text or ''
+--
+--   local imitator = {}
+--   imitator.__index = imitator
+--   local sr, sc, er, ec
+--   if tsn then
+--     sr, sc, er, ec = tsn:range()
+--   elseif pos == 'first' then
+--     sr, sc = parent:range()
+--     er, ec = sr, sc
+--   elseif pos == 'last' then
+--     _, _, er, ec = parent:range()
+--     sr, sc = er, ec
+--   end
+--
+--   function imitator:range()
+--     if pos == 'first' then
+--       return er, ec, er, ec
+--     else
+--       return sr, sc, sr, sc
+--     end
+--   end
+--
+--   function imitator:type()
+--     return text
+--   end
+--
+--   function imitator:text()
+--     return text
+--   end
+--
+--   return imitator
+-- end
+--
 ---Add first and last imitator nodas to children list for non-bracket blocks
 ---@param node userdata TSNode instance
 ---@param children table
@@ -130,8 +131,8 @@ end
 ---@param right? string
 function M.add_first_last_imitator(node, children, left, right)
   local first, last = u.get_non_bracket_first_last(node)
-  table.insert(children, 1, M.imitate_tsn(first, node, 'first', left))
-  table.insert(children, M.imitate_tsn(last, node, 'last', right))
+  table.insert(children, 1, lu.imitate_tsn(first, node, 'first', left))
+  table.insert(children, lu.imitate_tsn(last, node, 'last', right))
 end
 
 ---Add some text to start of base text. If the base is table, prepend text to first element of table
@@ -153,7 +154,7 @@ end
 local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
   local text = prepend_text(child:text(), spacing)
-  child:_update_text(text)
+  child:update_text(text)
 end
 
 -- TODO: rewrite
@@ -190,7 +191,7 @@ local function set_indent(child)
   end
 
   local text = prepend_text(child:text(), (sep):rep(indent))
-  child:_update_text(text)
+  child:update_text(text)
 end
 
 ---Append text to last item in list. If last item is a table, merge to last of this table.
@@ -247,7 +248,7 @@ function M._join(tsj)
       end
 
       if is_instruction_sep_need(child, p) then
-        child:_update_text(child:text() .. p.force_insert)
+        child:update_text(child:text() .. p.force_insert)
       end
 
       set_whitespace(child)
