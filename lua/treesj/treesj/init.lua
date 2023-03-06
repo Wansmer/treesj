@@ -16,6 +16,7 @@ local tu = require('treesj.treesj.utils')
 ---@field _children TreeSJ[] List of children
 ---@field _observed_range integer[] Range of node consider whitespaces
 ---@field _root_indent integer|nil Start indent to calculate other insdent when split
+---@field _remove boolean Marker if node should be removed from tree
 local TreeSJ = {}
 TreeSJ.__index = TreeSJ
 
@@ -51,6 +52,7 @@ function TreeSJ.new(tsn_data)
     _children = {},
     _observed_range = range,
     _root_indent = ri,
+    _remove = false,
   }, TreeSJ)
 end
 
@@ -109,8 +111,9 @@ function TreeSJ:build_tree(mode)
   end
 
   -- LIFECYCLE: after_build_tree
-  if preset then
-    local fn = preset.lifecycle and preset.lifecycle.after_build_tree
+  if self:has_preset() then
+    local fn = self:preset(mode).lifecycle
+      and self:preset(mode).lifecycle.after_build_tree
     if fn then
       self._children = fn(self._children)
     end
@@ -333,6 +336,10 @@ end
 function TreeSJ:get_lines()
   local text = self:text()
   return type(text) == 'table' and text or { text }
+end
+
+function TreeSJ:remove()
+  self._remove = true
 end
 
 ---Iterate all TreeSJ instance children

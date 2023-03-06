@@ -1,7 +1,10 @@
 local u = require('treesj.langs.utils')
 
 local remove_last = function(children)
-  table.remove(children, #children)
+  local last = children[#children]
+  if last then
+    last:remove()
+  end
   return children
 end
 
