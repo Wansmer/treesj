@@ -33,24 +33,50 @@ return {
   block = u.set_preset_for_statement({
     join = {
       no_insert_if = { u.no_insert.if_penultimate },
-      lifecycle = { 
-        before_build_tree = function (children, preset, tsj)
+      lifecycle = {
+        before_build_tree = function(children, preset, tsj)
           local node = tsj:tsnode()
-          if node:parent():type() == 'match_arm' and node:named_child_count() == 1 then
+          local allowed_parents = { 'match_arm', 'closure_expression' }
+          if
+            vim.tbl_contains(allowed_parents, node:parent():type())
+            and node:named_child_count() == 1
+          then
             return u.helper.remover(children, { '{', '}' })
           end
           return children
         end,
-      }
+      },
     },
   }),
   value = u.set_preset_for_statement({
     split = {
-      add_framing_nodes = { left = '{', right = '}', mode = 'pack' },
+      add_framing_nodes = function(tsj)
+        local framing = { left = '{', right = '}', mode = 'pack' }
+        return tsj:type() ~= 'block' and framing or false
+      end,
+    },
+    join = {
+      no_insert_if = { u.no_insert.if_penultimate },
+      lifecycle = {
+        before_build_tree = function(children, preset, tsj)
+          local node = tsj:tsnode()
+          local allowed_parents = { 'match_arm', 'closure_expression' }
+          if
+            vim.tbl_contains(allowed_parents, node:parent():type())
+            and node:named_child_count() == 1
+          then
+            return u.helper.remover(children, { '{', '}' })
+          end
+          return children
+        end,
+      },
     },
   }),
   match_arm = {
     target_nodes = { 'value' },
+  },
+  closure_expression = {
+    target_nodes = { ['body'] = 'value' },
   },
   use_list = u.set_preset_for_list(),
   array_expression = u.set_preset_for_list(),

@@ -49,6 +49,13 @@ end
 function M.add_framing_nodes(children, preset, tsj)
   local framing = preset.add_framing_nodes
   if preset.non_bracket_node or framing then
+    if type(framing) == 'function' then
+      framing = framing(tsj)
+      if not framing then
+        return children
+      end
+    end
+
     local left = framing and framing.left
     local right = framing and framing.right
 
