@@ -19,6 +19,7 @@ M.configured_langs = {
   'svelte',
   'rust',
   'python',
+  'starlark',
   'r',
   'cpp',
   'c',
