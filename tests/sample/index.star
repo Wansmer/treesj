@@ -16,6 +16,18 @@ other_li = [
     6,
 ]
 
+# Intentionally blank lines to retain the line-number references from the python test.
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
 # RESULT OF JOIN (node "tuple", preset default)
 tup = (1, 2, 3,)
 # RESULT OF SPLIT (node "tuple", preset default)
@@ -63,6 +75,15 @@ def create_adder(
     for i in [1, 2, 3]
 ]
 
+# Intentionally blank lines to retain the line-number references from the python test.
+#
+#
+#
+#
+#
+#
+#
+
 # RESULT OF JOIN (node "dictionary_comprehension")
 {k: v for k, v in items}
 
@@ -72,6 +93,24 @@ def create_adder(
     for k, v in items
 }
 
+# Intentionally blank lines to retain the line-number references from the python test.
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # RESULT OF JOIN (node "call")
 session.delete(existing_id)
 
@@ -98,6 +137,15 @@ lc = [
     for item in range(1, 4)
 ]
 
+# Intentionally blank lines to retain the line-number references from the python test.
+#
+#
+#
+#
+#
+#
+#
+#
 # RESULT OF JOIN (node "assignment" (dictionary_comprehension))
 dc = {k: v for k, v in items}
 
