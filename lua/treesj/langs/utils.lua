@@ -232,4 +232,23 @@ function M.imitate_tsn(tsn, parent, pos, text)
   return imitator
 end
 
+M.lf = {
+  before_build_tree = {},
+  after_build_tree = {},
+}
+
+M.helper = {}
+
+local function replace_text(children, replace)
+  for _, child in ipairs(children) do
+    local repl = replace[child:type()]
+    if repl then
+      child:update_text(repl)
+    end
+  end
+  return children
+end
+
+M.helper.repacer = replace_text
+
 return M
