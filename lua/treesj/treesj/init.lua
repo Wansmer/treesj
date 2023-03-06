@@ -57,19 +57,23 @@ end
 ---Recursive parse current node children and building TreeSJ
 ---@param mode string
 function TreeSJ:build_tree(mode)
-  local preset = self:preset(mode)
-  local children = u.collect_children(self:tsnode(), preset and preset.filter)
+  local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
   local prev
 
   -- LIFECYCLE: before_build_tree
-  if preset then
-    children = tu.add_framing_nodes(children, preset, self)
+  if self:preset(mode) then
+    children = tu.add_framing_nodes(children, self:preset(mode), self)
 
-    if preset.lifecycle and preset.lifecycle.before_build_tree then
-      children = preset.lifecycle.before_build_tree(children, preset, self)
+    if
+      self:preset(mode).lifecycle
+      and self:preset(mode).lifecycle.before_build_tree
+    then
+      children = self
+        :preset(mode).lifecycle
+        .before_build_tree(children, self:preset(mode), self)
     end
 
-    children = tu.handle_last_separator(children, preset)
+    children = tu.handle_last_separator(children, self:preset(mode))
   end
 
   for _, child in ipairs(children) do
@@ -340,6 +344,17 @@ function TreeSJ:iter_children()
     return tbl[index]
   end
   return iterator, self._children
+end
+
+function TreeSJ:update_preset(new_preset, mode)
+  if self._preset then
+    if mode then
+      self._preset[mode] =
+        vim.tbl_deep_extend('force', self._preset[mode], new_preset)
+    else
+      self._preset = vim.tbl_deep_extend('force', self._preset, new_preset)
+    end
+  end
 end
 
 return TreeSJ

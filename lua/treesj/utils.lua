@@ -160,18 +160,13 @@ end
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
 ---@param node userdata TSNode instance
----@param filter? function[] List of function for filtering output list
+---@param filter? function Function for filtering output list
 ---@return table
 function M.collect_children(node, filter)
-  filter = filter or {}
-  table.insert(filter, M.skip_empty_nodes)
   local children = {}
 
   for child in node:iter_children() do
-    local fn = function(cb)
-      return cb(child)
-    end
-    if M.every(filter, fn) then
+    if not filter or filter(child) then
       table.insert(children, child)
     end
   end
@@ -210,7 +205,7 @@ function M.is_empty_node(tsn, preset)
   end
 
   local cc = tsn:child_count()
-  local children = M.collect_children(tsn, { is_named })
+  local children = M.collect_children(tsn, is_named)
   local contains_only_framing = cc == framing_count
   return M.every(children, is_omit) or contains_only_framing
 end
