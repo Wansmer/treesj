@@ -90,6 +90,11 @@ function M._format(mode)
   local new_cursor = cursor:get_cursor()
 
   vim.api.nvim_buf_set_text(0, sr, sc, er, ec, replacement)
+
+  if treesj:has_lifecycle('after_insert_text', MODE) then
+    treesj:preset(MODE).lifecycle()
+  end
+
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
 end
 
