@@ -29,6 +29,9 @@ return {
     -- boolean|function function (tsnode): boolean
     -- Set `false` if node should't be splitted or joined. Can be different for both modes
     enable = true,
+    -- table|nil
+    -- See 'Lifecycle' section
+    lifecycle = nil,
   },
   -- Use only for join. If contains field from 'both',
   -- field here have higher priority

@@ -345,6 +345,18 @@ function TreeSJ:get_lines()
   return type(text) == 'table' and text or { text }
 end
 
+function TreeSJ:collect_text()
+  local res = {}
+  for child in self:iter_children() do
+    if child:has_preset() or child:has_to_format() then
+      table.insert(res, child:get_lines())
+    else
+      table.insert(res, child:text())
+    end
+  end
+  return res
+end
+
 function TreeSJ:remove()
   self._remove = true
 end

@@ -79,46 +79,6 @@ function M.get_observed_range(tsnode)
   return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
----Makes first/last imitator node for TreeSJ. Using only for non-bracket blocks.
----@param tsn userdata|nil
----@param parent userdata
----@param pos string last|first
----@param text? string
--- function M.imitate_tsn(tsn, parent, pos, text)
---   text = text or ''
---
---   local imitator = {}
---   imitator.__index = imitator
---   local sr, sc, er, ec
---   if tsn then
---     sr, sc, er, ec = tsn:range()
---   elseif pos == 'first' then
---     sr, sc = parent:range()
---     er, ec = sr, sc
---   elseif pos == 'last' then
---     _, _, er, ec = parent:range()
---     sr, sc = er, ec
---   end
---
---   function imitator:range()
---     if pos == 'first' then
---       return er, ec, er, ec
---     else
---       return sr, sc, sr, sc
---     end
---   end
---
---   function imitator:type()
---     return text
---   end
---
---   function imitator:text()
---     return text
---   end
---
---   return imitator
--- end
---
 ---Add first and last imitator nodas to children list for non-bracket blocks
 ---@param node userdata TSNode instance
 ---@param children table
@@ -259,6 +219,10 @@ function M._join(tsj)
 
   lines = collapse_spacing(lines)
 
+  if tsj:has_lifecycle('before_text_insert', 'join') then
+    lines = tsj:preset('join').lifecycle.before_text_insert(lines, tsj)
+  end
+
   return table.concat(lines)
 end
 
@@ -339,6 +303,11 @@ function M._split(tsj)
       table.insert(lines, child:text())
     end
   end
+
+  if tsj:has_lifecycle('before_text_insert', 'split') then
+    lines = tsj:preset('split').lifecycle.before_text_insert(lines, tsj)
+  end
+
   return lines
 end
 
