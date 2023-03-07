@@ -263,7 +263,7 @@ function TreeSJ:o_range()
 end
 
 ---Get updated text of current node
----@return string|string[]
+---@return string|table
 function TreeSJ:text()
   return self._text
 end
