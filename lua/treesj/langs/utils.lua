@@ -250,7 +250,7 @@ local function replace_text(children, replace)
 end
 
 local function remover(children, remove)
-  return vim.tbl_filter(function (child)
+  return vim.tbl_filter(function(child)
     return not vim.tbl_contains(remove, child:type())
   end, children)
 end
