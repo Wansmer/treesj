@@ -255,7 +255,7 @@ local function remover(children, remove)
   end, children)
 end
 
-M.helper.repacer = replace_text
+M.helper.replacer = replace_text
 M.helper.remover = remover
 
 return M

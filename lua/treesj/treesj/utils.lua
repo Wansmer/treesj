@@ -207,11 +207,6 @@ function M._join(tsj)
     if tsj:has_preset() then
       local p = tsj:preset(JOIN)
 
-      local cb = p.foreach
-      if cb then
-        cb(child)
-      end
-
       if not child._remove then
         if is_instruction_sep_need(child, p) then
           child:update_text(child:text() .. p.force_insert)
@@ -297,12 +292,6 @@ function M._split(tsj)
 
   for child in tsj:iter_children() do
     if tsj:has_preset() then
-      local cb = tsj:preset('split').foreach
-
-      if cb then
-        cb(child)
-      end
-
       if not child._remove then
         process_configured(child, lines)
       end

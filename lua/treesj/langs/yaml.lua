@@ -44,7 +44,7 @@ return {
           end, children)
         end,
         after_build_tree = function(children)
-          return remove_last(u.helper.repacer(children, { ['{'] = '' }))
+          return remove_last(u.helper.replacer(children, { ['{'] = '' }))
         end,
       },
     },

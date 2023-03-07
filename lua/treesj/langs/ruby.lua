@@ -9,15 +9,14 @@ return {
     split = {
       omit = { 'block_parameters' },
       separator = '',
-      foreach = function(child)
-        local text = child:text()
-        if child:is_framing() and type(text) == 'string' then
-          local replace = { ['{'] = 'do', ['}'] = 'end' }
-          if replace[text] then
-            child:update_text(replace[text])
+      lifecycle = {
+        after_build_tree = function(children, _, _)
+          for _, child in ipairs(table) do
+            print('Child type:', child:type())
           end
-        end
-      end,
+          return u.helper.replacer(children, { ['{'] = 'do', ['}'] = 'end' })
+        end,
+      },
     },
   }),
   do_block = u.set_preset_for_dict({
@@ -27,7 +26,7 @@ return {
       lifecycle = {
         after_build_tree = function(children)
           local replace = { ['do'] = '{', ['end'] = '}' }
-          return u.helper.repacer(children, replace)
+          return u.helper.replacer(children, replace)
         end,
       },
     },

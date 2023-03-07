@@ -22,9 +22,6 @@ return {
     format_empty_node = true,
     -- function|nil function (child: TreeSJ): void
     -- Custom callback for transforming text of children nodes. Can be different for split and join
-    foreach = nil,
-    -- nil|table { left = string, right = string }
-    -- Adding first and last custom nodes, e.g., [], {}, e.t.c, if needed (e.g., see YAML)
     add_framing_nodes = nil,
     -- boolean|function function (tsnode): boolean
     -- Set `false` if node should't be splitted or joined. Can be different for both modes
