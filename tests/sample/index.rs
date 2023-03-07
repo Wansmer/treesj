@@ -113,3 +113,45 @@ use path::to::{
     Use,
     List,
 };
+
+match x {
+    // RESULT OF JOIN (field "value" in match_arm, preset default)
+    _ => 12
+}
+
+match x {
+    // RESULT OF SPLIT (field "value" in match_arm, preset default)
+    _ => {
+        12
+    }
+}
+
+match x {
+    // RESULT OF JOIN (node "block" with 2 named children in match_arm, preset default)
+    _ => { 12; 13 }
+}
+
+match x {
+    // RESULT OF SPLIT (node "block" with 2 named children in match_arm, preset default)
+    _ => {
+        12;
+        13
+    }
+}
+
+// RESULT OF JOIN (field "body" inside closure_expression, preset default)
+let a = b.map(|x| x * x);
+
+// RESULT OF SPLIT (field "body" inside closure_expression, preset default)
+let a = b.map(|x| {
+    x * x
+});
+
+// RESULT OF JOIN (node "block" inside closure_expression with 2 named children, preset default)
+let a = b.map(|x| { doSomething(); x * x } );
+
+// RESULT OF SPLIT (node "block" inside closure_expression with 2 named children, preset default)
+let a = b.map(|x| {
+    doSomething();
+    x * x
+} );
