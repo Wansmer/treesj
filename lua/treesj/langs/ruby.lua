@@ -11,9 +11,6 @@ return {
       separator = '',
       lifecycle = {
         after_build_tree = function(children, _, _)
-          for _, child in ipairs(table) do
-            print('Child type:', child:type())
-          end
           return u.helper.replacer(children, { ['{'] = 'do', ['}'] = 'end' })
         end,
       },

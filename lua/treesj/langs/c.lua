@@ -6,9 +6,11 @@ return {
   initializer_list = utils.set_preset_for_list(),
   compound_statement = utils.set_preset_for_statement({
     both = {
-      force_insert = ';',
       no_format_with = { 'compound_statement' },
       recursive = false,
+    },
+    join = {
+      force_insert = ';',
     },
   }),
   enumerator_list = utils.set_preset_for_list(),

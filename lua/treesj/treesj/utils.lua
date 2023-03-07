@@ -69,13 +69,6 @@ function M.add_framing_nodes(children, preset, tsj)
   return children
 end
 
----Checking if tsn is TSNode instance. False if it imitator of tsn
----@param tsn userdata|table
----@return boolean
-function M.is_tsnode(tsn)
-  return type(tsn) == 'userdata'
-end
-
 ---Return observed range by tsnode
 ---@param tsnode userdata TSNode instance
 ---@return integer[]
@@ -87,6 +80,13 @@ function M.get_observed_range(tsnode)
     rr.col.start = prr.row.start == rr.row.start and prr.col.end_ or 0
   end
   return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
+end
+
+---Checking if tsn is TSNode instance. False if it imitator of tsn
+---@param tsn userdata|table
+---@return boolean
+function M.is_tsnode(tsn)
+  return type(tsn) == 'userdata'
 end
 
 ---Add first and last imitator nodas to children list for non-bracket blocks
@@ -120,28 +120,6 @@ local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
   local text = prepend_text(child:text(), spacing)
   child:update_text(text)
-end
-
--- TODO: rewrite
----Checking if need to set instruction separator
----@param child TreeSJ TreeSJ instance
----@param p table Preset
-local function is_instruction_sep_need(child, p)
-  if not p then
-    return false
-  end
-
-  local next = child:next()
-  local is_next_sep = next and next:text() == p.force_insert or false
-
-  if child:is_framing() or u.is_empty(p.force_insert) or is_next_sep then
-    return false
-  end
-
-  local has = vim.endswith(child:text(), p.force_insert)
-  local need = not u.check_match(p.no_insert_if, child)
-
-  return need and not has
 end
 
 ---Set indent when 'split'
@@ -197,6 +175,29 @@ local function merge_text_to_prev_line(lines, to_merge)
   end
 end
 
+---Sets instruction separator (force_insert) if need
+---@param child TreeSJ TreeSJ instance
+local function handle_force_insert(child)
+  local p = child:parent():preset(JOIN)
+  if not p or p.force_insert == '' then
+    return
+  end
+
+  local next = child:next()
+  local is_next_sep = next and next:text() == p.force_insert or false
+
+  if is_next_sep or child:is_framing() then
+    return
+  end
+
+  local has = vim.endswith(child:text(), p.force_insert)
+  local need = not u.check_match(p.no_insert_if, child)
+
+  if need and not has then
+    child:update_text(child:text() .. p.force_insert)
+  end
+end
+
 ---Make result line for 'join'
 ---@param tsj TreeSJ TreeSJ instance
 ---@return string
@@ -204,19 +205,10 @@ function M._join(tsj)
   local lines = {}
 
   for child in tsj:iter_children() do
-    if tsj:has_preset() then
-      local p = tsj:preset(JOIN)
-
-      if not child._remove then
-        if is_instruction_sep_need(child, p) then
-          child:update_text(child:text() .. p.force_insert)
-        end
-
-        set_whitespace(child)
-
-        table.insert(lines, child:text())
+    if not child._remove then
+      if tsj:has_preset() then
+        handle_force_insert(child)
       end
-    else
       set_whitespace(child)
       table.insert(lines, child:text())
     end

@@ -111,7 +111,7 @@ function TreeSJ:build_tree(mode)
   -- LIFECYCLE: after_build_tree
   if self:has_lifecycle('after_build_tree', mode) then
     local fn = self:preset(mode).lifecycle.after_build_tree
-    self._children = fn(self._children)
+    self._children = fn(self._children, self:preset(mode), self)
   end
 end
 
@@ -302,9 +302,11 @@ function TreeSJ:parent_preset(mode)
 end
 
 ---Checking if the current node is configured
+---@param mode? string
 ---@return boolean
-function TreeSJ:has_preset()
-  return u.tobool(self._preset)
+function TreeSJ:has_preset(mode)
+  local has = self._preset and (mode and self._preset[mode] or self._preset)
+  return u.tobool(has)
 end
 
 ---Checking if the current node is first among sibling
