@@ -45,22 +45,12 @@ return {
   if_modifier = u.set_default_preset({
     join = nil,
     split = {
-      omit = { 'binary', u.omit.if_second },
-      lifecycle = {
-        before_build_tree = function(children, preset, tsj)
-          table.insert(children, u.imitate_tsn(nil, tsj, 'last', 'end'))
-          return children
-        end,
-        after_build_tree = function(children, preset, tsj)
-          local if_node = u.helper.get_by_type(children, 'if')
-          return {
-            if_node,
-            if_node:next(),
-            tsj:child(1),
-            u.helper.get_by_type(children, 'end'),
-          }
-        end,
-      },
+      omit = { u.omit.if_second },
+      format_tree = function(tsj)
+        local if_node = tsj:child('if')
+        local end_ = tsj:create_child({ text = 'end', type = 'end' })
+        tsj:update_children({ if_node, if_node:next(), tsj:child(1), end_ })
+      end,
     },
   }),
   ['if'] = u.set_default_preset({
@@ -77,42 +67,21 @@ return {
         end)
       end,
       space_in_brackets = true,
-      lifecycle = {
-        before_build_tree = function(children, _, _)
-          if u.helper.get_by_type(children, 'else') then
-            return u.helper.remover(children, { 'if', 'end' })
-          else
-            return u.helper.remover(children, { 'end' })
+      format_tree = function(tsj)
+        if tsj:child('else') then
+          local if_ = tsj:child('if')
+          local else_ = tsj:child('else')
+          if else_:children() then
+            local text = else_:child(1):text()
+            else_:child(1):update_text(text:gsub('^else', ':'))
           end
-        end,
-        after_build_tree = function(children, _, _)
-          if u.helper.get_by_type(children, 'else') then
-            return children
-          else
-            local if_node = u.helper.get_by_type(children, 'if')
-            return {
-              u.helper.get_by_type(children, 'then'),
-              if_node,
-              if_node:next(),
-            }
-          end
-        end,
-        before_text_insert = function(lines)
-          local has_else = function(el)
-            return el:match('^ else')
-          end
-
-          if api.some(lines, has_else) then
-            table.insert(lines, 2, ' ?')
-            table.insert(lines, 4, ' :')
-            return vim.tbl_map(function(el)
-              return el:gsub('^ else', '')
-            end, lines)
-          else
-            return lines
-          end
-        end,
-      },
+          if_:update_text('? ')
+          tsj:update_children({ tsj:child(2), if_, tsj:child('then'), else_ })
+        else
+          local if_node = tsj:child('if')
+          tsj:update_children({ tsj:child('then'), if_node, if_node:next() })
+        end
+      end,
     },
   }),
   conditional = u.set_default_preset({

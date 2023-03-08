@@ -23,12 +23,17 @@ return {
     -- function|nil function (child: TreeSJ): void
     -- Custom callback for transforming text of children nodes. Can be different for split and join
     add_framing_nodes = nil,
+    -- add_framing_nodes = { left = '{', right = '}', mode = 'wrap|inline' }, 
     -- boolean|function function (tsnode): boolean
     -- Set `false` if node should't be splitted or joined. Can be different for both modes
     enable = true,
     -- table|nil
     -- See 'Lifecycle' section
     lifecycle = nil,
+    -- function|nil
+    format_tree = nil,
+    -- function|nil
+    format_resulted_lines = nil,
   },
   -- Use only for join. If contains field from 'both',
   -- field here have higher priority

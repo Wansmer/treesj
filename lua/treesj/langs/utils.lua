@@ -236,6 +236,39 @@ function M.imitate_tsn(tsn, parent, pos, text)
   return imitator
 end
 
+function M.imitate_tsn2(parent, data)
+  local imitator = {}
+  imitator.__index = imitator
+
+  local sr, sc, er, ec = parent:range()
+
+  function imitator:_set_range(range)
+    self._range = range
+  end
+
+  function imitator:range()
+    return unpack(self._range)
+  end
+
+  function imitator:type()
+    return data.type
+  end
+
+  function imitator:named()
+    return false
+  end
+
+  function imitator:field()
+    return false
+  end
+
+  function imitator:text()
+    return data.text
+  end
+
+  return setmetatable({ _range = { sr, sc, sr, sc } }, imitator)
+end
+
 M.lf = {
   before_build_tree = {},
   after_build_tree = {},

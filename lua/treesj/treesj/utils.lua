@@ -228,6 +228,9 @@ function M._join(tsj)
     lines = tsj:preset('join').lifecycle.before_text_insert(lines, tsj)
   end
 
+  if tsj:preset('join') and tsj:preset('join').format_resulted_lines then
+    lines = tsj:preset('join').format_resulted_lines(lines)
+  end
   return table.concat(lines)
 end
 
@@ -305,6 +308,10 @@ function M._split(tsj)
 
   if tsj:has_lifecycle('before_text_insert', 'split') then
     lines = tsj:preset('split').lifecycle.before_text_insert(lines, tsj)
+  end
+
+  if tsj:preset('split') and tsj:preset('split').format_resulted_lines then
+    lines = tsj:preset('split').format_resulted_lines(lines)
   end
 
   return lines

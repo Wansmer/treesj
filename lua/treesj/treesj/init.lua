@@ -1,4 +1,5 @@
 local u = require('treesj.utils')
+local lu = require('treesj.langs.utils')
 local tu = require('treesj.treesj.utils')
 
 ---TreeSJ - wrapper over TS Node
@@ -60,7 +61,6 @@ end
 ---@param mode string
 function TreeSJ:build_tree(mode)
   local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
-  local prev
 
   -- NOTE: `self:preset()` didn't should be saving in variable because
   -- it can be changing in life cycle function
@@ -86,11 +86,6 @@ function TreeSJ:build_tree(mode)
 
     local tsj = TreeSJ.new(tsn_data)
 
-    tsj:_set_prev(prev)
-    if tsj:prev() then
-      tsj:prev():_set_next(tsj)
-    end
-
     if not tsj:is_ignore('split') and tsj:has_preset() then
       local is_norm = tsj:root():preset('split').inner_indent == 'normal'
       local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
@@ -105,9 +100,13 @@ function TreeSJ:build_tree(mode)
     end
 
     table.insert(self._children, tsj)
-    prev = tsj
   end
 
+  self._children = tu.normalize_children(self._children)
+
+  if self:preset(mode) and self:preset(mode).format_tree then
+    self:preset(mode).format_tree(self)
+  end
   -- LIFECYCLE: after_build_tree
   if self:has_lifecycle('after_build_tree', mode) then
     local fn = self:preset(mode).lifecycle.after_build_tree
@@ -128,6 +127,23 @@ function TreeSJ:has_lifecycle(cycle, mode)
   end
 end
 
+function TreeSJ:create_child(data, index)
+  local child = TreeSJ.new({
+    tsnode = lu.imitate_tsn2(self, data),
+    preset = nil,
+    lang = self._lang,
+    parent = self,
+  })
+
+  if index then
+    local children = vim.list_extend({}, self._children)
+    table.insert(children, index, child)
+    self:update_children(children)
+  end
+
+  return child
+end
+
 ---Checking if the current treesj node is non-bracket block
 ---@return boolean
 function TreeSJ:non_bracket()
@@ -146,11 +162,38 @@ function TreeSJ:get_prev_indent()
   end
 end
 
----Get child of TreeSJ by index
----@param index integer
----@return TreeSJ
-function TreeSJ:child(index)
-  return self._children[index]
+---Get child of TreeSJ by index or by type
+---@param id number|string If id is integer - return child by index, if string - by type
+---@return TreeSJ|nil
+function TreeSJ:child(id)
+  if type(id) == 'number' then
+    return self._children[id]
+  else
+    for child in self:iter_children() do
+      if child:type() == id then
+        return child
+      end
+    end
+  end
+end
+
+function TreeSJ:remove_child(id)
+  if type(id) == 'number' then
+    table.remove(self._children, id)
+    self:update_children(self._children)
+  else
+    local remove = type(id) == 'table' and id or { id }
+    local check = function(child)
+      return not vim.tbl_contains(remove, child:type())
+    end
+    self:update_children(vim.tbl_filter(check, self._children))
+  end
+end
+
+---Get children of TreeSJ
+---@return TreeSJ[]
+function TreeSJ:children()
+  return self._children
 end
 
 ---Get root of TreeSJ
@@ -228,15 +271,26 @@ function TreeSJ:next()
 end
 
 ---Set left side node
+---@private
 ---@param node TreeSJ TreeSJ instance
 function TreeSJ:_set_prev(node)
   self._prev = node
 end
 
 ---Set right side node
+---@private
 ---@param node TreeSJ TreeSJ instance
 function TreeSJ:_set_next(node)
   self._next = node
+end
+
+---Updated children of current TreeSJ
+---@param children TreeSJ[]
+function TreeSJ:update_children(children)
+  if not self._children then
+    return
+  end
+  self._children = tu.normalize_children(children)
 end
 
 ---Get type of current node
