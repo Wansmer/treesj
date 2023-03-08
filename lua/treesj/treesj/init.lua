@@ -79,7 +79,7 @@ function TreeSJ:build_tree(mode)
   for _, child in ipairs(children) do
     local tsn_data = {
       tsnode = child,
-      preset = u.get_self_preset(child:type(), self._lang),
+      preset = child:named() and u.get_self_preset(child:type(), self._lang),
       lang = self._lang,
       parent = self,
     }
@@ -111,7 +111,8 @@ function TreeSJ:build_tree(mode)
   -- LIFECYCLE: after_build_tree
   if self:has_lifecycle('after_build_tree', mode) then
     local fn = self:preset(mode).lifecycle.after_build_tree
-    self._children = fn(self._children, self:preset(mode), self)
+    self._children =
+      tu.normalize_children(fn(self._children, self:preset(mode), self))
   end
 end
 

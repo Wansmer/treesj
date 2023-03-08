@@ -222,7 +222,11 @@ function M.imitate_tsn(tsn, parent, pos, text)
   end
 
   function imitator:type()
-    return text
+    return text ~= '' and text or 'imitator'
+  end
+
+  function imitator:named()
+    return false
   end
 
   function imitator:text()
@@ -257,5 +261,12 @@ end
 
 M.helper.replacer = replace_text
 M.helper.remover = remover
+M.helper.get_by_type = function(children, ts_type)
+  for _, child in ipairs(children) do
+    if child:type() == ts_type then
+      return child
+    end
+  end
+end
 
 return M

@@ -20,6 +20,14 @@ local function collapse_spacing(lines)
   return lines
 end
 
+function M.normalize_children(children)
+  for i, child in ipairs(children) do
+    child:_set_prev(children[i - 1])
+    child:_set_next(children[i + 1])
+  end
+  return children
+end
+
 ---Add or remove last separator in node
 ---@param children table List of children of root node
 ---@param preset table
