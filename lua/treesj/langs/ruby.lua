@@ -181,16 +181,24 @@ return {
     },
   }),
   right = u.set_default_preset({
+    both = {
+      enable = function(tsn)
+        if tsn:type() == 'begin' and tsn:named_child_count() > 1 then
+          return false
+        end
+        return true
+      end,
+    },
     split = {
       add_framing_nodes = { left = 'begin', right = 'end', mode = 'pack' },
     },
     join = {
       lifecycle = {
-        before_build_tree = function (children)
+        before_build_tree = function(children)
           return u.helper.remover(children, { 'begin', 'end' })
-        end
-      }
-    }
+        end,
+      },
+    },
   }),
   operator_assignment = { target_nodes = { 'right' } },
   method = {
