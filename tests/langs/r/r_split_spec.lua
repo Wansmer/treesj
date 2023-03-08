@@ -12,7 +12,6 @@ local data_for_split = {
     cursor = { 2, 2 },
     expected = { 4, 9 },
     result = { 1, 6 },
-    settings = {},
   },
 
   {
@@ -23,7 +22,6 @@ local data_for_split = {
     cursor = { 12, 6 },
     expected = { 14, 18 },
     result = { 11, 15 },
-    settings = {},
   },
 
   {
@@ -34,7 +32,6 @@ local data_for_split = {
     cursor = { 21, 0 },
     expected = { 25, 31 },
     result = { 20, 26 },
-    settings = {},
   },
 
   {
@@ -45,7 +42,6 @@ local data_for_split = {
     cursor = { 34, 7 },
     expected = { 36, 43 },
     result = { 33, 40 },
-    settings = {},
   },
 
   {
@@ -56,7 +52,6 @@ local data_for_split = {
     cursor = { 46, 1 },
     expected = { 48, 53 },
     result = { 45, 50 },
-    settings = {},
   },
 
   {
@@ -67,7 +62,6 @@ local data_for_split = {
     cursor = { 56, 17 },
     expected = { 58, 64 },
     result = { 55, 61 },
-    settings = {},
   },
 
   {
@@ -78,7 +72,6 @@ local data_for_split = {
     cursor = { 67, 23 },
     expected = { 69, 74 },
     result = { 66, 71 },
-    settings = {},
   },
 
   {
@@ -89,7 +82,6 @@ local data_for_split = {
     cursor = { 77, 0 },
     expected = { 79, 84 },
     result = { 76, 81 },
-    settings = {},
   },
 
   {
@@ -100,7 +92,6 @@ local data_for_split = {
     cursor = { 87, 10 },
     expected = { 93, 102 },
     result = { 86, 95 },
-    settings = {},
   },
 
   {
@@ -111,7 +102,6 @@ local data_for_split = {
     cursor = { 105, 2 },
     expected = { 107, 110 },
     result = { 104, 107 },
-    settings = {},
   },
 
   {
@@ -122,7 +112,6 @@ local data_for_split = {
     cursor = { 114, 0 },
     expected = { 116, 120 },
     result = { 112, 116 },
-    settings = {},
   },
 
   {
@@ -133,12 +122,15 @@ local data_for_split = {
     cursor = { 124, 0 },
     expected = { 126, 130 },
     result = { 122, 126 },
-    settings = {},
   },
 }
 
+local treesj = require('treesj')
+local opts = {}
+treesj.setup(opts)
+
 describe('TreeSJ SPLIT:', function()
   for _, value in ipairs(data_for_split) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)

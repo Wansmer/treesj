@@ -7,9 +7,7 @@ local function open_ang_get_buf(path)
   return a.nvim_get_current_buf()
 end
 
-function M._test_format(v)
-  local treesj = require('treesj')
-  treesj.setup(v.settings)
+function M._test_format(v, treesj)
   local desc = v.desc:format(v.lang)
 
   it(desc, function()

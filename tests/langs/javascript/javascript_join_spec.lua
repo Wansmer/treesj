@@ -12,7 +12,6 @@ local data_for_join = {
     cursor = { 8, 4 },
     expected = { 3, 4 },
     result = { 6, 7 },
-    settings = {},
   },
   {
     path = PATH,
@@ -22,7 +21,6 @@ local data_for_join = {
     cursor = { 18, 3 },
     expected = { 13, 14 },
     result = { 16, 17 },
-    settings = {},
   },
   {
     path = PATH,
@@ -32,7 +30,6 @@ local data_for_join = {
     cursor = { 32, 2 },
     expected = { 25, 26 },
     result = { 30, 31 },
-    settings = {},
   },
   {
     path = PATH,
@@ -42,7 +39,6 @@ local data_for_join = {
     cursor = { 45, 3 },
     expected = { 39, 40 },
     result = { 42, 43 },
-    settings = {},
   },
   {
     path = PATH,
@@ -52,7 +48,6 @@ local data_for_join = {
     cursor = { 54, 5 },
     expected = { 49, 50 },
     result = { 52, 53 },
-    settings = {},
   },
   {
     path = PATH,
@@ -62,7 +57,6 @@ local data_for_join = {
     cursor = { 64, 7 },
     expected = { 60, 61 },
     result = { 63, 64 },
-    settings = {},
   },
   {
     path = PATH,
@@ -72,7 +66,6 @@ local data_for_join = {
     cursor = { 73, 6 },
     expected = { 69, 70 },
     result = { 72, 73 },
-    settings = {},
   },
   {
     path = PATH,
@@ -82,7 +75,6 @@ local data_for_join = {
     cursor = { 82, 0 },
     expected = { 78, 79 },
     result = { 81, 82 },
-    settings = {},
   },
   {
     path = PATH,
@@ -92,7 +84,6 @@ local data_for_join = {
     cursor = { 93, 3 },
     expected = { 88, 89 },
     result = { 91, 92 },
-    settings = {},
   },
   {
     path = PATH,
@@ -102,7 +93,6 @@ local data_for_join = {
     cursor = { 103, 12 },
     expected = { 98, 99 },
     result = { 101, 102 },
-    settings = {},
   },
   {
     path = PATH,
@@ -112,12 +102,15 @@ local data_for_join = {
     cursor = { 112, 1 },
     expected = { 108, 109 },
     result = { 111, 112 },
-    settings = {},
   },
 }
 
+local treesj = require('treesj')
+local opts = {}
+treesj.setup(opts)
+
 describe('TreeSJ JOIN:', function()
   for _, value in ipairs(data_for_join) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)

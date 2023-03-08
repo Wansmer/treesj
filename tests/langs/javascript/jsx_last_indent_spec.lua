@@ -25,7 +25,6 @@ local data_for_split = {
     cursor = { 48, 32 },
     expected = { 49, 54 },
     result = { 47, 52 },
-    settings = settings,
   },
 }
 
@@ -38,18 +37,32 @@ local data_for_join = {
     cursor = { 52, 25 },
     expected = { 47, 48 },
     result = { 49, 50 },
-    settings = settings,
   },
 }
 
+local treesj = require('treesj')
+local opts = {
+  langs = {
+    javascript = {
+      jsx_self_closing_element = {
+        split = {
+          omit = { 'identifier', 'nested_identifier', '/', '>' },
+          last_indent = 'inner',
+        },
+      },
+    },
+  },
+}
+treesj.setup(opts)
+
 describe('TreeSJ SPLIT:', function()
   for _, value in ipairs(data_for_split) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)
 
 describe('TreeSJ JOIN:', function()
   for _, value in ipairs(data_for_join) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)

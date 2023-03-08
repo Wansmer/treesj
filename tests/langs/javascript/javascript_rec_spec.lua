@@ -36,7 +36,6 @@ local data_for_split = {
     cursor = { 2, 17 },
     expected = { 4, 16 },
     result = { 1, 13 },
-    settings = settings,
   },
   {
     path = PATH,
@@ -46,7 +45,6 @@ local data_for_split = {
     cursor = { 19, 15 },
     expected = { 21, 30 },
     result = { 18, 27 },
-    settings = settings,
   },
   {
     path = PATH,
@@ -56,7 +54,6 @@ local data_for_split = {
     cursor = { 33, 1 },
     expected = { 35, 40 },
     result = { 32, 37 },
-    settings = settings,
   },
   {
     path = PATH,
@@ -66,12 +63,26 @@ local data_for_split = {
     cursor = { 43, 25 },
     expected = { 45, 48 },
     result = { 42, 45 },
-    settings = settings,
   },
 }
 
+local treesj = require('treesj')
+local opts = {
+  langs = {
+    javascript = {
+      object = {
+        split = recursive.split,
+      },
+      statement_block = {
+        split = recursive.split,
+      },
+    },
+  },
+}
+treesj.setup(opts)
+
 describe('TreeSJ SPLIT:', function()
   for _, value in ipairs(data_for_split) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)

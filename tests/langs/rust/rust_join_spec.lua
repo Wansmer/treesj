@@ -12,7 +12,6 @@ local data_for_join = {
     cursor = { 9, 10 },
     expected = { 5, 6 },
     result = { 7, 8 },
-    settings = {},
   },
   {
     path = PATH,
@@ -22,7 +21,6 @@ local data_for_join = {
     cursor = { 16, 19 },
     expected = { 13, 14 },
     result = { 15, 16 },
-    settings = {},
   },
   {
     path = PATH,
@@ -32,7 +30,6 @@ local data_for_join = {
     cursor = { 26, 1 },
     expected = { 21, 22 },
     result = { 23, 24 },
-    settings = {},
   },
   {
     path = PATH,
@@ -42,7 +39,6 @@ local data_for_join = {
     cursor = { 33, 7 },
     expected = { 29, 30 },
     result = { 31, 32 },
-    settings = {},
   },
   {
     path = PATH,
@@ -52,7 +48,6 @@ local data_for_join = {
     cursor = { 42, 4 },
     expected = { 37, 38 },
     result = { 39, 40 },
-    settings = {},
   },
   {
     path = PATH,
@@ -62,7 +57,6 @@ local data_for_join = {
     cursor = { 51, 6 },
     expected = { 46, 47 },
     result = { 48, 49 },
-    settings = {},
   },
   {
     path = PATH,
@@ -72,7 +66,6 @@ local data_for_join = {
     cursor = { 60, 7 },
     expected = { 55, 56 },
     result = { 57, 58 },
-    settings = {},
   },
   {
     path = PATH,
@@ -82,7 +75,6 @@ local data_for_join = {
     cursor = { 68, 3 },
     expected = { 64, 65 },
     result = { 66, 67 },
-    settings = {},
   },
   {
     path = PATH,
@@ -92,7 +84,6 @@ local data_for_join = {
     cursor = { 77, 6 },
     expected = { 72, 73 },
     result = { 74, 75 },
-    settings = {},
   },
   {
     path = PATH,
@@ -102,7 +93,6 @@ local data_for_join = {
     cursor = { 86, 25 },
     expected = { 82, 83 },
     result = { 84, 85 },
-    settings = {},
   },
   {
     path = PATH,
@@ -112,7 +102,6 @@ local data_for_join = {
     cursor = { 100, 27 },
     expected = { 90, 91 },
     result = { 97, 98 },
-    settings = {},
   },
   {
     path = PATH,
@@ -122,7 +111,6 @@ local data_for_join = {
     cursor = { 112, 4 },
     expected = { 107, 108 },
     result = { 109, 110 },
-    settings = {},
   },
   {
     path = PATH,
@@ -132,7 +120,6 @@ local data_for_join = {
     cursor = { 124, 4 },
     expected = { 118, 119 },
     result = { 123, 124 },
-    settings = {},
   },
   {
     path = PATH,
@@ -142,7 +129,6 @@ local data_for_join = {
     cursor = { 136, 4 },
     expected = { 130, 131 },
     result = { 135, 136 },
-    settings = {},
   },
   {
     path = PATH,
@@ -152,7 +138,6 @@ local data_for_join = {
     cursor = { 146, 15 },
     expected = { 142, 143 },
     result = { 145, 146 },
-    settings = {},
   },
   {
     path = PATH,
@@ -162,12 +147,15 @@ local data_for_join = {
     cursor = { 156, 5 },
     expected = { 150, 151 },
     result = { 153, 154 },
-    settings = {},
   },
 }
 
+local treesj = require('treesj')
+local opts = {}
+treesj.setup(opts)
+
 describe('TreeSJ JOIN:', function()
   for _, value in ipairs(data_for_join) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)
