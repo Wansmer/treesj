@@ -117,8 +117,11 @@ function CHold:_calc_for_join(tsj)
   local rr_tsj = tsj:root():non_bracket() and tsj:root():child(1) or tsj:root()
   local rr = u.readable_range(rr_tsj:range())
 
-  if rr.row.start ~= self._new_pos.row then
-    self:_update_pos({ row = rr.row.start + 1 })
+  if tsj:is_first() then
+    self:_update_pos({
+      row = rr.row.start + 1,
+      col = rr.col.start,
+    })
   end
 
   if cu.in_node_range(self, tsj) then
@@ -130,7 +133,7 @@ function CHold:_calc_for_join(tsj)
   end
 
   local len = #tsj:text()
-  local col = tsj:is_first() and rr.col.start + len or self._new_pos.col + len
+  local col = self._new_pos.col + len
   self:_update_pos({ col = col })
 end
 
@@ -162,6 +165,9 @@ function CHold:done()
 end
 
 function CHold:_update_pos(pos)
+  -- TODO: find where happens negative num
+  pos.col = pos.col and (pos.col >= 0 and pos.col or 0)
+  pos.row = pos.row and (pos.row >= 0 and pos.row or 0)
   self._new_pos = vim.tbl_deep_extend('force', self._new_pos, pos)
 end
 

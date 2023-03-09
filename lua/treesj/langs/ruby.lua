@@ -5,7 +5,13 @@ return {
   array = u.set_preset_for_list(),
   hash = u.set_preset_for_list(),
   method_parameters = u.set_preset_for_args(),
-  argument_list = u.set_preset_for_args(),
+  argument_list = u.set_preset_for_args({
+    both = {
+      enable = function(tsn)
+        return tsn:parent():type() ~= 'return'
+      end,
+    },
+  }),
   block = u.set_preset_for_dict({
     join = {
       separator = '',
@@ -70,9 +76,12 @@ return {
         if tsj:child('else') then
           local if_ = tsj:child('if')
           local else_ = tsj:child('else')
-          if else_:children() then
+          if else_:has_to_format() then
             local text = else_:child(1):text()
             else_:child(1):update_text(text:gsub('^else', ':'))
+          else
+            local text = else_:text()
+            else_:update_text(text:gsub('^else', ':'))
           end
           if_:update_text('? ')
           tsj:update_children({ tsj:child(2), if_, tsj:child('then'), else_ })
