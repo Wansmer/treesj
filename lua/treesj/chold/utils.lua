@@ -14,8 +14,9 @@ end
 ---@param tsj TreeSJ TreeSJ instance
 ---@return boolean
 function M.is_not_need_change(chold, tsj)
-  local rr = u.readable_range(tsj:root():child(1):range())
-  return chold.pos.row == rr.row.start and chold.pos.col <= rr.col.end_
+  tsj = tsj:non_bracket() and tsj:root():child(1) or tsj:root()
+  local rr = u.readable_range(tsj:range())
+  return chold.pos.row == rr.row.start and chold.pos.col <= rr.col.start
 end
 
 ---Checking if cursor position is after node
@@ -27,19 +28,35 @@ function M.is_after_node(chold, tsj)
   return chold.pos.row == rr.row.end_ and chold.pos.col >= rr.col.end_
 end
 
+local function observed_range(tsj)
+  local cr = tsj:range()
+  local prev = tsj:prev()
+  if prev then
+    local pr = prev:range()
+    if cr[1] == pr[1] then
+      cr[2] = pr[4]
+    else
+      cr[1] = pr[3]
+      cr[2] = pr[4]
+    end
+  end
+  return cr
+end
+
 ---Checking if start position of cursor was place in current logic range of node
 ---@param chold CHold CHold instance
 ---@param tsj TreeSJ TreeSJ instance
 ---@return boolean
 function M.in_node_range(chold, tsj)
-  local rr = u.readable_range(tsj:o_range())
   local result = false
 
-  if rr.row.start <= chold.pos.row and chold.pos.row <= rr.row.end_ then
-    if chold.pos.row == rr.row.end_ then
-      result = chold.pos.col < rr.col.end_
-    elseif chold.pos.row == rr.row.start then
-      result = chold.pos.col >= rr.col.start
+  local cr = observed_range(tsj)
+
+  if cr[1] <= chold.pos.row and chold.pos.row <= cr[3] then
+    if chold.pos.row == cr[3] then
+      result = chold.pos.col < cr[4]
+    elseif chold.pos.row == cr[1] then
+      result = chold.pos.col >= cr[2]
     else
       result = true
     end
@@ -63,6 +80,14 @@ function M.pos_in_node(chold, tsj, mode)
     local indent = -u.calc_indent(tsj)
     pos = pos >= indent and pos or indent
   else
+    local prev = tsj:prev()
+    if prev then
+      if
+        chold.pos.row ~= tsj:range()[1] and tsj:range()[1] ~= prev:range()[3]
+      then
+        pos = chold.pos.col - prev:range()[4] - 1
+      end
+    end
     local sep = -space_sep
     pos = pos >= sep and pos or sep
   end

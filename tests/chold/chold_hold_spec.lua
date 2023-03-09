@@ -10,7 +10,6 @@ local data = {
     cursor = { 4, 16 },
     expected = { 5, 4 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -19,7 +18,6 @@ local data = {
     cursor = { 4, 0 },
     expected = { 4, 0 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -28,7 +26,6 @@ local data = {
     cursor = { 4, 12 },
     expected = { 4, 12 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -37,16 +34,14 @@ local data = {
     cursor = { 4, 78 },
     expected = { 8, 0 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s", pos on penultimate symbol of block',
     cursor = { 4, 77 },
-    expected = { 8, 0 },
+    expected = { 7, 38 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -55,7 +50,6 @@ local data = {
     cursor = { 4, 79 },
     expected = { 8, 1 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_LUA,
@@ -64,7 +58,6 @@ local data = {
     cursor = { 2, 63 },
     expected = { 4, 7 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_LUA,
@@ -73,7 +66,6 @@ local data = {
     cursor = { 11, 27 },
     expected = { 13, 1 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -82,7 +74,6 @@ local data = {
     cursor = { 8, 4 },
     expected = { 7, 16 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -91,7 +82,6 @@ local data = {
     cursor = { 7, 3 },
     expected = { 7, 3 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -100,7 +90,6 @@ local data = {
     cursor = { 7, 12 },
     expected = { 7, 12 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -109,7 +98,6 @@ local data = {
     cursor = { 11, 0 },
     expected = { 7, 78 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -118,7 +106,6 @@ local data = {
     cursor = { 10, 38 },
     expected = { 7, 77 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_JS,
@@ -127,7 +114,6 @@ local data = {
     cursor = { 11, 1 },
     expected = { 7, 79 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_LUA,
@@ -136,7 +122,6 @@ local data = {
     cursor = { 7, 5 },
     expected = { 5, 61 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
   {
     path = PATH_LUA,
@@ -145,12 +130,14 @@ local data = {
     cursor = { 16, 1 },
     expected = { 14, 27 },
     result = {},
-    settings = { cursor_behavior = 'hold' },
   },
 }
 
+local treesj = require('treesj')
+treesj.setup({ cursor_behavior = 'hold' })
+
 describe('TreeSJ CHOLD:', function()
   for _, value in ipairs(data) do
-    tu._test_chold(value)
+    tu._test_chold(value, treesj)
   end
 end)

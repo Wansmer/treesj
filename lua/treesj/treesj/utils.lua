@@ -1,5 +1,4 @@
 local u = require('treesj.utils')
-local lu = require('treesj.langs.utils')
 
 local M = {}
 
@@ -33,6 +32,8 @@ function M.linking_tree(children)
     local prev, next = children[i - 1], children[i + 1]
     child:_set_prev(prev)
     child:_set_next(next)
+
+    -- TODO: find next non imitator node
     if
       child:is_imitator() and not vim.tbl_contains(special_types, child:type())
     then
@@ -133,6 +134,7 @@ function M.imitate_tsn(tsj, data)
     if next then
       ner, nec = next:tsnode():range()
     end
+
     self._range = { nsr, nsc, ner, nec }
   end
 

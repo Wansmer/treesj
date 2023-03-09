@@ -22,9 +22,9 @@ function M._test_format(v, treesj)
   end)
 end
 
-function M._test_chold(v)
-  local treesj = require('treesj')
-  treesj.setup(v.settings)
+function M._test_chold(v, treesj)
+  -- local treesj = require('treesj')
+  -- treesj.setup(v.settings)
   local desc = v.desc:format(v.mode)
 
   it(desc, function()

@@ -9,7 +9,6 @@ local data = {
     cursor = { 4, 16 },
     expected = { 8, 0 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -18,7 +17,6 @@ local data = {
     cursor = { 4, 0 },
     expected = { 8, 0 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -27,7 +25,6 @@ local data = {
     cursor = { 4, 12 },
     expected = { 8, 0 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -36,7 +33,6 @@ local data = {
     cursor = { 4, 78 },
     expected = { 8, 0 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -45,7 +41,6 @@ local data = {
     cursor = { 8, 4 },
     expected = { 7, 78 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -54,7 +49,6 @@ local data = {
     cursor = { 7, 0 },
     expected = { 7, 78 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -63,7 +57,6 @@ local data = {
     cursor = { 7, 12 },
     expected = { 7, 78 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
   {
     path = PATH,
@@ -72,12 +65,16 @@ local data = {
     cursor = { 11, 0 },
     expected = { 7, 78 },
     result = {},
-    settings = { cursor_behavior = 'end' },
   },
 }
 
+local treesj = require('treesj')
+treesj.setup({
+  cursor_behavior = 'end'
+})
+
 describe('TreeSJ CHOLD:', function()
   for _, value in ipairs(data) do
-    tu._test_chold(value)
+    tu._test_chold(value, treesj)
   end
 end)

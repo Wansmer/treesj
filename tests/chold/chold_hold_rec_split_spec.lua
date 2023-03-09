@@ -25,18 +25,16 @@ local data = {
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos inside object',
     cursor = { 4, 77 },
-    expected = { 17, 0 },
+    expected = { 16, 3 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos in nested object',
     cursor = { 4, 75 },
-    expected = { 10, 0 },
+    expected = { 9, 3 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
@@ -45,7 +43,6 @@ local data = {
     cursor = { 14, 25 },
     expected = { 19, 3 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
@@ -54,7 +51,6 @@ local data = {
     cursor = { 14, 38 },
     expected = { 24, 3 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
@@ -63,16 +59,14 @@ local data = {
     cursor = { 14, 51 },
     expected = { 29, 3 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos on penult sym',
     cursor = { 14, 64 },
-    expected = { 35, 0 },
+    expected = { 34, 3 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
@@ -81,7 +75,6 @@ local data = {
     cursor = { 41, 33 },
     expected = { 42, 9 },
     result = {},
-    settings = settings,
   },
   {
     path = PATH,
@@ -90,12 +83,14 @@ local data = {
     cursor = { 37, 3 },
     expected = { 17, 64 },
     result = {},
-    settings = settings,
   },
 }
 
+local treesj = require('treesj')
+treesj.setup(settings)
+
 describe('TreeSJ CHOLD:', function()
   for _, value in ipairs(data) do
-    tu._test_chold(value)
+    tu._test_chold(value, treesj)
   end
 end)

@@ -336,7 +336,18 @@ end
 ---Get observed range of current node
 ---@return integer[]
 function TreeSJ:o_range()
-  return self._observed_range
+  if self._root then
+    return self:range()
+  else
+    local rr = self:root():range()
+    local prev = self:prev()
+    if prev then
+      local pr = prev:range()
+      rr[2] = rr[1] == pr[1] and pr[4] or 0
+    end
+    return rr
+  end
+  -- return self._observed_range
 end
 
 ---Get updated text of current node
