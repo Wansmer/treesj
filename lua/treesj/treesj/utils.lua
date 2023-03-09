@@ -1,82 +1,186 @@
 local u = require('treesj.utils')
 local lu = require('treesj.langs.utils')
 
-local JOIN = 'join'
-local SPLIT = 'split'
-
 local M = {}
 
----Collapse extra spacing: if elem ends with space and next elem starts with space
----@param lines string[]
----@return string[]
-local function collapse_spacing(lines)
-  for i, str in ipairs(lines) do
-    str = str:gsub('^%s+', ' '):gsub('%s+$', ' ')
-    local next = lines[i + 1]
-    if next and vim.endswith(str, ' ') and vim.startswith(next, ' ') then
-      lines[i] = string.gsub(str, ' $', '')
-    end
-  end
-  return lines
+---Checking if tsn is TSNode instance. False if it imitator of tsn
+---@param tsn userdata|table
+---@return boolean
+function M.is_tsnode(tsn)
+  return type(tsn) == 'userdata'
 end
 
-function M.normalize_children(children)
+---Calculation of the real index if a negative value was passed
+---@param i number
+---@param len number Length of the list for which the index is calculated
+---@return number
+function M.fix_index(i, len)
+  return i < 0 and (len + 1 + i) or i
+end
+
+---Add prev/next links for every child of TreeSJ children list
+---@param children TreeSJ[]
+---@return TreeSJ[]
+function M.linking_tree(children)
+  local special_types = {
+    'left_non_bracket',
+    'right_non_bracket',
+    'left_bracket',
+    'right_bracket',
+  }
+
   for i, child in ipairs(children) do
-    child:_set_prev(children[i - 1])
-    child:_set_next(children[i + 1])
+    local prev, next = children[i - 1], children[i + 1]
+    child:_set_prev(prev)
+    child:_set_next(next)
+    if
+      child:is_imitator() and not vim.tbl_contains(special_types, child:type())
+    then
+      child:tsnode():_set_range(prev, next)
+    end
   end
   return children
+end
+
+---Setting value of indent to configured nodes
+---@param tsj TreeSJ TreeSJ instance
+function M.handle_indent(tsj)
+  if tsj:has_preset() and not tsj:is_ignore('split') then
+    local is_norm = tsj:root():preset('split').inner_indent == 'normal'
+    local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
+
+    local sw = need_sw and vim.fn.shiftwidth() or 0
+
+    tsj._root_indent = tsj:get_prev_indent() + sw
+  end
 end
 
 ---Add or remove last separator in node
----@param children table List of children of root node
+---@param tsj TreeSJ TreeSJ instance
 ---@param preset table
-function M.handle_last_separator(children, preset)
-  local len = #children
-  local penult = children[len - 1]
+function M.handle_last_separator(tsj, preset)
+  local penult = tsj:child(-2)
+  local sep = preset.separator
 
-  if penult and preset.separator ~= '' then
-    local sep = preset.separator
+  if penult and not penult:is_framing() and sep ~= '' then
     local has = penult:type() == sep
     local need = preset.last_separator
 
-    if penult and not (penult == children[1]) then
-      if has and not need then
-        table.remove(children, len - 1)
-      elseif not has and need then
-        local imitator =
-          lu.imitate_tsn(penult, penult:parent(), 'end', preset.separator)
-        table.insert(children, len, imitator)
-      end
+    if has and not need then
+      tsj:remove_child(-2)
+    elseif not has and need then
+      tsj:create_child({ type = sep, text = sep }, -1)
+    end
+  end
+end
+
+local function get_bracket_imitator_range(tsj, side)
+  local tsn = tsj:tsnode()
+  local sr, sc, er, ec = tsn:range()
+  local sibling
+
+  if side == 'left' then
+    er, ec = sr, sc
+    sibling = tsn:prev_sibling() or tsn:parent():prev_sibling()
+  else
+    sr, sc = er, ec
+    sibling = tsn:next_sibling() or tsn:parent():next_sibling()
+  end
+
+  if sibling then
+    if side == 'left' then
+      _, _, er, ec = sibling:range()
+      sr, sc = er, ec
+    else
+      sr, sc = sibling:range()
+      er, ec = sr, sc
     end
   end
 
-  return children
+  return sr, sc, er, ec
 end
 
-function M.add_framing_nodes(children, preset, tsj)
-  local framing = preset.add_framing_nodes
-  if preset.non_bracket_node or framing then
-    if type(framing) == 'function' then
-      framing = framing(tsj)
-      if not framing then
-        return children
-      end
-    end
+---Create imitator of TSNode
+---@param tsj TreeSJ TreeSJ instance
+---@param data table { text = '', type = '' }
+---@return table
+function M.imitate_tsn(tsj, data)
+  local imitator = {}
+  imitator.__index = imitator
+  local text = data.text
+  local ts_type = data.type and data.type or data.text
+  local sr, sc, er, ec = u.range(tsj:tsnode())
 
-    local left = framing and framing.left
-    local right = framing and framing.right
+  local types = {
+    ['left_non_bracket'] = { get_bracket_imitator_range(tsj, 'left') },
+    ['right_non_bracket'] = { get_bracket_imitator_range(tsj, 'right') },
+    ['left_bracket'] = { sr, sc, sr, sc },
+    ['right_bracket'] = { er, ec, er, ec },
+  }
 
-    -- TODO: find right condition
-    if framing and framing.mode == 'pack' then
-      children = { tsj:tsnode() }
-    end
-
-    M.add_first_last_imitator(tsj:tsnode(), children, left, right)
+  if types[ts_type] then
+    sr, sc, er, ec = unpack(types[ts_type])
+  else
+    sr, sc = er, ec
   end
-  return children
+
+  function imitator:_set_range(prev, next)
+    local nsr, nsc, ner, nec = sr, sc, er, ec
+    if prev then
+      _, _, nsr, nsc = prev:tsnode():range()
+    end
+
+    if next then
+      ner, nec = next:tsnode():range()
+    end
+    self._range = { nsr, nsc, ner, nec }
+  end
+
+  function imitator:range()
+    return unpack(self._range)
+  end
+
+  function imitator:type()
+    return ts_type
+  end
+
+  function imitator:named()
+    return false
+  end
+
+  function imitator:field()
+    return false
+  end
+
+  function imitator:text()
+    return text
+  end
+
+  return setmetatable({
+    _parent = tsj,
+    _range = { sr, sc, sr, sc },
+  }, imitator)
 end
 
+---Creating and insert framing nodes to children list of configured TreeSJ
+---@param tsj TreeSJ
+---@param preset table
+function M.handle_framing_nodes(tsj, preset)
+  if tsj:non_bracket() then
+    local left_type, right_type = 'left_non_bracket', 'right_non_bracket'
+    local left, right = '', ''
+
+    if type(preset.non_bracket_node) == 'table' then
+      left = preset.non_bracket_node.left
+      right = preset.non_bracket_node.right
+    end
+
+    tsj:create_child({ text = left, type = left_type }, 1)
+    tsj:create_child({ text = right, type = right_type }, #tsj:children() + 1)
+  end
+end
+
+-- TODO: It affecting on CHold
 ---Return observed range by tsnode
 ---@param tsnode userdata TSNode instance
 ---@return integer[]
@@ -90,22 +194,18 @@ function M.get_observed_range(tsnode)
   return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
----Checking if tsn is TSNode instance. False if it imitator of tsn
----@param tsn userdata|table
----@return boolean
-function M.is_tsnode(tsn)
-  return type(tsn) == 'userdata'
-end
-
----Add first and last imitator nodas to children list for non-bracket blocks
----@param node userdata TSNode instance
----@param children table
----@param left? string
----@param right? string
-function M.add_first_last_imitator(node, children, left, right)
-  local first, last = u.get_non_bracket_first_last(node)
-  table.insert(children, 1, lu.imitate_tsn(first, node, 'first', left))
-  table.insert(children, lu.imitate_tsn(last, node, 'last', right))
+---Collapse extra spacing: if elem ends with space and next elem starts with space
+---@param lines string[]
+---@return string[]
+local function collapse_spacing(lines)
+  for i, str in ipairs(lines) do
+    str = str:gsub('^%s+', ' '):gsub('%s+$', ' ')
+    local next = lines[i + 1]
+    if next and vim.endswith(str, ' ') and vim.startswith(next, ' ') then
+      lines[i] = string.gsub(str, ' $', '')
+    end
+  end
+  return lines
 end
 
 ---Add some text to start of base text. If the base is table, prepend text to first element of table
@@ -127,21 +227,6 @@ end
 local function set_whitespace(child)
   local spacing = u.get_whitespace(child)
   local text = prepend_text(child:text(), spacing)
-  child:update_text(text)
-end
-
----Set indent when 'split'
----@param child TreeSJ TreeSJ instance
-local function set_indent(child)
-  local indent = u.calc_indent(child)
-  local sep = ' '
-
-  if not vim.bo.expandtab then
-    indent = indent / vim.fn.shiftwidth()
-    sep = '\t'
-  end
-
-  local text = prepend_text(child:text(), (sep):rep(indent))
   child:update_text(text)
 end
 
@@ -186,7 +271,7 @@ end
 ---Sets instruction separator (force_insert) if need
 ---@param child TreeSJ TreeSJ instance
 local function handle_force_insert(child)
-  local p = child:parent():preset(JOIN)
+  local p = child:parent():preset('join')
   if not p or p.force_insert == '' then
     return
   end
@@ -208,7 +293,7 @@ end
 
 ---Make result line for 'join'
 ---@param tsj TreeSJ TreeSJ instance
----@return string
+---@return string[]
 function M._join(tsj)
   local lines = {}
 
@@ -222,16 +307,22 @@ function M._join(tsj)
     end
   end
 
-  lines = collapse_spacing(lines)
+  return collapse_spacing(lines)
+end
 
-  if tsj:has_lifecycle('before_text_insert', 'join') then
-    lines = tsj:preset('join').lifecycle.before_text_insert(lines, tsj)
+---Set indent when 'split'
+---@param child TreeSJ TreeSJ instance
+local function set_indent(child)
+  local indent = u.calc_indent(child)
+  local sep = ' '
+
+  if not vim.bo.expandtab then
+    indent = indent / vim.fn.shiftwidth()
+    sep = '\t'
   end
 
-  if tsj:preset('join') and tsj:preset('join').format_resulted_lines then
-    lines = tsj:preset('join').format_resulted_lines(lines)
-  end
-  return table.concat(lines)
+  local text = prepend_text(child:text(), (sep):rep(indent))
+  child:update_text(text)
 end
 
 ---Handling for configured node when mode is SPLIT
@@ -306,11 +397,9 @@ function M._split(tsj)
     end
   end
 
-  if tsj:has_lifecycle('before_text_insert', 'split') then
-    lines = tsj:preset('split').lifecycle.before_text_insert(lines, tsj)
-  end
-
-  if tsj:preset('split') and tsj:preset('split').format_resulted_lines then
+  local p = tsj:preset('split')
+  local format_lines = p and p.format_resulted_lines
+  if type(format_lines) == 'function' then
     lines = tsj:preset('split').format_resulted_lines(lines)
   end
 

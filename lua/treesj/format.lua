@@ -91,11 +91,6 @@ function M._format(mode)
 
   vim.api.nvim_buf_set_text(0, sr, sc, er, ec, replacement)
 
-  if treesj:has_lifecycle('after_insert_text', MODE) then
-    local insert_range = u.get_insert_range({ sr, sc }, replacement, MODE)
-    treesj:preset(MODE).lifecycle(insert_range)
-  end
-
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
 end
 

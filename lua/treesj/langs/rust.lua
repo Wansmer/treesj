@@ -33,43 +33,34 @@ return {
   block = u.set_preset_for_statement({
     join = {
       no_insert_if = { u.no_insert.if_penultimate },
-      lifecycle = {
-        before_build_tree = function(children, preset, tsj)
-          local node = tsj:tsnode()
-          local allowed_parents = { 'match_arm', 'closure_expression' }
-          if
-            vim.tbl_contains(allowed_parents, node:parent():type())
-            and node:named_child_count() == 1
-          then
-            return u.helper.remover(children, { '{', '}' })
-          end
-          return children
-        end,
-      },
+      format_tree = function(tsj)
+        local node = tsj:tsnode()
+        local parents = { 'match_arm', 'closure_expression' }
+        local has_parent = vim.tbl_contains(parents, node:parent():type())
+        if has_parent and node:named_child_count() == 1 then
+          tsj:remove_child({ '{', '}' })
+        end
+      end,
     },
   }),
   value = u.set_preset_for_statement({
     split = {
-      add_framing_nodes = function(tsj)
-        local framing = { left = '{', right = '}', mode = 'pack' }
-        return tsj:type() ~= 'block' and framing or false
+      format_tree = function(tsj)
+        if tsj:type() ~= 'block' then
+          tsj:wrap({ left = '{', right = '}' })
+        end
       end,
     },
     join = {
       no_insert_if = { u.no_insert.if_penultimate },
-      lifecycle = {
-        before_build_tree = function(children, preset, tsj)
-          local node = tsj:tsnode()
-          local allowed_parents = { 'match_arm', 'closure_expression' }
-          if
-            vim.tbl_contains(allowed_parents, node:parent():type())
-            and node:named_child_count() == 1
-          then
-            return u.helper.remover(children, { '{', '}' })
-          end
-          return children
-        end,
-      },
+      format_tree = function(tsj)
+        local node = tsj:tsnode()
+        local parents = { 'match_arm', 'closure_expression' }
+        local has_parent = vim.tbl_contains(parents, node:parent():type())
+        if has_parent and node:named_child_count() == 1 then
+          tsj:remove_child({ '{', '}' })
+        end
+      end,
     },
   }),
   match_arm = {

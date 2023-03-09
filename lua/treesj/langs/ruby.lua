@@ -7,26 +7,25 @@ return {
   method_parameters = u.set_preset_for_args(),
   argument_list = u.set_preset_for_args(),
   block = u.set_preset_for_dict({
-    split = {
-      omit = { 'block_parameters' },
-      separator = '',
-      lifecycle = {
-        after_build_tree = function(children, _, _)
-          return u.helper.replacer(children, { ['{'] = 'do', ['}'] = 'end' })
-        end,
-      },
-    },
-  }),
-  do_block = u.set_preset_for_dict({
     join = {
       separator = '',
       recursive = false,
-      lifecycle = {
-        after_build_tree = function(children)
-          local replace = { ['do'] = '{', ['end'] = '}' }
-          return u.helper.replacer(children, replace)
-        end,
-      },
+      format_tree = function(tsj)
+        if tsj:has_children({ 'do', 'end' }) then
+          tsj:child('do'):update_text('{')
+          tsj:child('end'):update_text('}')
+        end
+      end,
+    },
+    split = {
+      omit = { 'block_parameters' },
+      separator = '',
+      format_tree = function(tsj)
+        if tsj:has_children({ '{', '}' }) then
+          tsj:child('{'):update_text('do')
+          tsj:child('}'):update_text('end')
+        end
+      end,
     },
   }),
   string_array = u.set_preset_for_list({
@@ -88,31 +87,27 @@ return {
     join = nil,
     split = {
       omit = { u.omit.if_second },
-      lifecycle = {
-        before_build_tree = function(children, _, tsj)
-          table.insert(children, u.imitate_tsn(nil, tsj, 'last', 'end'))
-          return children
-        end,
-        after_build_tree = function(children, preset, tsj)
-          local replace = { ['?'] = 'if ', [':'] = 'else' }
-          children = u.helper.replacer(children, replace)
-          local first, second = children[1], children[2]
-          children[1] = second
-          children[2] = first
-          return children
-        end,
-        before_text_insert = function(lines)
-          return vim.tbl_map(function(line)
-            if line:match('%s.else$') then
-              -- TODO: create helper `unindent`
-              local rgx = '^' .. (' '):rep(vim.fn.shiftwidth())
-              return line:gsub(rgx, '')
-            else
-              return line
-            end
-          end, lines)
-        end,
-      },
+      format_tree = function(tsj)
+        local children = tsj:children()
+        table.insert(children, tsj:create_child({ text = 'end', type = 'end' }))
+        tsj:child('?'):update_text('if ')
+        tsj:child(':'):update_text('else')
+        local first, second = tsj:child(1), tsj:child(2)
+        children[1] = second
+        children[2] = first
+        tsj:update_children(children)
+      end,
+      format_resulted_lines = function(lines)
+        return vim.tbl_map(function(line)
+          if line:match('%s.else$') then
+            -- TODO: create helper `unindent`
+            local rgx = '^' .. (' '):rep(vim.fn.shiftwidth())
+            return line:gsub(rgx, '')
+          else
+            return line
+          end
+        end, lines)
+      end,
     },
   }),
   when = u.set_default_preset({
@@ -124,49 +119,35 @@ return {
       enable = function(tsn)
         return tsn:field('body')[1]:named_child_count() == 1
       end,
-      lifecycle = {
-        before_build_tree = function(children, _, tsj)
-          table.insert(
-            children,
-            #children,
-            u.imitate_tsn(children[#children], tsj, 'first', 'then')
-          )
-          return children
-        end,
-      },
+      format_tree = function(tsj)
+        tsj:create_child({ type = 'then', text = 'then' }, -1)
+      end,
     },
     split = {
       last_indent = 'inner',
-      lifecycle = {
-        after_build_tree = function(children)
-          local then_ = u.helper.get_by_type(children, 'then')
-          if then_ then
-            local text = then_:text()
-            then_:update_text(text:gsub('then%s', ''))
-          end
-          return children
-        end,
-      },
+      format_tree = function(tsj)
+        if tsj:has_children({ 'then' }) then
+          local text = tsj:child('then'):text()
+          tsj:child('then'):update_text(text:gsub('then%s', ''))
+        end
+      end,
     },
   }),
   right = u.set_default_preset({
     both = {
       enable = function(tsn)
-        if tsn:type() == 'begin' and tsn:named_child_count() > 1 then
-          return false
-        end
-        return true
+        return not (tsn:type() == 'begin' and tsn:named_child_count() > 1)
       end,
     },
     split = {
-      add_framing_nodes = { left = 'begin', right = 'end', mode = 'pack' },
+      format_tree = function(tsj)
+        tsj:wrap({ left = 'begin', right = 'end' })
+      end,
     },
     join = {
-      lifecycle = {
-        before_build_tree = function(children)
-          return u.helper.remover(children, { 'begin', 'end' })
-        end,
-      },
+      format_tree = function(tsj)
+        tsj:remove_child({ 'begin', 'end' })
+      end,
     },
   }),
   operator_assignment = { target_nodes = { 'right' } },

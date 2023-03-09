@@ -62,38 +62,15 @@ end
 function TreeSJ:build_tree(mode)
   local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
 
-  -- NOTE: `self:preset()` didn't should be saving in variable because
-  -- it can be changing in life cycle function
-  if self:preset(mode) then
-    children = tu.add_framing_nodes(children, self:preset(mode), self)
-
-    -- LIFECYCLE: before_build_tree
-    if self:has_lifecycle('before_build_tree', mode) then
-      local fn = self:preset(mode).lifecycle.before_build_tree
-      children = fn(children, self:preset(mode), self)
-    end
-
-    children = tu.handle_last_separator(children, self:preset(mode))
-  end
-
   for _, child in ipairs(children) do
-    local tsn_data = {
+    local tsj = TreeSJ.new({
       tsnode = child,
       preset = child:named() and u.get_self_preset(child:type(), self._lang),
       lang = self._lang,
       parent = self,
-    }
+    })
 
-    local tsj = TreeSJ.new(tsn_data)
-
-    if not tsj:is_ignore('split') and tsj:has_preset() then
-      local is_norm = tsj:root():preset('split').inner_indent == 'normal'
-      local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
-
-      local sw = need_sw and vim.fn.shiftwidth() or 0
-
-      tsj._root_indent = tsj:get_prev_indent() + sw
-    end
+    tu.handle_indent(tsj)
 
     if tu.is_tsnode(child) then
       tsj:build_tree(mode)
@@ -102,46 +79,45 @@ function TreeSJ:build_tree(mode)
     table.insert(self._children, tsj)
   end
 
-  self._children = tu.normalize_children(self._children)
+  self:update_children(tu.linking_tree(self:children()))
 
-  if self:preset(mode) and self:preset(mode).format_tree then
+  if self:preset(mode) then
+    tu.handle_framing_nodes(self, self:preset(mode))
+    tu.handle_last_separator(self, self:preset(mode))
+  end
+
+  local format_tree = self:has_preset(mode) and self:preset(mode).format_tree
+  if type(format_tree) == 'function' then
     self:preset(mode).format_tree(self)
-  end
-  -- LIFECYCLE: after_build_tree
-  if self:has_lifecycle('after_build_tree', mode) then
-    local fn = self:preset(mode).lifecycle.after_build_tree
-    self._children =
-      tu.normalize_children(fn(self._children, self:preset(mode), self))
-  end
-end
-
----Checking if current TreeSJ has lifecycle callback
----@param cycle string Lifecycle name
----@param mode string
-function TreeSJ:has_lifecycle(cycle, mode)
-  if self:has_preset() and self:preset(mode).lifecycle then
-    local fn = self:preset(mode).lifecycle[cycle]
-    return u.tobool(fn and vim.is_callable(fn))
-  else
-    return false
   end
 end
 
 function TreeSJ:create_child(data, index)
   local child = TreeSJ.new({
-    tsnode = lu.imitate_tsn2(self, data),
+    tsnode = tu.imitate_tsn(self, data),
     preset = nil,
     lang = self._lang,
     parent = self,
   })
 
   if index then
-    local children = vim.list_extend({}, self._children)
+    local children = self:children()
+    index = tu.fix_index(index, #children)
     table.insert(children, index, child)
     self:update_children(children)
   end
 
   return child
+end
+
+function TreeSJ:_copy_self()
+  local data = {
+    tsnode = self:tsnode(),
+    preset = self:preset(),
+    lang = self._lang,
+    parent = self,
+  }
+  return TreeSJ.new(data)
 end
 
 ---Checking if the current treesj node is non-bracket block
@@ -163,22 +139,36 @@ function TreeSJ:get_prev_indent()
 end
 
 ---Get child of TreeSJ by index or by type
----@param id number|string If id is integer - return child by index, if string - by type
+---@param type_or_index number|string If id is integer - return child by index, if string - by type.
+---If integer is negative - get child from end
 ---@return TreeSJ|nil
-function TreeSJ:child(id)
-  if type(id) == 'number' then
-    return self._children[id]
+function TreeSJ:child(type_or_index)
+  if type(type_or_index) == 'number' then
+    type_or_index = tu.fix_index(type_or_index, #self:children())
+    return self:children()[type_or_index]
   else
     for child in self:iter_children() do
-      if child:type() == id then
+      if child:type() == type_or_index then
         return child
       end
     end
   end
 end
 
+function TreeSJ:has_children(types)
+  if not types then
+    return #self:children() > 0
+  else
+    return u.every(types, function(t)
+      return self:child(t)
+    end)
+  end
+end
+
+-- TODO: rewrite
 function TreeSJ:remove_child(id)
   if type(id) == 'number' then
+    id = tu.fix_index(id, #self._children)
     table.remove(self._children, id)
     self:update_children(self._children)
   else
@@ -191,15 +181,33 @@ function TreeSJ:remove_child(id)
 end
 
 ---Get children of TreeSJ
+---@param types? string[] List-like table with child's types for filtering
 ---@return TreeSJ[]
-function TreeSJ:children()
-  return self._children
+function TreeSJ:children(types)
+  local children = vim.list_extend({}, self._children)
+  if types then
+    children = vim.tbl_filter(function(child)
+      return vim.tbl_contains(types, child:type())
+    end, children)
+  end
+  return children
 end
 
 ---Get root of TreeSJ
 ---@return TreeSJ TreeSJ instance
 function TreeSJ:root()
   return self._root and self or self:parent():root()
+end
+
+function TreeSJ:wrap(data, mode)
+  mode = mode and mode or 'wrap'
+  local left = self:create_child({ text = data.left, type = 'left_bracket' })
+  local right = self:create_child({ text = data.right, type = 'right_bracket' })
+  local children = mode == 'wrap' and { self:_copy_self() } or self:children()
+  table.insert(children, 1, left)
+  table.insert(children, right)
+
+  self:update_children(children)
 end
 
 ---Merge TreeSJ to one line for replace start text
@@ -215,7 +223,15 @@ function TreeSJ:join()
       end
     end
 
-    self:update_text(tu._join(self))
+    local lines = tu._join(self)
+    local format_lines = self:preset('join')
+      and self:preset('join').format_resulted_lines
+
+    if format_lines then
+      lines = format_lines(lines)
+    end
+
+    self:update_text(table.concat(lines))
   end
 end
 
@@ -233,6 +249,12 @@ function TreeSJ:split()
     end
 
     local lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
+    local format_lines = self:preset('split')
+      and self:preset('split').format_resulted_lines
+
+    if format_lines then
+      lines = format_lines(lines)
+    end
 
     self:update_text(lines)
   end
@@ -290,7 +312,7 @@ function TreeSJ:update_children(children)
   if not self._children then
     return
   end
-  self._children = tu.normalize_children(children)
+  self._children = tu.linking_tree(children)
 end
 
 ---Get type of current node

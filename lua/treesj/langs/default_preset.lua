@@ -14,22 +14,16 @@ return {
     -- (e.g. tag_name in HTML start_tag or separator (',') in JS object)
     -- NOTE: Must be same for both modes
     omit = {},
-    -- boolean: Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
+    -- boolean|table: Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
+    -- If value is table, should be contains follow keys: { left = 'text', right = 'text' }. Empty string uses by default
     -- NOTE: Must be same for both modes
     non_bracket_node = false,
     -- If true, empty brackets, empty tags, or node which only contains nodes from 'omit' no will handling
     -- (ignored, when non_bracket_node = true)
     format_empty_node = true,
-    -- function|nil function (child: TreeSJ): void
-    -- Custom callback for transforming text of children nodes. Can be different for split and join
-    add_framing_nodes = nil,
-    -- add_framing_nodes = { left = '{', right = '}', mode = 'wrap|inline' }, 
     -- boolean|function function (tsnode): boolean
     -- Set `false` if node should't be splitted or joined. Can be different for both modes
     enable = true,
-    -- table|nil
-    -- See 'Lifecycle' section
-    lifecycle = nil,
     -- function|nil
     format_tree = nil,
     -- function|nil

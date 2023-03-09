@@ -1,79 +1,57 @@
 local u = require('treesj.langs.utils')
 
-local remove_last = function(children)
-  local last = children[#children]
-  if last then
-    last:remove()
-  end
-  return children
-end
-
 return {
-  flow_sequence = u.set_preset_for_list({
+  flow_sequence = {
+    join = nil,
     split = {
+      non_bracket_node = true,
       last_separator = false,
-      force_insert = ',',
+      last_indent = 'inner',
       no_insert_if = { u.no_insert.if_penultimate },
-      lifecycle = {
-        before_build_tree = function(children, p)
-          return vim.tbl_filter(function(child)
-            return child:type() ~= p.separator
-          end, children)
-        end,
-        after_build_tree = function(children)
-          for _, child in ipairs(children) do
-            if child:is_first() then
-              child:update_text('')
-            else
-              child:update_text('- ' .. child:text())
-            end
-          end
-          return remove_last(children)
-        end,
-      },
+      format_tree = function(tsj)
+        tsj:remove_child({ ',', '[', ']' })
+        for _, flow_node in ipairs(tsj:children({ 'flow_node' })) do
+          flow_node:update_text('- ' .. flow_node:text())
+        end
+        tsj:remove_child(-1)
+      end,
     },
-  }),
-  flow_mapping = u.set_preset_for_list({
+  },
+  flow_mapping = {
+    join = nil,
     split = {
-      last_separator = false,
+      non_bracket_node = true,
       recursive = true,
-      lifecycle = {
-        before_build_tree = function(children, p)
-          return vim.tbl_filter(function(child)
-            return child:type() ~= p.separator
-          end, children)
-        end,
-        after_build_tree = function(children)
-          return remove_last(u.helper.replacer(children, { ['{'] = '' }))
-        end,
-      },
+      last_indent = 'inner',
+      format_tree = function(tsj)
+        tsj:remove_child({ ',', '{', '}' })
+        tsj:remove_child(-1)
+      end,
     },
-  }),
-  block_sequence = u.set_preset_for_list({
+  },
+  block_sequence = {
+    split = nil,
     join = {
-      non_bracket_node = true,
-      add_framing_nodes = { left = ' [', right = ']' },
+      space_in_brackets = true,
+      non_bracket_node = { left = ' [', right = ']' },
       force_insert = ',',
       no_insert_if = { u.no_insert.if_penultimate },
-      lifecycle = {
-        after_build_tree = function(children)
-          for _, child in ipairs(children) do
-            local text = child:text()
-            if type(text) == 'string' then
-              child:update_text(child:text():gsub('^- ', ''))
-            end
-          end
-          return children
-        end,
-      },
+      format_tree = function(tsj)
+        local items = tsj:children({ 'block_sequence_item' })
+        for _, item in ipairs(items) do
+          local text = item:text():gsub('^- ', '')
+          item:update_text(text)
+        end
+      end,
     },
-  }),
-  block_mapping = u.set_preset_for_list({
+  },
+  block_mapping = {
+    split = nil,
     join = {
-      non_bracket_node = true,
+      space_in_brackets = true,
+      non_bracket_node = { left = ' {', right = '}' },
       force_insert = ',',
       no_insert_if = { u.no_insert.if_penultimate },
-      add_framing_nodes = { left = ' {', right = '}' },
     },
-  }),
+  },
 }

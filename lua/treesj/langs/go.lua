@@ -26,7 +26,9 @@ return {
       end,
     },
     split = {
-      add_framing_nodes = { left = '(', right = ')' },
+      format_tree = function(tsj)
+        tsj:wrap({ left = '(', right = ')' })
+      end,
     },
   }),
   import_spec_list = u.set_preset_for_args({
@@ -34,16 +36,9 @@ return {
       enable = function(tsn)
         return tsn:named_child_count() < 2
       end,
-      lifecycle = {
-        after_build_tree = function(children, _, _)
-          for _, child in ipairs(children) do
-            if child:is_framing() then
-              child:update_text('')
-            end
-          end
-          return children
-        end,
-      },
+      format_tree = function(tsj)
+        tsj:remove_child({ '(', ')' })
+      end,
     },
   }),
   import_declaration = { target_nodes = { 'import_spec', 'import_spec_list' } },
