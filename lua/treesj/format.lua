@@ -1,7 +1,7 @@
 local notify = require('treesj.notify')
 local search = require('treesj.search')
 local TreeSJ = require('treesj.treesj')
-local NCHold = require('treesj.chold')
+local CHold = require('treesj.chold')
 local u = require('treesj.utils')
 local settings = require('treesj.settings').settings
 local msg = notify.msg
@@ -85,7 +85,7 @@ function M._format(mode)
     return
   end
 
-  local cursor = NCHold.new()
+  local cursor = CHold.new()
   cursor:compute(treesj, MODE)
   local new_cursor = cursor:get_cursor()
 

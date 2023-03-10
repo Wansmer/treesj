@@ -10,10 +10,10 @@ test-chold:
 
 # M string = mode 'start'|'end'|'hold'
 test-chold-m:
-	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/chold/chold_${M}_spec.lua {minimal_init = 'tests/minimal.lua'}"
+	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/chold/${M}_spec.lua {minimal_init = 'tests/minimal.lua'}"
 
 test-chold-r:
-	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/chold/chold_hold_rec_split_spec.lua {minimal_init = 'tests/minimal.lua'}"
+	nvim --headless -u tests/minimal.lua -c "PlenaryBustedDirectory tests/chold/hold_split_recursive_spec.lua {minimal_init = 'tests/minimal.lua'}"
 
 test:
 	make test-langs && make test-chold

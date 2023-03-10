@@ -381,6 +381,7 @@ end
 ---Returned range of node considering the presence of brackets
 ---@param tsn userdata
 ---@param p? table
+---@return integer, integer, integer, integer
 function M.range(tsn, p)
   local non_bracket_node = M.get_nested_key_value(p, 'non_bracket_node')
 
@@ -423,23 +424,6 @@ function M.check_match(tbl, tjs)
   else
     return contains
   end
-end
-
----Get insert range after new text was inserted
----@param range integer[] Start row and start column of original range of node
----@param replacement string[] Lines that was inserted
----@param mode string join|split
----@return integer[] Integers: start_row, start_col, end_row, end_col
-function M.get_insert_range(range, replacement, mode)
-  local is_join = mode == 'join'
-  local sr, sc = unpack(range)
-
-  local len = #replacement
-  local last_elem_len = #replacement[len]
-
-  local er = is_join and sr or (sr + len - 1)
-  local ec = is_join and sc + last_elem_len or last_elem_len
-  return { sr, sc, er, ec }
 end
 
 return M

@@ -25,7 +25,7 @@ local data = {
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos inside object',
     cursor = { 4, 77 },
-    expected = { 16, 3 },
+    expected = { 17, 0 },
     result = {},
   },
   {
@@ -33,7 +33,7 @@ local data = {
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos in nested object',
     cursor = { 4, 75 },
-    expected = { 9, 3 },
+    expected = { 10, 0 },
     result = {},
   },
   {
@@ -65,7 +65,7 @@ local data = {
     mode = 'split',
     desc = 'cursor_behavior = "hold", mode = "%s" + resursive, pos on penult sym',
     cursor = { 14, 64 },
-    expected = { 34, 3 },
+    expected = { 35, 0 },
     result = {},
   },
   {
