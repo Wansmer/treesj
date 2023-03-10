@@ -125,6 +125,7 @@ function CHold:_calc_for_join(tsj)
   end
 
   if cu.in_node_range(self, tsj) then
+    -- print('In node:', tsj:type())
     self:_update_pos({
       col = self._new_pos.col + cu.new_col_pos(self, tsj, JOIN),
     })
@@ -143,13 +144,9 @@ function CHold:_calc_for_split(tsj)
   cu.increase_row(self, tsj)
 
   if cu.in_node_range(self, tsj) then
-    local rr = u.readable_range(tsj:root():range())
-    if not (self._new_pos.row - 1 == rr.row.start) then
-      self:_update_pos({ col = cu.new_col_pos(self, tsj, SPLIT) })
-      self:done()
-    else
-      self:done()
-    end
+    -- print('cu.new_col_pos(self, tsj, SPLIT)', cu.new_col_pos(self, tsj, SPLIT))
+    self:_update_pos({ col = cu.new_col_pos(self, tsj, SPLIT) })
+    self:done()
   end
 end
 

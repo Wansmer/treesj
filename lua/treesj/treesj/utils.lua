@@ -10,9 +10,9 @@ function M.is_tsnode(tsn)
 end
 
 ---Calculation of the real index if a negative value was passed
----@param i number
----@param len number Length of the list for which the index is calculated
----@return number
+---@param i integer
+---@param len integer Length of the list for which the index is calculated
+---@return integer
 function M.fix_index(i, len)
   return i < 0 and (len + 1 + i) or i
 end
@@ -52,7 +52,7 @@ function M.handle_indent(tsj)
 
     local sw = need_sw and vim.fn.shiftwidth() or 0
 
-    tsj._root_indent = tsj:get_prev_indent() + sw
+    tsj._root_indent = tsj:_get_prev_indent() + sw
   end
 end
 
@@ -180,20 +180,6 @@ function M.handle_framing_nodes(tsj, preset)
     tsj:create_child({ text = left, type = left_type }, 1)
     tsj:create_child({ text = right, type = right_type }, #tsj:children() + 1)
   end
-end
-
--- TODO: It affecting on CHold
----Return observed range by tsnode
----@param tsnode userdata TSNode instance
----@return integer[]
-function M.get_observed_range(tsnode)
-  local rr = u.readable_range({ tsnode:range() })
-  local prev = tsnode:prev_sibling()
-  if prev then
-    local prr = u.readable_range({ prev:range() })
-    rr.col.start = prr.row.start == rr.row.start and prr.col.end_ or 0
-  end
-  return { rr.row.start, rr.col.start, rr.row.end_, rr.col.end_ }
 end
 
 ---Collapse extra spacing: if elem ends with space and next elem starts with space

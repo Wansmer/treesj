@@ -73,6 +73,9 @@ return {
       end,
       space_in_brackets = true,
       format_tree = function(tsj)
+        for child, i in tsj:iter_children() do
+          print('I:', i, 'Child:', child:type())
+        end
         if tsj:child('else') then
           local if_ = tsj:child('if')
           local else_ = tsj:child('else')

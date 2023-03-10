@@ -33,10 +33,11 @@ local function observed_range(tsj)
   local prev = tsj:prev()
   if prev then
     local pr = prev:range()
-    if cr[1] == pr[1] then
-      cr[2] = pr[4]
+    if cr[1] == pr[3] then
+      cr[2] = cr[2] > pr[4] and pr[4] or cr[2]
     else
       cr[1] = pr[3]
+      -- cr[2] = cr[2] > pr[4] and pr[4] or cr[2]
       cr[2] = pr[4]
     end
   end
@@ -50,14 +51,30 @@ end
 function M.in_node_range(chold, tsj)
   local result = false
 
+  -- vim.pretty_print('Chold:', chold.pos)
   local cr = observed_range(tsj)
+  -- for _, c in ipairs(tsj:root():children()) do
+  --   vim.pretty_print(
+  --     'Tsj:',
+  --     c:type(),
+  --     'cr:',
+  --     observed_range(c),
+  --     'Real range:',
+  --     c:range()
+  --   )
+  -- end
 
   if cr[1] <= chold.pos.row and chold.pos.row <= cr[3] then
     if chold.pos.row == cr[3] then
-      result = chold.pos.col < cr[4]
+      -- print('On last')
+      result = chold.pos.col < cr[4] and chold.pos.col >= cr[2]
     elseif chold.pos.row == cr[1] then
-      result = chold.pos.col >= cr[2]
+      -- print('On first', tsj:type(), 'Pos:', chold.pos.col, 'cr:', cr[2])
+      result = cr[1] == cr[3]
+          and (chold.pos.col >= cr[2] and chold.pos.col < cr[4])
+        or chold.pos.col >= cr[2]
     else
+      -- print('On else')
       result = true
     end
   end
@@ -101,10 +118,12 @@ end
 ---@param mode string Current mode (split|join)
 ---@return integer
 function M.new_col_pos(chold, tsj, mode)
+  -- print('Tsj:', tsj:type(), tsj:text())
   local pos = M.pos_in_node(chold, tsj, mode)
   local is_need_prev_len = mode == SPLIT and tsj:is_omit()
   local prev_len_corr = is_need_prev_len and #tsj:prev():text() or 0
   local ws = mode == SPLIT and u.calc_indent(tsj) or #u.get_whitespace(tsj)
+  -- print('prev_len_corr:', prev_len_corr, 'ws:', ws, 'pos:', pos, #tsj:prev():text())
   return prev_len_corr + ws + pos
 end
 
