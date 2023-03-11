@@ -288,6 +288,7 @@ function TreeSJ:split()
     local format_lines = self:preset('split')
       and self:preset('split').format_resulted_lines
 
+    vim.pretty_print(lines)
     if format_lines then
       lines = format_lines(lines)
     end

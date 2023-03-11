@@ -1,7 +1,5 @@
 # TreeSJ
 
-**Split or join blocks of code**
-
 Neovim plugin for splitting/joining blocks of code like arrays, hashes,
 statements, objects, dictionaries, etc. Written in Lua, using
 [Tree-Sitter](https://tree-sitter.github.io/tree-sitter/).
@@ -9,15 +7,26 @@ statements, objects, dictionaries, etc. Written in Lua, using
 Inspired by and partly repeats the functionality of
 [splitjoin.vim](https://github.com/AndrewRadev/splitjoin.vim).
 
-> _⚡Disclaimer: The plugin is under active development. Documentation will be
-> added when all planned features are implemented. Feel free to open an issue or
-> PR 💪_
-
 <!-- panvimdoc-ignore-start -->
 
 <https://user-images.githubusercontent.com/46977173/201088511-b336cec5-cec4-437f-95b3-0208c83377fd.mov>
 
 <sup align="center">Theme: [Catppuccin](https://github.com/catppuccin/nvim), Font: JetBrains Mono</sup>
+
+<!--toc:start-->
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Settings](#settings)
+- [Configuration](#configuration)
+- [How it works](#how-it-works)
+  - [Languages](#languages)
+  - [Basic node](#basic-node)
+  - [Advanced node](#advanced-node)
+  - [TreeSJ instance](#treesj-instance)
+
+<!--toc:end-->
 
 <!-- panvimdoc-ignore-end -->
 
@@ -109,6 +118,39 @@ Also, TreeSJ provide user commands:
 - `:TSJSplit` - split node under cursor;
 - `:TSJJoin` - join node under cursor;
 
+## How it works
+
+When you run the plugin, TreeSJ detects the node under the cursor, recognizes
+the language, and looks for it in the presets. If the current node is not
+configured, TreeSJ checks the parent node, and so on, until a configured node is
+found.
+
+Presets for node can be two types:
+
+- With preset for self - if this type is found, the node will be formatted;
+- With referens for nested nodes - in this case, search will be continued among
+  this node descendants;
+
+**Example**:
+
+> "|" - meaning cursor
+
+```txt
+// with preset for self
+const arr = [ 1, |2, 3 ];
+                 |
+    first node is 'number' - not configured,
+    parent node is 'array' - configured and will be split
+
+// with referens
+cons|t arr = [ 1, 2, 3 ];
+    |
+  first node is 'variable_declarator' - not configured,
+  parent node is 'lexical_declaration' - configured and has reference
+  { target_nodes = { 'array', 'object' } },
+  first configured nested node is 'array' and array will be splitted
+```
+
 # Configuration
 
 ## Languages
@@ -171,7 +213,7 @@ expected, feel free to open PR and share it.
 Default preset for node:
 
 ```lua
-local somenode = {
+local node_type = {
   -- `both` will be merged with both presets from `split` and `join` modes tables.
   -- If you need different values for different modes, they can be overridden
   -- in mode tables unless otherwise noted.
@@ -541,15 +583,234 @@ local lua = {
 
 #### Option `target_nodes`
 
-TODO
+In most cases, `target_nodes` is a list of node types to redirect the search for
+the configured node deeper. But in reality it is treated like a dictionary:
+
+```lua
+-- these values are equivalent
+target_nodes = { 'block', 'statement' }
+target_nodes = { ['block'] = 'block', ['statement'] = 'statement' }
+```
+
+The key must be a node type or a field name. The value is the name of any
+configured node whose preset is to be used.
+
+If the field name is specified in the keys, then it has the highest priority
+over node types.
+
+This also means that you can redirect found fields or nodes for processing with
+other (including custom) presets.
+
+```lua
+{
+  block = lang_utils.set_preset_for_statement(),
+  my_custom_preset_for_block_inside_fun_dec = {--[[ another preset ]]}
+  function_declaration = {
+      target_nodes = { ['block'] = 'my_custom_preset_for_block_inside_fun_dec' }
+  }
+}
+```
+
+<details>
+
+<summary>Example of usage</summary>
+
+The problem:
+
+```rust
+match x {
+    //   | - it is a field `value` and now it `integer_literal`
+    _ => 12
+    //   `integer_literal` is not configured and can't be configured
+    //   but you can transform this field into a `block` node
+}
+
+match x {
+    _ => {
+        12
+    }
+}
+
+```
+
+This can be implemented with:
+
+```lua
+local rust = {
+  match_arm = {
+    target_nodes = { 'value' },
+  },
+  value = lang_utils.set_preset_for_statement({
+    split = {
+      format_tree = function(tsj)
+        if tsj:type() ~= 'block' then
+          tsj:wrap({ left = '{', right = '}' })
+        end
+      end,
+    },
+    join = {
+      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      format_tree = function(tsj)
+        local node = tsj:tsnode()
+        local parents = { 'match_arm', 'closure_expression' }
+        local has_parent = vim.tbl_contains(parents, node:parent():type())
+        if has_parent and node:named_child_count() == 1 then
+          tsj:remove_child({ '{', '}' })
+        end
+      end,
+    },
+  }),
+}
+```
+
+</details>
 
 #### Option `format_tree`
 
-TODO
+`format_tree` is a function that takes a TreeSJ root node. In this function, you
+can work with the context and add or remove elements.
+
+<details>
+
+<summary>Example of usage</summary>
+
+The problem:
+
+Python's `import_from_statement` does not have a container for a list of imported modules.
+
+Here you need to add parentheses to the middle and end of TreeSJ when splitting and remove these parentheses when joining.
+
+```python
+# from
+from re import search, match,sub
+
+# to this and back
+from re import (
+    search,
+    match,
+    sub,
+)
+```
+
+This can be implemented with:
+
+```lua
+local python = {
+  import_from_statement = lang_utils.set_preset_for_args({
+    both = {
+      -- There is no need to wrap the second element, the 'import' node,
+      -- and the first parenthesis, which does not already exist.
+      omit = { lang_utils.omit.if_second, 'import', ' (' },
+    },
+    split = {
+      last_separator = true,
+      format_tree = function(tsj)
+        -- If there are no brackets, then create them
+        if not tsj:has_children({ '(', ')' }) then
+          tsj:create_child({ text = ' (' }, 4)
+          tsj:create_child({ text = ')' }, #tsj:children() + 1)
+          -- Since the elements have moved, you need to add the penultimate
+          -- separator manually
+          local penult = tsj:child(-2)
+          penult:update_text(penult:text() .. ',')
+        end
+      end,
+    },
+    join = {
+      format_tree = function(tsj)
+        -- Remove brackets
+        tsj:remove_child({ '(', ')' })
+      end,
+    },
+  }),
+}
+```
+
+</details>
 
 #### Option `format_resulted_lines`
 
-TODO
+The `format_resulted_lines` function takes as an argument an array of strings
+that will replace the content of the base node.
+
+The function should return an array of strings that may have been modified.
+
+If the mode is "join", then after executing this function, these strings will be
+concatenated.
+
+E.g.:
+
+```lua
+-- base node
+local dict = { one = 'one', two = 'two' }
+
+-- array of string for replacement is { "{", "    one = 'one',", "    two = 'two',", "}" }
+
+-- base node after format
+local dict = {
+    one = 'one',
+    two = 'two',
+}
+
+```
+
+<details>
+
+<summary>Example of usage</summary>
+
+The problem:
+
+Python's `import_from_statement` does not have a container for a list of imported modules.
+
+Here you need to add parentheses to the middle and end of TreeSJ when splitting and remove these parentheses when joining.
+
+```ruby
+# from
+if cond
+    do_that('cond')
+else
+    do_this('not nond')
+end
+
+# to this and back
+cond ? do_that('cond') : do_this('not nond')
+```
+
+This can be implemented with:
+
+```lua
+local ruby = {
+  conditional = lang_utils.set_default_preset({
+    join = nil,
+    split = {
+      omit = { lang_utils.omit.if_second },
+      format_tree = function(tsj)
+        local children = tsj:children()
+        table.insert(children, tsj:create_child({ text = 'end', type = 'end' }))
+        tsj:child('?'):update_text('if ')
+        tsj:child(':'):update_text('else')
+        local first, second = tsj:child(1), tsj:child(2)
+        children[1] = second
+        children[2] = first
+        tsj:update_children(children)
+      end,
+      format_resulted_lines = function(lines)
+        return vim.tbl_map(function(line)
+          -- Need to remove one indent on `else` element
+          if line:match('%s.else$') then
+            local rgx = '^' .. (' '):rep(vim.fn.shiftwidth())
+            return line:gsub(rgx, '')
+          else
+            return line
+          end
+        end, lines)
+      end,
+    },
+  }),
+}
+```
+
+</details>
 
 ## TreeSJ instance
 
@@ -850,36 +1111,3 @@ function TreeSJ:update_preset(new_preset, mode)
 ```
 
 </details>
-
-## How it works
-
-When you run the plugin, TreeSJ detects the node under the cursor, recognizes
-the language, and looks for it in the presets. If the current node is not
-configured, TreeSJ checks the parent node, and so on, until a configured node is
-found.
-
-Presets for node can be two types:
-
-- With preset for self - if this type is found, the node will be formatted;
-- With referens for nested nodes - in this case, search will be continued among
-  this node descendants;
-
-**Example**:
-
-> "|" - meaning cursor
-
-```txt
-// with preset for self
-const arr = [ 1, |2, 3 ];
-                 |
-    first node is 'number' - not configured,
-    parent node is 'array' - configured and will be split
-
-// with referens
-cons|t arr = [ 1, 2, 3 ];
-    |
-  first node is 'variable_declarator' - not configured,
-  parent node is 'lexical_declaration' - configured and has reference
-  { target_nodes = { 'array', 'object' } },
-  first configured nested node is 'array' and array will be splitted
-```
