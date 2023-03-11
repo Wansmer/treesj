@@ -40,7 +40,7 @@ return {
     },
     join = {
       space_in_brackets = true,
-      space_separator = 1,
+      space_separator = true,
     },
   }),
 }

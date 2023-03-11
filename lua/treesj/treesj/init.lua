@@ -387,7 +387,7 @@ function TreeSJ:has_to_format()
   return self._has_node_to_format
 end
 
----Get preset for for current TreeSJ
+---Get preset for current TreeSJ
 ---@param mode? 'split'|'join' Current mode (split|join)
 ---@return table|nil
 function TreeSJ:preset(mode)

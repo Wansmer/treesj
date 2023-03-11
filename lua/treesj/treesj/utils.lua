@@ -259,7 +259,7 @@ function M.get_whitespace(tsj)
   end
 
   local p = tsj:parent():preset('join')
-  local s_count = p and p.space_separator or 1
+  local s_count = p and (p.space_separator and 1 or 0) or 1
   local is_sep = (p and p.separator ~= '') and tsj:text() == p.separator
 
   if tsj:is_first() or is_sep then

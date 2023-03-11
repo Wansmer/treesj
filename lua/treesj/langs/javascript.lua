@@ -74,7 +74,7 @@ return {
   }),
   jsx_element = lang_utils.set_default_preset({
     join = {
-      space_separator = 0,
+      space_separator = false,
     },
   }),
   jsx_self_closing_element = lang_utils.set_default_preset({

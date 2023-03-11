@@ -3,15 +3,22 @@
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
 
-1. TreeSJ: split or join blocks of code|treesj-treesj:-split-or-join-blocks-of-code|
-  - Features            |treesj-treesj:-split-or-join-blocks-of-code-features|
-  - Requirements    |treesj-treesj:-split-or-join-blocks-of-code-requirements|
-  - Installation    |treesj-treesj:-split-or-join-blocks-of-code-installation|
-  - Configuration  |treesj-treesj:-split-or-join-blocks-of-code-configuration|
-  - How it works    |treesj-treesj:-split-or-join-blocks-of-code-how-it-works|
+1. TreeSJ                                                      |treesj-treesj|
+  - Features                                          |treesj-treesj-features|
+  - Requirements                                  |treesj-treesj-requirements|
+  - Installation                                  |treesj-treesj-installation|
+  - Settings                                          |treesj-treesj-settings|
+2. Configuration                                        |treesj-configuration|
+  - Languages                                 |treesj-configuration-languages|
+  - Basic node                               |treesj-configuration-basic-node|
+  - Advanced node                         |treesj-configuration-advanced-node|
+  - TreeSJ instance                     |treesj-configuration-treesj-instance|
+  - How it works                           |treesj-configuration-how-it-works|
 
 ==============================================================================
-1. TreeSJ: split or join blocks of code*treesj-treesj:-split-or-join-blocks-of-code*
+1. TreeSJ                                                      *treesj-treesj*
+
+**Split or join blocks of code**
 
 Neovim plugin for splitting/joining blocks of code like arrays, hashes,
 statements, objects, dictionaries, etc. Written in Lua, using Tree-Sitter
@@ -25,29 +32,42 @@ Inspired by and partly repeats the functionality of splitjoin.vim
   added when all planned features are implemented. Feel free to open an issue or
   PR 💪_
 
-<https://user-images.githubusercontent.com/46977173/201088511-b336cec5-cec4-437f-95b3-0208c83377fd.mov>
-
-Theme: Catppuccin <https://github.com/catppuccin/nvim>, Font: JetBrains Mono
+FEATURES                                              *treesj-treesj-features*
 
 
-FEATURES                *treesj-treesj:-split-or-join-blocks-of-code-features*
-
-
-- **Can be called from anywhere in the block**: No need to move cursor to specified place to split/join block of code;
+- **Can be called from anywhere in the block**: No need to move cursor to
+    specified place to split/join block of code;
 - **Make cursor sticky**: The cursor follows the text on which it was called;
-- **Autodetect mode**: Toggle-mode present. Split or join blocks by same key mapping;
+- **Autodetect mode**: Toggle-mode present. Split or join blocks by same key
+    mapping;
 - **Do it recursively**: Expand or collapse all nested nodes? Yes, you can;
-- **Recognize nested languages**: Filetype doesn’t matter, detect language with treesitter;
+- **Recognize nested languages**: Filetype doesn’t matter, detect language with
+    treesitter;
 - **Repeat formatting with dot**: `.` support for each action.
+- **Smart**: Different behavior depending on the context.
 
 
-REQUIREMENTS        *treesj-treesj:-split-or-join-blocks-of-code-requirements*
+REQUIREMENTS                                      *treesj-treesj-requirements*
 
 
-1. Neovim 0.8+ <https://github.com/neovim/neovim/releases>2. nvim-treesitter <https://github.com/nvim-treesitter/nvim-treesitter>
+- Neovim 0.8+ <https://github.com/neovim/neovim/releases>
+- nvim-treesitter <https://github.com/nvim-treesitter/nvim-treesitter>
 
 
-INSTALLATION        *treesj-treesj:-split-or-join-blocks-of-code-installation*
+INSTALLATION                                      *treesj-treesj-installation*
+
+With lazy.nvim <https://github.com/folke/lazy.nvim>:
+
+>lua
+    return {
+      'Wansmer/treesj',
+      keys = { '<space>m', '<space>j', '<space>s' },
+      dependencies = { 'nvim-treesitter/nvim-treesitter' },
+      config = function()
+        require('treesj').setup({--[[ your config ]]})
+      end,
+    }
+<
 
 With packer.nvim <https://github.com/wbthomason/packer.nvim>:
 
@@ -62,10 +82,7 @@ With packer.nvim <https://github.com/wbthomason/packer.nvim>:
 <
 
 
-CONFIGURATION      *treesj-treesj:-split-or-join-blocks-of-code-configuration*
-
-
-PLUGIN CONFIGURATION ~
+SETTINGS                                              *treesj-treesj-settings*
 
 Default configuration:
 
@@ -95,6 +112,7 @@ Default configuration:
       -- Notify about possible problems or not
       notify = true,
       langs = langs,
+    
       -- Use `dot` for repeat action
       dot_repeat = true,
     })
@@ -103,10 +121,17 @@ Default configuration:
 Also, TreeSJ provide user commands:
 
 
-1. `:TSJToggle` - toggle node under cursor (split if one-line and join if multiline);2. `:TSJSplit` - split node under cursor;3. `:TSJJoin` - join node under cursor;
+- `:TSJToggle` - toggle node under cursor (split if one-line and join if
+    multiline);
+- `:TSJSplit` - split node under cursor;
+- `:TSJJoin` - join node under cursor;
 
 
-LANGUAGES CONFIGURATION ~
+==============================================================================
+2. Configuration                                        *treesj-configuration*
+
+
+LANGUAGES                                     *treesj-configuration-languages*
 
 By default, TreeSJ has presets for these languages:
 
@@ -163,94 +188,94 @@ expected, feel free to open PR and share it. (Please, read manual
 </tests/README.md> before PR)
 
 
-NODES CONFIGURATION ~
+BASIC NODE                                   *treesj-configuration-basic-node*
 
 Default preset for node:
 
 >lua
     local somenode = {
-      -- Use for split and join. Will merge to both resulting presets
-      -- If you need various values for different modes,
-      -- it can be overridden in modes sections
+      -- `both` will be merged with both presets from `split` and `join` modes tables.
+      -- If you need different values for different modes, they can be overridden
+      -- in mode tables unless otherwise noted.
       both = {
-        -- string[]: TreeSJ will stop if node contains node from list
+        ---If a node contains descendants with a type from the list, it will not be formatted
+        ---@type string[]
         no_format_with = { 'comment' },
-    
-        -- string: Separator for arrays, objects, hash e.c.t.
-        -- Will auto add to option 'omit' for 'both'
+        ---Separator for arrays, objects, hash e.c.t. (usually ',')
+        ---@type string
         separator = '',
-    
-        -- boolean: Set last separator or not
+        ---Set last separator or not
+        ---@type boolean
         last_separator = false,
-    
-        -- list[string|function]: Nodes in list will be joined for previous node
-        -- (e.g. tag_name in HTML start_tag or separator (',') in JS object)
-        -- NOTE: Must be same for both modes
-        omit = {},
-    
-        -- boolean: Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
-        -- NOTE: Must be same for both modes
-        non_bracket_node = false,
-    
-        -- If true, empty brackets, empty tags, or node which only contains nodes from 'omit' no will handling
-        -- (ignored, when non_bracket_node = true)
+        ---If true, empty brackets, empty tags, or node which only contains nodes from 'omit' no will handling
+        ---@type boolean
         format_empty_node = true,
+        ---All nested configured nodes will process according to their presets
+        ---@type boolean
+        recursive = true,
+        ---Type of configured node that must be ignored
+        ---@type string[]
+        recursive_ignore = {},
     
-        -- boolean|function function (tsnode): boolean
-        -- Set `false` if node should't be splitted or joined. Can be different for both modes
+        --[[ Working with the options below is explained in detail in `advanced node configuration` section. ]]
+        ---Set `false` if node should't be splitted or joined.
+        ---@type boolean|function For function: function(tsnode: TSNode): boolean
         enable = true,
-      },
+        ---@type function|nil function(tsj: TreeSJ): void
+        format_tree = nil,
+        ---@type function|nil function(tsj: TreeSJ): void
+        format_resulted_lines = nil,
     
+        --[[ The options below should be the same for both modes. ]]
+        ---The text of the node will be merged with the previous one, without wrapping to a new line
+        ---@type table List-like table with types 'string' (type of node) or 'function' (function(child: TreeSJ): boolean).
+        omit = {},
+        ---Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
+        ---If value is table, should be contains follow keys: { left = 'text', right = 'text' }. Empty string uses by default
+        ---@type boolean|table
+        non_bracket_node = false,
+      },
       -- Use only for join. If contains field from 'both',
       -- field here have higher priority
       join = {
-    
-        -- Adding space in framing brackets or last/end element
+        ---Adding space in framing brackets or last/end element
+        ---@type boolean
         space_in_brackets = false,
-    
-        -- Count of spaces between nodes
-        space_separator = 1,
-    
-        -- string: Add instruction separator like ';' in statement block
-        -- Will auto add to option 'omit' for 'both'
+        ---Insert space between nodes or not
+        ---@type boolean
+        space_separator = true,
+        ---Adds instruction separator like ';' in statement block.
+        ---It's not the same as `separator`: `separator` is a separate node, `force_insert` is a last symbol of code instruction.
+        ---@type string
         force_insert = '',
-    
-        -- list[string|function]: The insert symbol will be omitted if node contains in this list
+        ---The `force_insert` symbol will be omitted if the type of node contains in this list
         -- (e.g. function_declaration inside statement_block in JS no require instruction separator (';'))
+        ---@type table List-like table with types 'string' (type of node) or 'function' (function(child: TreeSJ): boolean).
         no_insert_if = {},
-    
-        -- boolean: All nested configured nodes will process according to their presets
-        recursive = true,
-    
-        -- [string]: Type of configured node that must be ignored
-        recursive_ignore = {},
       },
-    
       -- Use only for split. If contains field from 'both',
       -- field here have higher priority
       split = {
-        -- boolean: All nested configured nodes will process according to their presets
+        ---All nested configured nodes will process according to their presets
+        ---@type boolean
         recursive = false,
-    
-        -- [string]: Type of configured node that must be ignored
-        -- E.g., you probably don't want the parameters of each nested function to be expanded.
-        recursive_ignore = {},
-    
-        -- string: Which indent must be on the last line of the formatted node.
-        -- 'normal' – indent equals of the indent from first line;
-        -- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
-    
+        ---Which indent must be on the last line of the formatted node.
+        --- 'normal' – indent equals of the indent from first line;
+        --- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
+        ---@type 'normal'|'inner'
         last_indent = 'normal',
-        -- string: Which indent must be on the last line of the formatted node.
-        -- 'normal' – indent equals of the indent from first line;
-        -- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
+        ---Which indent must be on the last line of the formatted node.
+        --- 'normal' – indent equals of the indent from first line;
+        --- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
+        ---@type 'normal'|'inner'
         inner_indent = 'inner',
       },
-      -- If 'true', node will be completely removed from langs preset
+      ---If 'true', node will be completely removed from langs preset
+      ---@type boolean
       disable = false,
-    
-      -- TreeSJ will search child from list into this node and redirect to found child
-      -- If list not empty, another fields (split, join) will be ignored
+      ---TreeSJ will search child from list into this node and redirect to found child
+      ---If list not empty, another fields (split, join) will be ignored
+      ---@type string[]|table See `advanced node configuration`
       target_nodes = {},
     }
 <
@@ -275,15 +300,15 @@ Takes a table with the settings to be overwritten as an argument.
 **Usage example**:
 
 >lua
-    local tsj_utils = require('treesj.langs.utils')
+    local lang_utils = require('treesj.langs.utils')
     
     local langs = {
       javascript = {
-        object = tsj_utils.set_preset_for_dict(),
-        array = tsj_utils.set_preset_for_list(),
-        formal_parameters = tsj_utils.set_preset_for_args(),
-        arguments = tsj_utils.set_preset_for_args(),
-        statement_block = tsj_utils.set_preset_for_statement({
+        object = lang_utils.set_preset_for_dict(),
+        array = lang_utils.set_preset_for_list(),
+        formal_parameters = lang_utils.set_preset_for_args(),
+        arguments = lang_utils.set_preset_for_args(),
+        statement_block = lang_utils.set_preset_for_statement({
           join = {
             no_insert_if = {
               'function_declaration',
@@ -294,9 +319,9 @@ Takes a table with the settings to be overwritten as an argument.
         }),
       },
       lua = {
-        table_constructor = tsj_utils.set_preset_for_dict(),
-        arguments = tsj_utils.set_preset_for_args(),
-        parameters = tsj_utils.set_preset_for_args(),
+        table_constructor = lang_utils.set_preset_for_dict(),
+        arguments = lang_utils.set_preset_for_args(),
+        parameters = lang_utils.set_preset_for_args(),
       },
     }
 <
@@ -320,7 +345,561 @@ of nodes:
 <
 
 
-HOW IT WORKS        *treesj-treesj:-split-or-join-blocks-of-code-how-it-works*
+ADVANCED NODE                             *treesj-configuration-advanced-node*
+
+Although most nodes have similar parameters and can be configured
+declaratively, sometimes you need to change the values, text, or order of
+children on the fly.
+
+To do this, some options accept functions as a value, which are passed
+instances of |TSNode|, |treesj-treesj|, or an array of rows to insert.
+
+
+Option enable                                           *treesj-Option-enable*
+
+The `enable` option can be a boolean value or a function. The function takes
+the found |TSNode| node as arguments and should return a boolean value.
+
+Example of usage ~
+
+The problem:
+
+>go
+    // from 'import_spec_list'
+    import (
+        "123"
+    )
+    
+    // to 'import_spec' and back
+    import "123"
+    
+    // but disable 'import_spec_list' when two or more 'import_spec' inside and
+    // disable 'import_spec' when it already inside 'import_spec_list'
+    import (
+        "123"
+        "321"
+    )
+<
+
+This can be implemented with:
+
+>lua
+    local go = {
+      import_spec = lang_utils.set_preset_for_args({
+        both = {
+          -- If the parent is a 'import_spec_list', then skip this node and
+          -- look for a suitable one for formatting further
+          enable = function(tsn)
+            return tsn:parent():type() ~= 'import_spec_list'
+          end,
+        },
+        split = {
+          -- If the parent was something else, then wrap the import in parentheses,
+          -- which actually converts the 'import_spec' into the 'import_spec_list'
+          format_tree = function(tsj)
+            tsj:wrap({ left = '(', right = ')' })
+          end,
+        },
+      }),
+      import_spec_list = lang_utils.set_preset_for_args({
+        join = {
+          enable = function(tsn)
+            -- If the node contains more than one named child node, then disable
+            return tsn:named_child_count() < 2
+          end,
+          format_tree = function(tsj)
+            -- If there was only one named element, then remove the brackets
+            tsj:remove_child({ '(', ')' })
+          end,
+        },
+      }),
+    }
+<
+
+
+Option no_insert_if                               *treesj-Option-no_insert_if*
+
+The `preset[join].no_insert_if` option takes an array with node types or
+functions. The function takes a TreeSJ as a parameter (each child of the root
+node in turn) and should return a boolean if that child matches the condition.
+
+The utilities have helper functions that you will need most often:
+
+`lang_utils.no_insert.if_penultimate`
+
+`lang_utils.no_insert.if_second`
+
+`lang_utils.no_insert.by_index(index)`
+
+`lang_utils.no_insert.has_parent(parent_type)`
+
+`lang_utils.no_insert.match(pattern)`
+
+Example of usage ~
+
+The problem:
+
+>kotlin
+    // Kotlin's 'statements' should be separated with ';' after each child
+    // when it joins, but for the last named child it is not necessary,
+    // and we want to skip it
+    
+    // from
+    call_expression("arg1") {
+      call1(1, 2)
+      call2(1, 2)
+    }
+    
+    // to                                             | here no ';', great
+    call_expression("arg1") { call1(1, 2); call2(1, 2) }
+<
+
+This can be implemented with:
+
+>lua
+    local lang_utils = require('treesj.langs.utils')
+    
+    local kotlin = {
+      statements = lang_utils.set_preset_for_non_bracket({
+        join = {
+          force_insert = ';',
+          no_insert_if = {
+            lang_utils.no_insert.if_penultimate,
+          },
+        },
+      }),
+    }
+<
+
+
+Option omit                                               *treesj-Option-omit*
+
+The `preset[both]omit` option accepts a list of node types or functions. If at
+the time the tree is built, the type of the child matches one of the listed
+ones, then this child remains unchanged. (does not wrap to a new line in case
+of a split, or its position and spaces do not change in the case of a join).
+
+When some value of list is `function` the principle of operation is the same as
+that of `no_insert_if`.
+
+Helper function:
+
+`lang_utils.omit.if_penultimate`
+
+`lang_utils.omit.if_second`
+
+`lang_utils.omit.by_index(index)`
+
+`lang_utils.omit.has_parent(parent_type)`
+
+`lang_utils.omit.match(pattern)`
+
+
+Option non_bracket_node                       *treesj-Option-non_bracket_node*
+
+Some languages have nodes that can be split and joined, but they don’t have
+brackets or other framing elements.
+
+In this case, it is necessary not only to simulate the framing nodes, but also
+to calculate a new range for inserting rows.
+
+`preset[both].non_bracket_node` can be a boolean value (in which case wrapping
+node imitators are created with an empty value) or take a table that specifies
+what text should wrap the actual base node.
+
+E.g., table value: `{ left = 'text', right = 'text' }`
+
+Example of usage ~
+
+The problem:
+
+>lua
+    -- `block` in Lua does not have parentheses, but when it joins,
+    -- it must jump up a line and pull an `end` node that is not part of it.
+    -- To do this, you need to create imitators of framing nodes one line above
+    -- and one line below
+                   | -- imitator left-side bracket
+    function test()|
+      | -- real start of `block`
+      |print(123)
+      return 123| -- real end of `block`
+    | -- imitator right-side bracket
+    |end
+    
+    -- from
+    function test()
+      print(123)
+      return 123
+    end
+    
+    -- to and back
+    function test() print(123) return 123 end
+<
+
+This can be implemented with:
+
+>lua
+    local lang_utils = require('treesj.langs.utils')
+    
+    local lua = {
+      block = {
+        both = {
+          non_bracket_node = true,
+          -- non_bracket_node = { left = '', right = '' }, - it is same
+        },
+        join = {
+          space_in_brackets = true,
+        },
+      },
+    }
+<
+
+
+Option target_nodes                               *treesj-Option-target_nodes*
+
+TODO
+
+
+Option format_tree                                 *treesj-Option-format_tree*
+
+TODO
+
+
+Option format_resulted_lines             *treesj-Option-format_resulted_lines*
+
+TODO
+
+
+TREESJ INSTANCE                         *treesj-configuration-treesj-instance*
+
+After the node for formatting is found, an instance of the TreeSJ class is
+created. Each of its children and descendants is also an instance of this
+class. The methods of this class can be used to change formatting behavior on
+the fly (see advanced node configuration).
+
+
+TREESJ LIFECYCLE ~
+
+
+- **Checking the found Node**: There is a check that there is no syntax error in
+    the node, there are no descendants with types from `preset[mode].no_format_with`
+    and `preset[mode].enable` is true.
+- **Creating root TreeSJ**: A node for formatting has been found and checked,
+    and an instance of TreeSJ is created based on it.
+- **Build tree**: It iterates all the children of the base node and creates
+    the TreeSJ children. If the `preset[mode].recursive` is true, then a check is made
+    to see if the child or its children are configured, if so, a tree is built
+    for it and its children.
+- **Remove or insert last separator**: if a separator is specified in the
+    preset.
+- **Run preset[mode].format_tree**: custom function from preset.
+- **Mode-based preparation**: spacing or indenting, adding a
+    `preset.join.force_insert`, forming a list of strings to replace the base node
+    content.
+- **Run preset[mode].format_resulted_lines**: custom function from preset.
+
+
+METHODS ~
+
+Show/Hide methods… ~
+
+
+has_children                                             *treesj-has_children*
+
+Checks if the specified types of children exist among the list of children. If
+types are omitted, checks that there is at least one child.
+
+>lua
+    ---@param types? string[]
+    ---@return boolean
+    function TreeSJ:has_children(types)
+<
+
+
+iter_children                                           *treesj-iter_children*
+
+Iterate all TreeSJ children. Use: `... for child, index in tsj:iter_children()
+do ...`
+
+>lua
+    ---@return function, table
+    function TreeSJ:iter_children()
+<
+
+
+children                                                     *treesj-children*
+
+Get the children list of the current TreeSJ. Returns all children if `types`
+are omitted, otherwise returns all children of the listed types.
+
+>lua
+    ---@param types? string[] List-like table with child's types for filtering
+    ---@return TreeSJ[]
+    function TreeSJ:children(types)
+<
+
+
+root                                                             *treesj-root*
+
+Get root TreeSJ node of current TreeSJ
+
+>lua
+    ---@return TreeSJ TreeSJ instance
+    function TreeSJ:root()
+<
+
+
+parent                                                         *treesj-parent*
+
+Get parent TreeSJ
+
+>lua
+    ---@return TreeSJ|nil
+    function TreeSJ:parent()
+<
+
+
+child                                                           *treesj-child*
+
+Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
+
+
+- The `index` can be a negative value, which means to search from the end of the
+    list.
+- If a `type` is passed, the first element found will be returned. To get an
+    array of similar elements, use `TreeSJ:children(types)`.
+
+>lua
+    ---@param type_or_index number|string Type of TreeSJ child or it index in children list
+    ---@return TreeSJ|nil
+    function TreeSJ:child(type_or_index)
+<
+
+
+create_child                                             *treesj-create_child*
+
+Creating a new TreeSJ instance as a child of current TreeSJ. If index present,
+puts it in children list and returned this child, if not – returned child,
+but not puts it in children list (This means that you need to update the list
+of children manually with `TreeSJ:update_children(...)`). Index can be a
+negative value, meaning insert from the end. If an index is specified that is
+outside the list of children, then `nil` will be returned.
+
+>lua
+    ---@param data table { text = string, type? = string }. If `type` not present, uses value of `text`
+    ---@param index? integer Index where the child should be inserted.
+    ---@return TreeSJ|nil
+    function TreeSJ:create_child(data, index)
+<
+
+
+update_children                                       *treesj-update_children*
+
+Updating children list of current TreeSJ
+
+>lua
+    ---@param children TreeSJ[]
+    function TreeSJ:update_children(children)
+<
+
+
+wrap                                                             *treesj-wrap*
+
+Creates the first and last elements in the list of children of the current
+TreeSJ.
+
+
+- If the `wrap` mode is passed (the default), then a new list of children is
+    created with one element as itself, and the wrapping elements are added to it.
+- If the `inline` mode is passed, then the real list of children of the current
+    TreeSJ is used to add framing elements.
+
+>lua
+    ---@param data table { left = string, right = string }
+    ---@param mode? 'wrap'|'inline' 'wrap' by default
+    function TreeSJ:wrap(data, mode)
+<
+
+
+remove_child                                             *treesj-remove_child*
+
+Removes children by the passed types or index.
+
+>lua
+    ---@param types_or_index string|string[]|integer Type, types, or index of child to remove
+    function TreeSJ:remove_child(types_or_index)
+<
+
+
+tsnode                                                         *treesj-tsnode*
+
+Get |TSNode| or TSNode imitator of current TreeSJ. If you plan to use tsnode
+methods in the future, you first need to check that the returned value is not
+an imitator.
+
+>lua
+    ---@return userdata|table TSNode or TSNode imitator
+    function TreeSJ:tsnode()
+<
+
+
+prev                                                             *treesj-prev*
+
+Get left side TreeSJ
+
+>lua
+    ---@return TreeSJ|nil
+    function TreeSJ:prev()
+<
+
+
+next                                                             *treesj-next*
+
+Get right side TreeSJ
+
+>lua
+    ---@return TreeSJ|nil
+    function TreeSJ:next()
+<
+
+
+type                                                             *treesj-type*
+
+Get node type of current TreeSJ.
+
+>lua
+    ---@return string
+    function TreeSJ:type()
+<
+
+
+text                                                             *treesj-text*
+
+Get text of current TreeSJ.
+
+>lua
+    ---@return string|table
+    function TreeSJ:text()
+<
+
+
+update_text                                               *treesj-update_text*
+
+Updating text of current TreeSJ. If the mode "split" and "recursively" is
+active, then it can be an array. In such a case, you need to update the text in
+its children directly.
+
+>lua
+    ---@param new_text string|string[]
+    function TreeSJ:update_text(new_text)
+<
+
+
+is_ignore                                                   *treesj-is_ignore*
+
+Checks if the current TreeSJ child must be ignored while recursive formatting
+
+>lua
+    ---@param mode string Current mode (split|join)
+    ---@return boolean
+    function TreeSJ:is_ignore(mode)
+<
+
+
+has_to_format                                           *treesj-has_to_format*
+
+Checks if the TreeSJ contains children that need to be formatted
+
+>lua
+    ---@return boolean
+    function TreeSJ:has_to_format()
+<
+
+
+is_first                                                     *treesj-is_first*
+
+Checks if the current node is first among sibling
+
+>lua
+    ---@return boolean
+    function TreeSJ:is_first()
+<
+
+
+is_last                                                       *treesj-is_last*
+
+Checks if the current node is last among sibling
+
+>lua
+    ---@return boolean
+    function TreeSJ:is_last()
+<
+
+
+is_framing                                                 *treesj-is_framing*
+
+Checks if the current node is first or is last among sibling
+
+>lua
+    ---@return boolean
+    function TreeSJ:is_framing()
+<
+
+
+is_omit                                                       *treesj-is_omit*
+
+Checks if the text of current TreeSJ’s type contains at `preset[mode].omit`
+
+>lua
+    ---@return boolean
+    function TreeSJ:is_omit()
+<
+
+
+is_imitator                                               *treesj-is_imitator*
+
+Checks if the current TreeSJ is node-imitator
+
+>lua
+    ---@return boolean
+    function TreeSJ:is_imitator()
+<
+
+
+preset                                                         *treesj-preset*
+
+Get preset for current TreeSJ
+
+>lua
+    ---@param mode? 'split'|'join' Current mode (split|join)
+    ---@return table|nil
+    function TreeSJ:preset(mode)
+<
+
+
+parent_preset                                           *treesj-parent_preset*
+
+Get the preset of the TreeSJ parent
+
+>lua
+    ---@param mode? 'split'|'join' Current mode (split|join)
+    ---@return table|nil
+    function TreeSJ:parent_preset(mode)
+<
+
+
+update_preset                                           *treesj-update_preset*
+
+Updates the presets for the current TreeSJ.
+
+>lua
+    ---@param new_preset table
+    ---@param mode? 'split'|'join'
+    function TreeSJ:update_preset(new_preset, mode)
+<
+
+
+HOW IT WORKS                               *treesj-configuration-how-it-works*
 
 When you run the plugin, TreeSJ detects the node under the cursor, recognizes
 the language, and looks for it in the presets. If the current node is not
@@ -330,7 +909,9 @@ is found.
 Presets for node can be two types:
 
 
-1. With preset for self - if this type is found, the node will be formatted;2. With referens for nested nodes - in this case, search will be continued among this node descendants;
+- With preset for self - if this type is found, the node will be formatted;
+- With referens for nested nodes - in this case, search will be continued among
+    this node descendants;
 
 **Example**:
 

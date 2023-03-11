@@ -14,7 +14,7 @@ return {
   }),
   element = lang_utils.set_default_preset({
     join = {
-      space_separator = 0,
+      space_separator = false,
     },
   }),
 }
