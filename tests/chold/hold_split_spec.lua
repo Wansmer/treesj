@@ -67,6 +67,14 @@ local data = {
     expected = { 13, 1 },
     result = {},
   },
+  {
+    path = PATH_LUA,
+    mode = 'split',
+    desc = 'cursor_behavior = "hold", mode = "%s", pos on space before first element of non-bracket block',
+    cursor = { 11, 12 },
+    expected = { 12, 1 },
+    result = {},
+  },
 }
 
 local treesj = require('treesj')

@@ -4,6 +4,12 @@ local tu = require('treesj.treesj.utils')
 local u = require('treesj.utils')
 
 local BEHAVIOR = settings.cursor_behavior
+local special_types = {
+  'left_non_bracket',
+  'right_non_bracket',
+  'left_bracket',
+  'right_bracket',
+}
 
 local function prev_not_deleted(child)
   local tsn = child:tsnode()
@@ -22,7 +28,16 @@ end
 
 local function observed_range(child)
   local tsn = child:tsnode()
-  local prev_tsn = prev_not_deleted(child)
+  local prev_tsn
+  if
+    child:prev()
+    and child:prev():is_imitator()
+    and vim.tbl_contains(special_types, child:prev():type())
+  then
+    prev_tsn = child:prev():tsnode()
+  else
+    prev_tsn = prev_not_deleted(child)
+  end
   local sr, sc, er, ec = tsn:range()
 
   if prev_tsn then
@@ -66,12 +81,17 @@ local function calc_new_pos(cursor, child, mode)
   return pos + ws
 end
 
+local function need_check(child)
+  return not child:is_imitator()
+    or (vim.tbl_contains(special_types, child:type()) and child:is_framing())
+end
+
 local function get_cursor_for_join(tsj, rowcol, cursor)
   local len = 0
   local row, col = unpack(rowcol)
 
   for child in tsj:iter_children() do
-    local is_in_range = not child:is_imitator()
+    local is_in_range = need_check(child)
       and in_range(cursor, observed_range(child), 'join')
 
     if is_in_range then
@@ -90,7 +110,7 @@ local function get_cursor_for_split(tsj, rowcol, cursor)
   local row, col = unpack(rowcol)
 
   for child in tsj:iter_children() do
-    local is_in_range = not child:is_imitator()
+    local is_in_range = need_check(child)
       and in_range(cursor, observed_range(child), 'split')
 
     if not child:is_first() then

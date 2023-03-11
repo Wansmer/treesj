@@ -202,6 +202,14 @@ function M.imitate_tsn(tsj, data)
     self._range = { nsr, nsc, ner, nec }
   end
 
+  function imitator:prev_sibling()
+    return nil
+  end
+
+  function imitator:next_sibling()
+    return nil
+  end
+
   function imitator:range()
     return unpack(self._range)
   end
@@ -225,6 +233,7 @@ function M.imitate_tsn(tsj, data)
   return setmetatable({
     _parent = tsj,
     _range = { sr, sc, sr, sc },
+    _type = ts_type,
   }, imitator)
 end
 
