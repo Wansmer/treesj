@@ -19,8 +19,9 @@ Inspired by and partly repeats the functionality of
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Settings](#settings)
-- [Configuration](#configuration)
+- [Commands](#commands)
 - [How it works](#how-it-works)
+- [Configuration](#configuration)
   - [Languages](#languages)
   - [Basic node](#basic-node)
   - [Advanced node](#advanced-node)
@@ -111,12 +112,39 @@ tsj.setup({
 })
 ```
 
-Also, TreeSJ provide user commands:
+## Commands
+
+TreeSJ provide user commands:
 
 - `:TSJToggle` - toggle node under cursor (split if one-line and join if
   multiline);
 - `:TSJSplit` - split node under cursor;
 - `:TSJJoin` - join node under cursor;
+
+Similar with lua:
+
+```bash
+:lua require('treesj').toggle()
+:lua require('treesj').split()
+:lua require('treesj').join()
+```
+
+In the lua version, you can optionally pass a preset that will overwrite the
+default preset values. It should contain `split` or `join` keys. Key `both`
+will be ignored.
+
+**Warning**: If you are passing a preset, repeating with a dot will not work.
+
+E.g.:
+
+```lua
+-- For use default preset and it work with dot
+vim.keymap.set('n', '<leader>m', require('treesj').toggle)
+-- For extending default preset with `recursive = true`, but this doesn't work with dot
+vim.keymap.set('n', '<leader>M', function()
+    require('treesj').toggle({ split = { recursive = true } })
+end)
+```
 
 ## How it works
 
@@ -128,8 +156,8 @@ found.
 Presets for node can be two types:
 
 - With preset for self - if this type is found, the node will be formatted;
-- With referens for nested nodes - in this case, search will be continued among
-  this node descendants;
+- With referens for nested nodes or fields - in this case, search will be
+  continued among this node descendants;
 
 **Example**:
 

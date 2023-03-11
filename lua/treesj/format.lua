@@ -17,7 +17,7 @@ local MAX_LENGTH = settings.max_join_length
 
 local M = {}
 
-function M._format(mode)
+function M._format(mode, override)
   local start_node = ts_utils.get_node_at_cursor(0)
   if not start_node then
     notify.info(msg.no_detect_node)
@@ -39,6 +39,10 @@ function M._format(mode)
     if vim.tbl_contains(viewed, tsn_data.tsnode) then
       notify.info(msg.node_is_disable, MODE, node:type())
       return
+    end
+
+    if override then
+      tsn_data.preset = vim.tbl_deep_extend('force', tsn_data.preset, override)
     end
 
     node = tsn_data.tsnode
