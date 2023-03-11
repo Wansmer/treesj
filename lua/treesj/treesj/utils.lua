@@ -1,3 +1,5 @@
+local query = require('vim.treesitter.query')
+local search = require('treesj.search')
 local u = require('treesj.utils')
 
 local M = {}
@@ -7,6 +9,68 @@ local M = {}
 ---@return boolean
 function M.is_tsnode(tsn)
   return type(tsn) == 'userdata'
+end
+
+---Returned true if node is not empty
+---@param tsn userdata TSNode instance
+---@return boolean
+function M.skip_empty_nodes(tsn)
+  local text = vim.trim(query.get_node_text(tsn, 0))
+  return not u.is_empty(text)
+end
+
+---Get list-like table with children of node
+---This function is pretty much copied from 'nvim-treesitter'
+---(TSRange:collect_children)
+---@param tsnode userdata TSNode instance
+---@param filter? function Function for filtering output list
+---@return table
+function M.collect_children(tsnode, filter)
+  local children = {}
+
+  for child in tsnode:iter_children() do
+    if not filter or filter(child) then
+      table.insert(children, child)
+    end
+  end
+
+  return children
+end
+
+---Return text of node
+---@param tsnode userdata TSNode instance
+---@return string
+function M.get_node_text(tsnode)
+  local lines = query.get_node_text(tsnode, 0, { concat = false })
+  local trimed_lines = {}
+  local sep = ' '
+  for _, line in ipairs(lines) do
+    line = vim.trim(line)
+    if not u.is_empty(line) then
+      table.insert(trimed_lines, line)
+    end
+  end
+  return table.concat(trimed_lines, sep)
+end
+
+---Checking if the found node is empty
+---@param tsnode userdata TSNode instance
+---@param preset table Preset for TSNode
+---@return boolean
+function M.is_empty_node(tsnode, preset)
+  local framing_count = 2
+  local function is_omit(child)
+    return vim.tbl_contains(preset.omit, child:type())
+  end
+
+  local function is_named(child)
+    return child:named()
+  end
+
+  local cc = tsnode:child_count()
+  local children = M.collect_children(tsnode, is_named)
+  local contains_only_framing = cc == framing_count
+  return u.every(children, is_omit) or contains_only_framing
 end
 
 ---Calculation of the real index if a negative value was passed
@@ -110,7 +174,7 @@ function M.imitate_tsn(tsj, data)
   imitator.__index = imitator
   local text = data.text
   local ts_type = data.type and data.type or data.text
-  local sr, sc, er, ec = u.range(tsj:tsnode())
+  local sr, sc, er, ec = search.range(tsj:tsnode())
 
   local types = {
     ['left_non_bracket'] = { get_bracket_imitator_range(tsj, 'left') },
@@ -182,6 +246,88 @@ function M.handle_framing_nodes(tsj, preset)
   end
 end
 
+---Get whitespace between nodes
+---@param tsj TreeSJ TreeSJ instance
+---@return string
+function M.get_whitespace(tsj)
+  local function is_on_same_line(prev, curent)
+    return prev and prev:range()[3] == curent:range()[1] or false
+  end
+
+  local function get_sibling_spacing(prev, current)
+    return current:range()[2] - prev:range()[4]
+  end
+
+  local p = tsj:parent():preset('join')
+  local s_count = p and p.space_separator or 1
+  local is_sep = (p and p.separator ~= '') and tsj:text() == p.separator
+
+  if tsj:is_first() or is_sep then
+    s_count = 0
+  elseif (not p or tsj:is_omit()) and is_on_same_line(tsj:prev(), tsj) then
+    s_count = get_sibling_spacing(tsj:prev(), tsj)
+  elseif p and (tsj:prev():is_first() or tsj:is_last()) then
+    s_count = p.space_in_brackets and 1 or 0
+  end
+
+  return (' '):rep(s_count)
+end
+
+---Checking if tsj meets condition in list of string and functions
+---Returned 'true' if type of tsj contains among strings or some of 'function(tsj)' returned 'true'
+---@param tbl table List with 'string' and 'function'
+---@param tjs TreeSJ TreeSJ instance
+function M.check_match(tbl, tjs)
+  local function is_func(item)
+    return type(item) == 'function'
+  end
+
+  local contains = vim.tbl_contains(tbl, tjs:type())
+  local cbs = vim.tbl_filter(is_func, tbl)
+
+  if not contains and #cbs > 0 then
+    return u.some(cbs, function(cb)
+      return cb(tjs)
+    end)
+  else
+    return contains
+  end
+end
+
+---Checking if the current node is last with `is_omtit = false`
+---@param tsj TreeSJ TreeSJ instance
+---@return boolean
+local function is_last_no_omit(tsj)
+  local parent = tsj:parent()
+  if parent and parent:has_preset() then
+    local last_no_omit = parent:child(1)
+    for child in parent:iter_children() do
+      last_no_omit = not child:is_omit() and child or last_no_omit
+    end
+    return tsj == last_no_omit
+  end
+  return false
+end
+
+---Computed indent for node when mode is 'split'
+---@param tsj TreeSJ TreeSJ instance
+---@return integer
+function M.calc_indent(tsj)
+  local parent = tsj:parent()
+  if tsj:is_first() or tsj:is_omit() or not parent then
+    return 0
+  end
+
+  local pp = parent:preset('split')
+  local start_indent = parent._root_indent
+  local shiftwidth = vim.fn.shiftwidth()
+  local common_indent = start_indent + shiftwidth
+  local is_last = is_last_no_omit(tsj) and pp.last_indent == 'normal'
+  local is_same = pp.inner_indent == 'normal'
+
+  return (is_last or is_same) and start_indent or common_indent
+end
+
 ---Collapse extra spacing: if elem ends with space and next elem starts with space
 ---@param lines string[]
 ---@return string[]
@@ -213,7 +359,7 @@ end
 ---Set whitespaces before node
 ---@param child TreeSJ
 local function set_whitespace(child)
-  local spacing = u.get_whitespace(child)
+  local spacing = M.get_whitespace(child)
   local text = prepend_text(child:text(), spacing)
   child:update_text(text)
 end
@@ -272,7 +418,7 @@ local function handle_force_insert(child)
   end
 
   local has = vim.endswith(child:text(), p.force_insert)
-  local need = not u.check_match(p.no_insert_if, child)
+  local need = not M.check_match(p.no_insert_if, child)
 
   if need and not has then
     child:update_text(child:text() .. p.force_insert)
@@ -301,7 +447,7 @@ end
 ---Set indent when 'split'
 ---@param child TreeSJ TreeSJ instance
 local function set_indent(child)
-  local indent = u.calc_indent(child)
+  local indent = M.calc_indent(child)
   local sep = ' '
 
   if not vim.bo.expandtab then

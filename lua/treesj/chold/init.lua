@@ -1,4 +1,6 @@
 local settings = require('treesj.settings').settings
+local search = require('treesj.search')
+local tu = require('treesj.treesj.utils')
 local u = require('treesj.utils')
 
 local BEHAVIOR = settings.cursor_behavior
@@ -56,8 +58,9 @@ local function pos_in_node(cursor, child)
   return cursor_col - range[2]
 end
 
-local function new_pos_in_node(cursor, child, mode)
-  local ws = mode == 'join' and #u.get_whitespace(child) or u.calc_indent(child)
+local function calc_new_pos(cursor, child, mode)
+  local ws = mode == 'join' and #tu.get_whitespace(child)
+    or tu.calc_indent(child)
   local pos = pos_in_node(cursor, child)
   pos = pos < -ws and -ws or pos
   return pos + ws
@@ -72,7 +75,7 @@ local function get_cursor_for_join(tsj, rowcol, cursor)
       and in_range(cursor, observed_range(child), 'join')
 
     if is_in_range then
-      local pos = new_pos_in_node(cursor, child, 'join')
+      local pos = calc_new_pos(cursor, child, 'join')
       col = col + len + pos
       break
     else
@@ -98,7 +101,7 @@ local function get_cursor_for_split(tsj, rowcol, cursor)
     end
 
     if is_in_range then
-      local pos = new_pos_in_node(cursor, child, 'split')
+      local pos = calc_new_pos(cursor, child, 'split')
       local len = child:is_omit() and #child:prev():text() or 0
       col = pos + col + len
       break
@@ -121,7 +124,7 @@ function CHold.new()
 end
 
 function CHold:compute(tsj, mode)
-  local range = { u.range(tsj:root():tsnode(), tsj:root():preset()) }
+  local range = { search.range(tsj:root():tsnode(), tsj:root():preset()) }
 
   -- Use position for `start` behavior by default
   local row, col = range[1] + 1, range[2]

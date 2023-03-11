@@ -2,7 +2,7 @@ local notify = require('treesj.notify')
 local search = require('treesj.search')
 local TreeSJ = require('treesj.treesj')
 local CHold = require('treesj.chold')
-local u = require('treesj.utils')
+local tu = require('treesj.treesj.utils')
 local settings = require('treesj.settings').settings
 local msg = notify.msg
 
@@ -24,7 +24,7 @@ function M._format(mode)
     return
   end
 
-  local found, tsn_data, node, p, sr, sc, er, ec, MODE
+  local found, tsn_data, node, p, sr, sc, er, ec, MODE, lang
   local viewed = {}
 
   -- If the node is marked as "disabled", continue searching from its parent.
@@ -43,7 +43,8 @@ function M._format(mode)
 
     node = tsn_data.tsnode
     p = tsn_data.preset
-    sr, sc, er, ec = u.range(node, p)
+    lang = tsn_data.lang
+    sr, sc, er, ec = search.range(node, p)
     MODE = mode or sr == er and SPLIT or JOIN
     p = p[MODE]
 
@@ -59,7 +60,7 @@ function M._format(mode)
   end
 
   if p and not p.format_empty_node then
-    if not p.non_bracket_node and u.is_empty_node(node, p) then
+    if not p.non_bracket_node and tu.is_empty_node(node, p) then
       return
     end
   end
@@ -69,7 +70,7 @@ function M._format(mode)
     return
   end
 
-  if u.has_disabled_descendants(node, MODE) then
+  if search.has_disabled_descendants(node, MODE, lang) then
     local no_format_with = p and vim.inspect(p.no_format_with) or ''
     notify.info(msg.no_format_with, MODE, node:type(), no_format_with)
     return

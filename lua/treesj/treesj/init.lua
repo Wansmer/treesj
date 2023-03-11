@@ -1,5 +1,6 @@
 local u = require('treesj.utils')
 local tu = require('treesj.treesj.utils')
+local search = require('treesj.search')
 
 ---TreeSJ - wrapper over TS Node
 ---@class TreeSJ
@@ -24,10 +25,12 @@ TreeSJ.__index = TreeSJ
 function TreeSJ.new(tsn_data)
   local root_preset = tsn_data.parent and tsn_data.parent:root():preset() or nil
   local tsnode = tsn_data.tsnode
+  local lang = tsn_data.lang
 
   local is_tsn = tu.is_tsnode(tsnode)
-  local hntf = is_tsn and u.has_node_to_format(tsnode, root_preset) or false
-  local text = is_tsn and u.get_node_text(tsn_data.tsnode) or tsnode:text()
+  local hntf = is_tsn and search.has_node_to_format(tsnode, root_preset, lang)
+    or false
+  local text = is_tsn and tu.get_node_text(tsn_data.tsnode) or tsnode:text()
   local preset = tsn_data.preset
     and vim.tbl_deep_extend('force', {}, tsn_data.preset)
 
@@ -40,7 +43,7 @@ function TreeSJ.new(tsn_data)
   return setmetatable({
     _root = not tsn_data.parent,
     _tsnode = tsnode,
-    _lang = tsn_data.lang,
+    _lang = lang,
     _imitator = not is_tsn,
     _parent = tsn_data.parent,
     _prev = nil,
@@ -57,12 +60,13 @@ end
 ---Recursive parse current node children and building TreeSJ
 ---@param mode string
 function TreeSJ:build_tree(mode)
-  local children = u.collect_children(self:tsnode(), u.skip_empty_nodes)
+  local children = tu.collect_children(self:tsnode(), tu.skip_empty_nodes)
 
   for _, child in ipairs(children) do
     local tsj = TreeSJ.new({
       tsnode = child,
-      preset = child:named() and u.get_self_preset(child:type(), self._lang),
+      preset = child:named()
+        and search.get_self_preset(child:type(), self._lang),
       lang = self._lang,
       parent = self,
     })
@@ -434,7 +438,7 @@ end
 ---@return boolean
 function TreeSJ:is_omit()
   local omit = u.get_nested_key_value(self:parent_preset(), 'omit')
-  return omit and u.check_match(omit, self) or false
+  return omit and tu.check_match(omit, self) or false
 end
 
 ---Checking if the current TreeSJ is node-imitator
