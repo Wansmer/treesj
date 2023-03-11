@@ -126,19 +126,6 @@ function TreeSJ:create_child(data, index)
   return child
 end
 
----Creating child of TreeSJ from self
----@private
----@return TreeSJ
-function TreeSJ:_copy_self()
-  local data = {
-    tsnode = self:tsnode(),
-    preset = self:preset(),
-    lang = self._lang,
-    parent = self,
-  }
-  return TreeSJ.new(data)
-end
-
 ---Checking if the current TreeSJ node is non-bracket block
 ---@return boolean
 function TreeSJ:non_bracket()
@@ -226,6 +213,19 @@ end
 ---@return TreeSJ TreeSJ instance
 function TreeSJ:root()
   return self._root and self or self:parent():root()
+end
+
+---Creating child of TreeSJ from self
+---@private
+---@return TreeSJ
+function TreeSJ:_copy_self()
+  local data = {
+    tsnode = self:tsnode(),
+    preset = self:preset(),
+    lang = self._lang,
+    parent = self,
+  }
+  return TreeSJ.new(data)
 end
 
 ---Creates the first and last elements in the list of children of the current TreeSJ.

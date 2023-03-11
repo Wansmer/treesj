@@ -173,23 +173,38 @@ M.set_preset_for_non_bracket = set_preset({
   },
 })
 
-M.no_insert = {}
-M.omit = {}
+local helpers = {}
 
-local function if_penultimate(tsj)
-  local next = tsj:next()
+function helpers.if_penultimate(child)
+  local next = child:next()
   return next and next:is_last() or false
 end
 
-local function if_second(tsj)
-  local prev = tsj:prev()
+function helpers.if_second(child)
+  local prev = child:prev()
   return prev and prev:is_first() or false
 end
 
-M.no_insert.if_penultimate = if_penultimate
-M.no_insert.if_second = if_second
+function helpers.by_index(i)
+  return function(child)
+    return child:parent() and child:parent():child(i) == child
+  end
+end
 
-M.omit.if_penultimate = if_penultimate
-M.omit.if_second = if_second
+function helpers.has_parent(parent_type)
+  return function(child)
+    return child:parent() and child:parent():type() == parent_type
+  end
+end
+
+function helpers.match(pattern)
+  return function(child)
+    local text = child:text()
+    return type(text) == 'string' and text:match(pattern) or false
+  end
+end
+
+M.omit = vim.tbl_extend('force', {}, helpers)
+M.no_insert = vim.tbl_extend('force', {}, helpers)
 
 return M
