@@ -1,15 +1,15 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  object = u.set_preset_for_dict(),
-  object_pattern = u.set_preset_for_dict(),
-  array = u.set_preset_for_list(),
-  array_pattern = u.set_preset_for_list(),
-  formal_parameters = u.set_preset_for_args(),
-  arguments = u.set_preset_for_args(),
-  named_imports = u.set_preset_for_dict(),
-  export_clause = u.set_preset_for_dict(),
-  statement_block = u.set_preset_for_statement({
+  object = lang_utils.set_preset_for_dict(),
+  object_pattern = lang_utils.set_preset_for_dict(),
+  array = lang_utils.set_preset_for_list(),
+  array_pattern = lang_utils.set_preset_for_list(),
+  formal_parameters = lang_utils.set_preset_for_args(),
+  arguments = lang_utils.set_preset_for_args(),
+  named_imports = lang_utils.set_preset_for_dict(),
+  export_clause = lang_utils.set_preset_for_dict(),
+  statement_block = lang_utils.set_preset_for_statement({
     join = {
       no_insert_if = {
         'function_declaration',
@@ -67,17 +67,17 @@ return {
       'object',
     },
   },
-  jsx_opening_element = u.set_default_preset({
+  jsx_opening_element = lang_utils.set_default_preset({
     both = {
       omit = { 'identifier', 'nested_identifier' },
     },
   }),
-  jsx_element = u.set_default_preset({
+  jsx_element = lang_utils.set_default_preset({
     join = {
       space_separator = 0,
     },
   }),
-  jsx_self_closing_element = u.set_default_preset({
+  jsx_self_closing_element = lang_utils.set_default_preset({
     both = {
       omit = { 'identifier', 'nested_identifier', '>' },
       no_format_with = {},

@@ -1,19 +1,10 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  table_constructor = u.set_preset_for_dict({
-    -- split = {
-    --   recursive = true,
-    -- },
-  }),
-  arguments = u.set_preset_for_args(),
-  parameters = u.set_preset_for_args(),
-  block = u.set_preset_for_non_bracket({
-    -- split = {
-    --   recursive = true,
-    --   recursive_ignore = { 'arguments', 'parameters' },
-    -- },
-  }),
+  table_constructor = lang_utils.set_preset_for_dict(),
+  arguments = lang_utils.set_preset_for_args(),
+  parameters = lang_utils.set_preset_for_args(),
+  block = lang_utils.set_preset_for_non_bracket(),
   variable_declaration = {
     target_nodes = { 'table_constructor', 'block' },
   },

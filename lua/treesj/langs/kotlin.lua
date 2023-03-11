@@ -1,21 +1,21 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  collection_literal = u.set_default_preset({
+  collection_literal = lang_utils.set_default_preset({
     both = {
       separator = ',',
     },
   }),
-  value_arguments = u.set_default_preset({
+  value_arguments = lang_utils.set_default_preset({
     both = {
       separator = ',',
     },
   }),
-  statements = u.set_preset_for_non_bracket({
+  statements = lang_utils.set_preset_for_non_bracket({
     join = {
       force_insert = ';',
       no_insert_if = {
-        u.no_insert.if_penultimate,
+        lang_utils.no_insert.if_penultimate,
       },
     },
   }),

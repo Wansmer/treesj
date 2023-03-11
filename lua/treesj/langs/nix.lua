@@ -1,7 +1,7 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  list_expression = u.set_preset_for_list({
+  list_expression = lang_utils.set_preset_for_list({
     both = {
       separator = '',
     },
@@ -9,14 +9,14 @@ return {
   attrset_expression = {
     target_nodes = { 'binding_set' },
   },
-  binding_set = u.set_preset_for_dict({
+  binding_set = lang_utils.set_preset_for_dict({
     both = {
       non_bracket_node = true,
       separator = '',
       force_insert = ';',
     },
   }),
-  formals = u.set_preset_for_args({
+  formals = lang_utils.set_preset_for_args({
     both = {
       omit = { 'formal', 'ellipses' },
     },
@@ -29,7 +29,7 @@ return {
       space_in_brackets = true,
     },
   }),
-  let_expression = u.set_default_preset({
+  let_expression = lang_utils.set_default_preset({
     both = {
       omit = { 'binding_set' },
     },

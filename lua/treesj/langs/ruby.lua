@@ -1,18 +1,18 @@
-local lu = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 local utils = require('treesj.utils')
 
 return {
-  array = lu.set_preset_for_list(),
-  hash = lu.set_preset_for_list(),
-  method_parameters = lu.set_preset_for_args(),
-  argument_list = lu.set_preset_for_args({
+  array = lang_utils.set_preset_for_list(),
+  hash = lang_utils.set_preset_for_list(),
+  method_parameters = lang_utils.set_preset_for_args(),
+  argument_list = lang_utils.set_preset_for_args({
     both = {
       enable = function(tsn)
         return tsn:parent():type() ~= 'return'
       end,
     },
   }),
-  block = lu.set_preset_for_dict({
+  block = lang_utils.set_preset_for_dict({
     join = {
       separator = '',
       recursive = false,
@@ -34,23 +34,23 @@ return {
       end,
     },
   }),
-  string_array = lu.set_preset_for_list({
+  string_array = lang_utils.set_preset_for_list({
     split = {
       last_separator = false,
     },
   }),
-  body_statement = lu.set_preset_for_non_bracket({
+  body_statement = lang_utils.set_preset_for_non_bracket({
     join = {
       force_insert = ';',
       no_insert_if = {
-        lu.no_insert.if_penultimate,
+        lang_utils.no_insert.if_penultimate,
       },
     },
   }),
-  if_modifier = lu.set_default_preset({
+  if_modifier = lang_utils.set_default_preset({
     join = nil,
     split = {
-      omit = { lu.omit.if_second },
+      omit = { lang_utils.omit.if_second },
       format_tree = function(tsj)
         local if_node = tsj:child('if')
         local end_ = tsj:create_child({ text = 'end', type = 'end' })
@@ -58,7 +58,7 @@ return {
       end,
     },
   }),
-  ['if'] = lu.set_default_preset({
+  ['if'] = lang_utils.set_default_preset({
     split = nil,
     join = {
       enable = function(tsn)
@@ -92,10 +92,10 @@ return {
       end,
     },
   }),
-  conditional = lu.set_default_preset({
+  conditional = lang_utils.set_default_preset({
     join = nil,
     split = {
-      omit = { lu.omit.if_second },
+      omit = { lang_utils.omit.if_second },
       format_tree = function(tsj)
         local children = tsj:children()
         table.insert(children, tsj:create_child({ text = 'end', type = 'end' }))
@@ -119,9 +119,9 @@ return {
       end,
     },
   }),
-  when = lu.set_default_preset({
+  when = lang_utils.set_default_preset({
     both = {
-      omit = { lu.omit.if_second },
+      omit = { lang_utils.omit.if_second },
     },
     join = {
       space_in_brackets = true,
@@ -142,7 +142,7 @@ return {
       end,
     },
   }),
-  right = lu.set_default_preset({
+  right = lang_utils.set_default_preset({
     both = {
       enable = function(tsn)
         return not (tsn:type() == 'begin' and tsn:named_child_count() > 1)

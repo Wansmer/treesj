@@ -1,17 +1,17 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  block = u.set_preset_for_statement({
+  block = lang_utils.set_preset_for_statement({
     join = {
       force_insert = '',
     },
   }),
-  keyframe_block_list = u.set_preset_for_statement({
+  keyframe_block_list = lang_utils.set_preset_for_statement({
     join = {
       force_insert = '',
     },
   }),
-  arguments = u.set_preset_for_args(),
+  arguments = lang_utils.set_preset_for_args(),
   call_expression = {
     target_nodes = { 'arguments' },
   },

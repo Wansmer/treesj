@@ -1,7 +1,7 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  arguments = u.set_preset_for_args({
+  arguments = lang_utils.set_preset_for_args({
     both = {
       non_bracket_node = true,
     },
@@ -10,7 +10,7 @@ return {
     },
   }),
 
-  formal_parameters = u.set_preset_for_args({
+  formal_parameters = lang_utils.set_preset_for_args({
     split = {
       recursive_ignore = { 'subset' },
     },

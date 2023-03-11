@@ -1,38 +1,38 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  field_declaration_list = u.set_preset_for_dict(),
-  declaration_list = u.set_preset_for_statement(),
-  field_initializer_list = u.set_preset_for_dict(),
-  struct_pattern = u.set_preset_for_dict({
+  field_declaration_list = lang_utils.set_preset_for_dict(),
+  declaration_list = lang_utils.set_preset_for_statement(),
+  field_initializer_list = lang_utils.set_preset_for_dict(),
+  struct_pattern = lang_utils.set_preset_for_dict({
     both = {
       omit = { '{' },
     },
   }),
-  parameters = u.set_preset_for_args({
+  parameters = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  arguments = u.set_preset_for_args({
+  arguments = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  tuple_type = u.set_preset_for_args({
+  tuple_type = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  enum_variant_list = u.set_preset_for_list(),
-  tuple_expression = u.set_preset_for_args({
+  enum_variant_list = lang_utils.set_preset_for_list(),
+  tuple_expression = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  block = u.set_preset_for_statement({
+  block = lang_utils.set_preset_for_statement({
     join = {
-      no_insert_if = { u.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.no_insert.if_penultimate },
       format_tree = function(tsj)
         local node = tsj:tsnode()
         local parents = { 'match_arm', 'closure_expression' }
@@ -43,7 +43,7 @@ return {
       end,
     },
   }),
-  value = u.set_preset_for_statement({
+  value = lang_utils.set_preset_for_statement({
     split = {
       format_tree = function(tsj)
         if tsj:type() ~= 'block' then
@@ -52,7 +52,7 @@ return {
       end,
     },
     join = {
-      no_insert_if = { u.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.no_insert.if_penultimate },
       format_tree = function(tsj)
         local node = tsj:tsnode()
         local parents = { 'match_arm', 'closure_expression' }
@@ -69,8 +69,8 @@ return {
   closure_expression = {
     target_nodes = { ['body'] = 'value' },
   },
-  use_list = u.set_preset_for_list(),
-  array_expression = u.set_preset_for_list(),
+  use_list = lang_utils.set_preset_for_list(),
+  array_expression = lang_utils.set_preset_for_list(),
   let_declaration = {
     target_nodes = {
       'field_declaration_list',
