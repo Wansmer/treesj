@@ -20,3 +20,19 @@ test:
 
 lint-fix:
 	stylua ./lua/treesj ./tests/langs/
+
+docs:
+	~/projects/code/github/panvimdoc/panvimdoc.sh \
+	--project-name treesj \
+	--input-file ./README.md \
+	--vim-version 0.8.0 \
+	--toc true \
+	--description "" \
+	--dedup-subheadings true \
+	--demojify false \
+	--treesitter true \
+	--ignore-rawblocks false \
+	--doc-mapping true \
+	--doc-mapping-project-name true \
+	--shift-heading-level-by 0 \
+	--increment-heading-level-by 0 \
