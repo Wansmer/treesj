@@ -38,12 +38,15 @@ function M.collect_children(tsnode, filter)
 end
 
 ---Return text of node
----@param tsnode userdata TSNode instance
+---@param node TSNode from userdata
 ---@return string
-function M.get_node_text(tsnode)
-  local lines = query.get_node_text(tsnode, 0, { concat = false })
+function M.get_node_text(node)
+  local lines = query.get_node_text(node, 0, { concat = false })
   local trimed_lines = {}
   local sep = ' '
+  if type(lines) == 'string' then
+    lines = vim.split(lines, '\n')
+  end
   for _, line in ipairs(lines) do
     line = vim.trim(line)
     if not u.is_empty(line) then
