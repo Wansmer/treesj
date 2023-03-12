@@ -155,5 +155,14 @@ dc = {
     for k, v in items
 }
 
+# RESULT OF JOIN (node "import_from_statement", preset default)
+from re import search, match,sub
+
+# RESULT OF SPLIT (node "import_from_statement", preset default)
+from re import (
+    search,
+    match,
+    sub,
+)
 
 # code from https://learnxinyminutes.com/docs/python/
