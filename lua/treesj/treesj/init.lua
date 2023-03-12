@@ -221,11 +221,15 @@ end
 function TreeSJ:_copy_self()
   local data = {
     tsnode = self:tsnode(),
-    preset = self:preset(),
+    preset = search.get_self_preset(self:type(), self._lang),
     lang = self._lang,
     parent = self,
   }
-  return TreeSJ.new(data)
+
+  local child = TreeSJ.new(data)
+  child:build_tree('split')
+
+  return child
 end
 
 ---Creates the first and last elements in the list of children of the current TreeSJ.

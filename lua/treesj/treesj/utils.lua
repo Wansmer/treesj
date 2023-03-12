@@ -223,7 +223,7 @@ function M.imitate_tsn(tsj, data)
   end
 
   function imitator:field()
-    return false
+    return nil
   end
 
   function imitator:text()
