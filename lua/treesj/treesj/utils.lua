@@ -41,6 +41,7 @@ end
 ---@param node TSNode from userdata
 ---@return string
 function M.get_node_text(node)
+  -- TODO: concat is deprecated in 0.9+. Refactor later
   local lines = query.get_node_text(node, 0, { concat = false })
   local trimed_lines = {}
   local sep = ' '
@@ -113,7 +114,7 @@ end
 ---Setting value of indent to configured nodes
 ---@param tsj TreeSJ TreeSJ instance
 function M.handle_indent(tsj)
-  if tsj:has_preset() and not tsj:is_ignore('split') then
+  if tsj._mode == 'split' and tsj:has_preset() and not tsj:is_ignore() then
     local is_norm = tsj:root():preset('split').inner_indent == 'normal'
     local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
 
@@ -475,7 +476,7 @@ end
 ---@param child TreeSJ child of tsj
 ---@param lines table List-like table
 local function process_configured(child, lines)
-  if child:is_omit() then
+  if child:is_omit() and not child:is_first() then
     set_whitespace(child)
     merge_text_to_prev_line(lines, child:text())
   else

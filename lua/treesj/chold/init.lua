@@ -144,7 +144,8 @@ function CHold.new()
 end
 
 function CHold:compute(tsj, mode)
-  local range = { search.range(tsj:root():tsnode(), tsj:root():preset()) }
+  -- local range = { search.range(tsj:root():tsnode(), tsj:root():preset()) }
+  local range = { search.range(tsj:tsnode(), tsj:preset()) }
 
   -- Use position for `start` behavior by default
   local row, col = range[1] + 1, range[2]

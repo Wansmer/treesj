@@ -1049,9 +1049,8 @@ function TreeSJ:update_text(new_text)
 Checks if the current TreeSJ child must be ignored while recursive formatting
 
 ```lua
----@param mode string Current mode (split|join)
 ---@return boolean
-function TreeSJ:is_ignore(mode)
+function TreeSJ:is_ignore()
 ```
 
 #### has_to_format

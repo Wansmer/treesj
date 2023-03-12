@@ -104,7 +104,12 @@ end
 ---@return table|nil
 local function search_node(node, lang)
   local viewed = {}
-  local tsn_data = { lang = lang, parent = nil }
+  local tsn_data = {
+    lang = lang,
+    from_self = false,
+    parent = nil,
+    mode = nil,
+  }
   local preset
 
   while node do

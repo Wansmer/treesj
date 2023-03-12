@@ -80,6 +80,7 @@ function M._format(mode, override)
     return
   end
 
+  tsn_data.mode = MODE
   local treesj = TreeSJ.new(tsn_data)
   treesj:build_tree(MODE)
   treesj[MODE](treesj)
