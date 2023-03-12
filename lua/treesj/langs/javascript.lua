@@ -5,6 +5,7 @@ local arrow_body_format_join = function(tsj)
   local parent = tsj:tsnode():parent():type()
   if parent == 'arrow_function' and tsj:tsnode():named_child_count() == 1 then
     tsj:remove_child({ '{', '}' })
+    tsj:update_preset({ force_insert = '', space_in_brackets = false }, 'join')
     local ret = tsj:child('return_statement')
 
     if ret then
@@ -61,7 +62,8 @@ return {
 
           local rec = tsj:preset('split').recursive
           local ph = tsj:child('parenthesized_expression')
-          if ph and ph:tsnode():named_child_count() == 1 then
+          local not_seq = ph and not ph:child('sequence_expression')
+          if not_seq then
             if rec and ph:has_to_format() then
               ph:remove_child({ '(', ')' })
             else
@@ -83,11 +85,7 @@ return {
     },
     join = {
       space_in_brackets = false,
-      no_insert_if = {
-        'function_declaration',
-        'try_statement',
-        'if_statement',
-      },
+      force_insert = '',
       format_tree = arrow_body_format_join,
     },
   }),

@@ -114,3 +114,52 @@ if (b <= a) {
   add(2, 1) + sum(2, 1);
   return (console.log(1), 1) >= 1;
 }
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "call_expression", preset default)
+const myFunc = (param) => console.log([ 1, 2, 3 ]);
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "call_expression", preset default)
+const myFunc = (param) => {
+  return console.log([ 1, 2, 3 ])
+};
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "identifier", preset default)
+const myFunc = (param) => param;
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "identifier", preset default)
+const myFunc = (param) => {
+  return param
+};
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "parenthesized_expression", preset default)
+const myFunc = (param) => ({ one: 'one' });
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "parenthesized_expression", preset default)
+const myFunc = (param) => {
+  return { one: 'one' }
+};
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "array", preset default)
+const myFunc = (param) => [ 1, 2, 3 ];
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "array", preset default)
+const myFunc = (param) => {
+  return [ 1, 2, 3 ]
+};
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "parenthesized_expression" with 'sequence_expression', preset default)
+const myFunc = (param) => (1, 2);
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "parenthesized_expression" with 'sequence_expression', preset default)
+const myFunc = (param) => {
+  return (1, 2)
+};
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "statement_block" with >1 named child, preset default)
+const myFunc = (param) => { doSomething(); andThisDoTo(); };
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "parenthesized_expression" with 'sequence_expression', preset default)
+const myFunc = (param) => {
+  doSomething();
+  andThisDoTo();
+};
