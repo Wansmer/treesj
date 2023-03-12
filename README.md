@@ -20,7 +20,7 @@ Inspired by and partly repeats the functionality of
 - [Installation](#installation)
 - [Settings](#settings)
 - [Commands](#commands)
-- [How it works](#how-it-works)
+- [How plugin works](#how-plugin-works)
 - [Configuration](#configuration)
   - [Languages](#languages)
   - [Basic node](#basic-node)
@@ -146,7 +146,7 @@ vim.keymap.set('n', '<leader>M', function()
 end)
 ```
 
-## How it works
+## How plugin works
 
 When you run the plugin, TreeSJ detects the node under the cursor, recognizes
 the language, and looks for it in the presets. If the current node is not
