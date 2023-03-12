@@ -1,4 +1,4 @@
-*treesj.txt*                For 0.8.0               Last change: 2023 March 12
+*treesj.txt*           For Neovim >= 0.8.0          Last change: 2023 March 12
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -9,7 +9,7 @@ Table of Contents                                   *treesj-table-of-contents*
   - Installation                                  |treesj-treesj-installation|
   - Settings                                          |treesj-treesj-settings|
   - Commands                                          |treesj-treesj-commands|
-  - How it works                                  |treesj-treesj-how-it-works|
+  - How plugin works                          |treesj-treesj-how-plugin-works|
 2. Configuration                                        |treesj-configuration|
   - Languages                                 |treesj-configuration-languages|
   - Basic node                               |treesj-configuration-basic-node|
@@ -30,16 +30,16 @@ Inspired by and partly repeats the functionality of splitjoin.vim
 FEATURES                                              *treesj-treesj-features*
 
 
-- **Can be called from anywhere in the block**: No need to move cursor to
+- **Can be called from anywhere in the block**No need to move cursor to
     specified place to split/join block of code;
-- **Make cursor sticky**: The cursor follows the text on which it was called;
-- **Autodetect mode**: Toggle-mode present. Split or join blocks by same key
+- **Make cursor sticky**The cursor follows the text on which it was called;
+- **Autodetect mode**Toggle-mode present. Split or join blocks by same key
     mapping;
-- **Do it recursively**: Expand or collapse all nested nodes? Yes, you can;
-- **Recognize nested languages**: Filetype doesn’t matter, detect language with
+- **Do it recursively**Expand or collapse all nested nodes? Yes, you can;
+- **Recognize nested languages**Filetype doesn’t matter, detect language with
     treesitter;
-- **Repeat formatting with dot**: `.` support for each action.
-- **Smart**: Different behavior depending on the context.
+- **Repeat formatting with dot**`.` support for each action.
+- **Smart**Different behavior depending on the context.
 
 
 REQUIREMENTS                                      *treesj-treesj-requirements*
@@ -51,7 +51,7 @@ REQUIREMENTS                                      *treesj-treesj-requirements*
 
 INSTALLATION                                      *treesj-treesj-installation*
 
-With lazy.nvim <https://github.com/folke/lazy.nvim>:
+With lazy.nvim <https://github.com/folke/lazy.nvim>
 
 >lua
     return {
@@ -64,7 +64,7 @@ With lazy.nvim <https://github.com/folke/lazy.nvim>:
     }
 <
 
-With packer.nvim <https://github.com/wbthomason/packer.nvim>:
+Withpacker.nvim <https://github.com/wbthomason/packer.nvim>
 
 >lua
     use({
@@ -79,7 +79,7 @@ With packer.nvim <https://github.com/wbthomason/packer.nvim>:
 
 SETTINGS                                              *treesj-treesj-settings*
 
-Default configuration:
+Defaultconfiguration:
 
 >lua
     local tsj = require('treesj')
@@ -136,7 +136,7 @@ In the lua version, you can optionally pass a preset that will overwrite the
 default preset values. It should contain `split` or `join` keys. Key `both`
 will be ignored.
 
-**Warning**: If you are passing a preset, repeating with a dot will not work.
+**Warning**If you are passing a preset, repeating with a dot will not work.
 
 E.g.:
 
@@ -150,7 +150,7 @@ E.g.:
 <
 
 
-HOW IT WORKS                                      *treesj-treesj-how-it-works*
+HOW PLUGIN WORKS                              *treesj-treesj-how-plugin-works*
 
 When you run the plugin, TreeSJ detects the node under the cursor, recognizes
 the language, and looks for it in the presets. If the current node is not
@@ -164,10 +164,10 @@ Presets for node can be two types:
 - With referens for nested nodes or fields - in this case, search will be
     continued among this node descendants;
 
-**Example**:
+**Example**
 
 
-  "|" - meaning cursor
+  "|"- meaning cursor
 >txt
     // with preset for self
     const arr = [ 1, |2, 3 ];
@@ -355,7 +355,7 @@ default presets for common nodes:
 
 Takes a table with the settings to be overwritten as an argument.
 
-**Usage example**:
+**Usage example**
 
 >lua
     local lang_utils = require('treesj.langs.utils')
@@ -384,7 +384,7 @@ Takes a table with the settings to be overwritten as an argument.
     }
 <
 
-Also, you can use whole preset for language if your language has the same types
+Also,you can use whole preset for language if your language has the same types
 of nodes:
 
 
@@ -413,7 +413,7 @@ To do this, some options accept functions as a value, which are passed
 instances of |TSNode|, |treesj-treesj|, or an array of rows to insert.
 
 
-Option enable                                           *treesj-Option-enable*
+OPTION ENABLE
 
 The `enable` option can be a boolean value or a function. The function takes
 the found |TSNode| node as arguments and should return a boolean value.
@@ -475,7 +475,7 @@ This can be implemented with:
 <
 
 
-Option no_insert_if                               *treesj-Option-no_insert_if*
+OPTION NO_INSERT_IF
 
 The `preset[join].no_insert_if` option takes an array with node types or
 functions. The function takes a TreeSJ as a parameter (each child of the root
@@ -530,7 +530,7 @@ This can be implemented with:
 <
 
 
-Option omit                                               *treesj-Option-omit*
+OPTION OMIT
 
 The `preset[both]omit` option accepts a list of node types or functions. If at
 the time the tree is built, the type of the child matches one of the listed
@@ -553,7 +553,7 @@ Helper function:
 `lang_utils.omit.match(pattern)`
 
 
-Option non_bracket_node                       *treesj-Option-non_bracket_node*
+OPTION NON_BRACKET_NODE
 
 Some languages have nodes that can be split and joined, but they don’t have
 brackets or other framing elements.
@@ -613,7 +613,7 @@ This can be implemented with:
 <
 
 
-Option target_nodes                               *treesj-Option-target_nodes*
+OPTION TARGET_NODES
 
 In most cases, `target_nodes` is a list of node types to redirect the search
 for the configured node deeper. But in reality it is treated like a dictionary:
@@ -693,7 +693,7 @@ This can be implemented with:
 <
 
 
-Option format_tree                                 *treesj-Option-format_tree*
+OPTION FORMAT_TREE
 
 `format_tree` is a function that takes a TreeSJ root node. In this function,
 you can work with the context and add or remove elements.
@@ -709,10 +709,10 @@ Here you need to add parentheses to the middle and end of TreeSJ when splitting
 and remove these parentheses when joining.
 
 >python
-    # from
+     from
     from re import search, match,sub
     
-    # to this and back
+     to this and back
     from re import (
         search,
         match,
@@ -736,7 +736,7 @@ This can be implemented with:
             -- If there are no brackets, then create them
             if not tsj:has_children({ '(', ')' }) then
               tsj:create_child({ text = ' (' }, 4)
-              tsj:create_child({ text = ')' }, #tsj:children() + 1)
+              tsj:create_child({ text = ')' }, tsj:children() + 1)
               -- Since the elements have moved, you need to add the penultimate
               -- separator manually
               local penult = tsj:child(-2)
@@ -755,7 +755,7 @@ This can be implemented with:
 <
 
 
-Option format_resulted_lines             *treesj-Option-format_resulted_lines*
+OPTION FORMAT_RESULTED_LINES
 
 The `format_resulted_lines` function takes as an argument an array of strings
 that will replace the content of the base node.
@@ -791,14 +791,14 @@ Here you need to add parentheses to the middle and end of TreeSJ when splitting
 and remove these parentheses when joining.
 
 >ruby
-    # from
+     from
     if cond
         do_that('cond')
     else
         do_this('not nond')
     end
     
-    # to this and back
+     to this and back
     cond ? do_that('cond') : do_this('not nond')
 <
 
@@ -848,22 +848,22 @@ the fly (see advanced node configuration).
 TREESJ LIFECYCLE ~
 
 
-- **Checking the found Node**: There is a check that there is no syntax error in
+- **Checking the found Node**There is a check that there is no syntax error in
     the node, there are no descendants with types from `preset[mode].no_format_with`
     and `preset[mode].enable` is true.
-- **Creating root TreeSJ**: A node for formatting has been found and checked,
+- **Creating root TreeSJ**A node for formatting has been found and checked,
     and an instance of TreeSJ is created based on it.
-- **Build tree**: It iterates all the children of the base node and creates
+- **Build tree**It iterates all the children of the base node and creates
     the TreeSJ children. If the `preset[mode].recursive` is true, then a check is made
     to see if the child or its children are configured, if so, a tree is built
     for it and its children.
-- **Remove or insert last separator**: if a separator is specified in the
+- **Remove or insert last separator**if a separator is specified in the
     preset.
-- **Run preset[mode].format_tree**: custom function from preset.
-- **Mode-based preparation**: spacing or indenting, adding a
+- **Run preset[mode].format_tree**custom function from preset.
+- **Mode-based preparation**spacing or indenting, adding a
     `preset.join.force_insert`, forming a list of strings to replace the base node
     content.
-- **Run preset[mode].format_resulted_lines**: custom function from preset.
+- **Run preset[mode].format_resulted_lines**custom function from preset.
 
 
 METHODS ~
@@ -871,7 +871,7 @@ METHODS ~
 Show/Hide methods… ~
 
 
-has_children                                             *treesj-has_children*
+HAS_CHILDREN
 
 Checks if the specified types of children exist among the list of children. If
 types are omitted, checks that there is at least one child.
@@ -883,7 +883,7 @@ types are omitted, checks that there is at least one child.
 <
 
 
-iter_children                                           *treesj-iter_children*
+ITER_CHILDREN
 
 Iterate all TreeSJ children. Use: `... for child, index in tsj:iter_children()
 do ...`
@@ -894,7 +894,7 @@ do ...`
 <
 
 
-children                                                     *treesj-children*
+CHILDREN
 
 Get the children list of the current TreeSJ. Returns all children if `types`
 are omitted, otherwise returns all children of the listed types.
@@ -906,7 +906,7 @@ are omitted, otherwise returns all children of the listed types.
 <
 
 
-root                                                             *treesj-root*
+ROOT
 
 Get root TreeSJ node of current TreeSJ
 
@@ -916,7 +916,7 @@ Get root TreeSJ node of current TreeSJ
 <
 
 
-parent                                                         *treesj-parent*
+PARENT
 
 Get parent TreeSJ
 
@@ -926,7 +926,7 @@ Get parent TreeSJ
 <
 
 
-child                                                           *treesj-child*
+CHILD
 
 Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
 
@@ -943,7 +943,7 @@ Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
 <
 
 
-create_child                                             *treesj-create_child*
+CREATE_CHILD
 
 Creating a new TreeSJ instance as a child of current TreeSJ. If index present,
 puts it in children list and returned this child, if not – returned child,
@@ -960,7 +960,7 @@ outside the list of children, then `nil` will be returned.
 <
 
 
-update_children                                       *treesj-update_children*
+UPDATE_CHILDREN
 
 Updating children list of current TreeSJ
 
@@ -970,7 +970,7 @@ Updating children list of current TreeSJ
 <
 
 
-wrap                                                             *treesj-wrap*
+WRAP
 
 Creates the first and last elements in the list of children of the current
 TreeSJ.
@@ -988,7 +988,7 @@ TreeSJ.
 <
 
 
-remove_child                                             *treesj-remove_child*
+REMOVE_CHILD
 
 Removes children by the passed types or index.
 
@@ -998,7 +998,7 @@ Removes children by the passed types or index.
 <
 
 
-tsnode                                                         *treesj-tsnode*
+TSNODE
 
 Get |TSNode| or TSNode imitator of current TreeSJ. If you plan to use tsnode
 methods in the future, you first need to check that the returned value is not
@@ -1010,7 +1010,7 @@ an imitator.
 <
 
 
-prev                                                             *treesj-prev*
+PREV
 
 Get left side TreeSJ
 
@@ -1020,7 +1020,7 @@ Get left side TreeSJ
 <
 
 
-next                                                             *treesj-next*
+NEXT
 
 Get right side TreeSJ
 
@@ -1030,7 +1030,7 @@ Get right side TreeSJ
 <
 
 
-type                                                             *treesj-type*
+TYPE
 
 Get node type of current TreeSJ.
 
@@ -1040,7 +1040,7 @@ Get node type of current TreeSJ.
 <
 
 
-text                                                             *treesj-text*
+TEXT
 
 Get text of current TreeSJ.
 
@@ -1050,7 +1050,7 @@ Get text of current TreeSJ.
 <
 
 
-update_text                                               *treesj-update_text*
+UPDATE_TEXT
 
 Updating text of current TreeSJ. If the mode "split" and "recursively" is
 active, then it can be an array. In such a case, you need to update the text in
@@ -1062,18 +1062,17 @@ its children directly.
 <
 
 
-is_ignore                                                   *treesj-is_ignore*
+IS_IGNORE
 
 Checks if the current TreeSJ child must be ignored while recursive formatting
 
 >lua
-    ---@param mode string Current mode (split|join)
     ---@return boolean
-    function TreeSJ:is_ignore(mode)
+    function TreeSJ:is_ignore()
 <
 
 
-has_to_format                                           *treesj-has_to_format*
+HAS_TO_FORMAT
 
 Checks if the TreeSJ contains children that need to be formatted
 
@@ -1083,7 +1082,7 @@ Checks if the TreeSJ contains children that need to be formatted
 <
 
 
-is_first                                                     *treesj-is_first*
+IS_FIRST
 
 Checks if the current node is first among sibling
 
@@ -1093,7 +1092,7 @@ Checks if the current node is first among sibling
 <
 
 
-is_last                                                       *treesj-is_last*
+IS_LAST
 
 Checks if the current node is last among sibling
 
@@ -1103,7 +1102,7 @@ Checks if the current node is last among sibling
 <
 
 
-is_framing                                                 *treesj-is_framing*
+IS_FRAMING
 
 Checks if the current node is first or is last among sibling
 
@@ -1113,7 +1112,7 @@ Checks if the current node is first or is last among sibling
 <
 
 
-is_omit                                                       *treesj-is_omit*
+IS_OMIT
 
 Checks if the text of current TreeSJ’s type contains at `preset[mode].omit`
 
@@ -1123,7 +1122,7 @@ Checks if the text of current TreeSJ’s type contains at `preset[mode].omit`
 <
 
 
-is_imitator                                               *treesj-is_imitator*
+IS_IMITATOR
 
 Checks if the current TreeSJ is node-imitator
 
@@ -1133,7 +1132,7 @@ Checks if the current TreeSJ is node-imitator
 <
 
 
-preset                                                         *treesj-preset*
+PRESET
 
 Get preset for current TreeSJ
 
@@ -1144,7 +1143,7 @@ Get preset for current TreeSJ
 <
 
 
-parent_preset                                           *treesj-parent_preset*
+PARENT_PRESET
 
 Get the preset of the TreeSJ parent
 
@@ -1155,7 +1154,7 @@ Get the preset of the TreeSJ parent
 <
 
 
-update_preset                                           *treesj-update_preset*
+UPDATE_PRESET
 
 Updates the presets for the current TreeSJ.
 
