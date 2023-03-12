@@ -1,66 +1,97 @@
 local lang_utils = require('treesj.langs.utils')
 
+local rec_ignore = { 'arguments', 'formal_parameters' }
+local arrow_body_format_join = function(tsj)
+  local parent = tsj:tsnode():parent():type()
+  if parent == 'arrow_function' and tsj:tsnode():named_child_count() == 1 then
+    tsj:remove_child({ '{', '}' })
+    local ret = tsj:child('return_statement')
+
+    if ret then
+      if ret:has_to_format() then
+        ret:remove_child({ 'return', ';' })
+        local obj = ret:child('object')
+        if obj then
+          tsj:wrap({ left = '(', right = ')' }, 'inline')
+        end
+      else
+        local text = ret:text():gsub('^return ', ''):gsub(';$', '')
+        ret:update_text(text)
+      end
+    end
+  end
+end
+
 return {
-  object = lang_utils.set_preset_for_dict(),
-  object_pattern = lang_utils.set_preset_for_dict(),
-  array = lang_utils.set_preset_for_list(),
-  array_pattern = lang_utils.set_preset_for_list(),
+  object = lang_utils.set_preset_for_dict({
+    split = { recursive_ignore = rec_ignore },
+  }),
+  object_pattern = lang_utils.set_preset_for_dict({
+    both = { recursive_ignore = rec_ignore },
+  }),
+  array = lang_utils.set_preset_for_list({
+    split = { recursive_ignore = rec_ignore },
+  }),
+  array_pattern = lang_utils.set_preset_for_list({
+    split = { recursive_ignore = rec_ignore },
+  }),
   formal_parameters = lang_utils.set_preset_for_args(),
   arguments = lang_utils.set_preset_for_args(),
   named_imports = lang_utils.set_preset_for_dict(),
   export_clause = lang_utils.set_preset_for_dict(),
   statement_block = lang_utils.set_preset_for_statement({
+    split = {
+      recursive_ignore = rec_ignore,
+    },
     join = {
       no_insert_if = {
         'function_declaration',
         'try_statement',
         'if_statement',
       },
+      format_tree = arrow_body_format_join,
     },
   }),
   body = lang_utils.set_preset_for_statement({
     split = {
-      recursive = false,
+      recursive_ignore = rec_ignore,
       format_tree = function(tsj)
         if tsj:type() ~= 'statement_block' then
           tsj:wrap({ left = '{', right = '}' })
+
+          local rec = tsj:preset('split').recursive
           local ph = tsj:child('parenthesized_expression')
-          if ph and ph:has_to_format() then
-            ph:remove_child({ '(', ')' })
-            local text = ph:text():gsub('^%(', ''):gsub('%)$', '')
-            ph:update_text(text)
-          elseif ph then
-            local text = ph:text():gsub('^%(', ''):gsub('%)$', '')
-            ph:update_text(text)
+          if ph and ph:tsnode():named_child_count() == 1 then
+            if rec and ph:has_to_format() then
+              ph:remove_child({ '(', ')' })
+            else
+              local text = ph:text():gsub('^%(', ''):gsub('%)$', '')
+              ph:update_text(text)
+            end
           end
-          local middle = tsj:child(2)
-          tsj:child(2):update_text('return ' .. tsj:child(2):text())
+
+          local body = tsj:child(2)
+          if rec and (body:has_to_format() or body:has_preset('split')) then
+            local set_ret = body:has_preset('split') and body:child(1)
+              or body:child(1):child(1)
+            set_ret:update_text('return ' .. set_ret:text())
+          else
+            body:update_text('return ' .. body:text())
+          end
         end
       end,
     },
     join = {
       space_in_brackets = false,
-      force_insert = '',
-      format_tree = function(tsj)
-        if tsj:tsnode():named_child_count() == 1 then
-          tsj:remove_child({ '{', '}' })
-          local return_ = tsj:child('return_statement')
-
-          if return_ and return_:has_to_format() then
-            return_:remove_child({ 'return', ';' })
-            local obj = return_:child('object')
-            if obj then
-              tsj:wrap({ left = '(', right = ')' }, 'inline')
-            end
-          else
-            local text = return_:text():gsub('^return ', ''):gsub(';$', '')
-            return_:update_text(text)
-          end
-        end
-      end,
+      no_insert_if = {
+        'function_declaration',
+        'try_statement',
+        'if_statement',
+      },
+      format_tree = arrow_body_format_join,
     },
   }),
-  arrow_function = { target_nodes = { 'body', 'statement_block' } },
+  arrow_function = { target_nodes = { 'body' } },
   lexical_declaration = {
     target_nodes = { 'array', 'object' },
   },

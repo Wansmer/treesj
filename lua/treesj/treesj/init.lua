@@ -119,6 +119,7 @@ function TreeSJ:create_child(data, index)
     lang = self._lang,
     parent = self,
     mode = self._mode,
+    from_self = false,
   })
 
   if index then
@@ -229,16 +230,23 @@ end
 ---Creating child of TreeSJ from self
 ---@return TreeSJ
 function TreeSJ:_copy_self()
+  local preset = search.get_self_preset(self:type(), self._lang)
+
   local data = {
     tsnode = self:tsnode(),
-    preset = search.get_self_preset(self:type(), self._lang),
+    preset = preset,
     lang = self._lang,
     parent = self,
     from_self = true,
     mode = self._mode,
   }
 
+  if preset then
+    self._has_node_to_format = true
+  end
+
   local child = TreeSJ.new(data)
+  tu.handle_indent(child)
   child:build_tree()
 
   return child
@@ -291,7 +299,6 @@ end
 function TreeSJ:split()
   if self:has_preset() or self:has_to_format() then
     local root = self:root()
-
     if self:has_to_format() and root:preset('split').recursive then
       for child in self:iter_children() do
         if not child:is_ignore() then
