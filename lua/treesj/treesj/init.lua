@@ -91,16 +91,20 @@ function TreeSJ:build_tree()
 
   self:update_children(tu.linking_tree(self:children()))
 
-  if self:preset(mode) then
-    tu.handle_framing_nodes(self, self:preset(mode))
-    tu.handle_last_separator(self, self:preset(mode))
-  end
+  local preset = self:preset(mode)
+  if preset then
+    tu.handle_framing_nodes(self, preset)
+    tu.handle_last_separator(self, preset)
 
-  local format_tree = not self._copy_from_self
-    and self:has_preset(mode)
-    and self:preset(mode).format_tree
-  if type(format_tree) == 'function' then
-    self:preset(mode).format_tree(self)
+    local format_tree = preset.format_tree
+    -- Don't run `format_tree` if node is copied from itself and uses the same preset,
+    -- because it will be endless recursion
+    local is_run = not self._copy_from_self and true
+      or (self:parent_preset(mode).__info.node ~= preset.__info.node)
+
+    if type(format_tree) == 'function' and is_run then
+      self:preset(mode).format_tree(self)
+    end
   end
 end
 
