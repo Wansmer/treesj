@@ -7,7 +7,7 @@ return {
       non_bracket_node = true,
       last_separator = false,
       last_indent = 'inner',
-      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.helpers.if_penultimate },
       format_tree = function(tsj)
         tsj:remove_child({ ',', '[', ']' })
         for _, flow_node in ipairs(tsj:children({ 'flow_node' })) do
@@ -35,7 +35,7 @@ return {
       space_in_brackets = true,
       non_bracket_node = { left = ' [', right = ']' },
       force_insert = ',',
-      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.helpers.if_penultimate },
       format_tree = function(tsj)
         local items = tsj:children({ 'block_sequence_item' })
         for _, item in ipairs(items) do
@@ -51,7 +51,7 @@ return {
       space_in_brackets = true,
       non_bracket_node = { left = ' {', right = '}' },
       force_insert = ',',
-      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.helpers.if_penultimate },
     },
   },
 }

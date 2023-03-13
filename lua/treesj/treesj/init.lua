@@ -222,6 +222,18 @@ function TreeSJ:wrap(data, mode)
   self:update_children(children)
 end
 
+---Helps to swap elements by their indexes
+---@param index1 integer
+---@param index2 integer
+function TreeSJ:swap_children(index1, index2)
+  local children = self:children()
+  local first = children[index1]
+  local second = children[index2]
+  children[index1] = second
+  children[index2] = first
+  self:update_children(children)
+end
+
 --[[ Work with TreeSJ data ]]
 
 ---Get node type of current TreeSJ

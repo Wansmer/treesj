@@ -15,7 +15,7 @@ return {
   block = lang_utils.set_preset_for_statement({
     join = {
       no_insert_if = {
-        lang_utils.no_insert.if_penultimate,
+        lang_utils.helpers.if_penultimate,
       },
     },
   }),

@@ -43,14 +43,14 @@ return {
     join = {
       force_insert = ';',
       no_insert_if = {
-        lang_utils.no_insert.if_penultimate,
+        lang_utils.helpers.if_penultimate,
       },
     },
   }),
   if_modifier = lang_utils.set_default_preset({
     join = { enable = false },
     split = {
-      omit = { lang_utils.omit.if_second },
+      omit = { lang_utils.helpers.if_second },
       format_tree = function(tsj)
         local if_node = tsj:child('if')
         local end_ = tsj:create_child({ text = 'end', type = 'end' })
@@ -95,16 +95,12 @@ return {
   conditional = lang_utils.set_default_preset({
     join = { enable = false },
     split = {
-      omit = { lang_utils.omit.if_second },
+      omit = { lang_utils.helpers.if_second },
       format_tree = function(tsj)
-        local children = tsj:children()
-        table.insert(children, tsj:create_child({ text = 'end', type = 'end' }))
+        tsj:create_child({ text = 'end', type = 'end' }, #tsj:children() + 1)
         tsj:child('?'):update_text('if ')
         tsj:child(':'):update_text('else')
-        local first, second = tsj:child(1), tsj:child(2)
-        children[1] = second
-        children[2] = first
-        tsj:update_children(children)
+        tsj:swap_children(1, 2)
       end,
       format_resulted_lines = function(lines)
         return vim.tbl_map(function(line)
@@ -121,7 +117,7 @@ return {
   }),
   when = lang_utils.set_default_preset({
     both = {
-      omit = { lang_utils.omit.if_second },
+      omit = { lang_utils.helpers.if_second },
     },
     join = {
       space_in_brackets = true,

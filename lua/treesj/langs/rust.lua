@@ -32,7 +32,7 @@ return {
   }),
   block = lang_utils.set_preset_for_statement({
     join = {
-      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.helpers.if_penultimate },
       format_tree = function(tsj)
         local node = tsj:tsnode()
         local parents = { 'match_arm', 'closure_expression' }
@@ -52,7 +52,7 @@ return {
       end,
     },
     join = {
-      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.helpers.if_penultimate },
       format_tree = function(tsj)
         local node = tsj:tsnode()
         local parents = { 'match_arm', 'closure_expression' }

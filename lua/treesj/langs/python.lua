@@ -18,7 +18,7 @@ return {
   }),
   import_from_statement = lang_utils.set_preset_for_args({
     both = {
-      omit = { lang_utils.omit.if_second, 'import', ' (' },
+      omit = { lang_utils.helpers.if_second, 'import', ' (' },
     },
     split = {
       last_separator = true,

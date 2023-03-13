@@ -180,38 +180,35 @@ M.set_preset_for_non_bracket = set_preset({
   },
 })
 
-local helpers = {}
+M.helpers = {}
 
-function helpers.if_penultimate(child)
+M.helpers.if_penultimate = function(child)
   local next = child:next()
   return next and next:is_last() or false
 end
 
-function helpers.if_second(child)
+M.helpers.if_second = function(child)
   local prev = child:prev()
   return prev and prev:is_first() or false
 end
 
-function helpers.by_index(i)
+M.helpers.by_index = function(i)
   return function(child)
     return child:parent() and child:parent():child(i) == child
   end
 end
 
-function helpers.has_parent(parent_type)
+M.helpers.has_parent = function(parent_type)
   return function(child)
     return child:parent() and child:parent():type() == parent_type
   end
 end
 
-function helpers.match(pattern)
+M.helpers.match = function(pattern)
   return function(child)
     local text = child:text()
     return type(text) == 'string' and text:match(pattern) or false
   end
 end
-
-M.omit = vim.tbl_extend('force', {}, helpers)
-M.no_insert = vim.tbl_extend('force', {}, helpers)
 
 return M

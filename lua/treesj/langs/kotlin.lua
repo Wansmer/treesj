@@ -15,7 +15,7 @@ return {
     join = {
       force_insert = ';',
       no_insert_if = {
-        lang_utils.no_insert.if_penultimate,
+        lang_utils.helpers.if_penultimate,
       },
     },
   }),

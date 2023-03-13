@@ -474,15 +474,15 @@ node in turn) and should return a boolean if that child matches the condition.
 
 The utilities have helper functions that you will need most often:
 
-`lang_utils.no_insert.if_penultimate`
+`lang_utils.helpers.if_penultimate`
 
-`lang_utils.no_insert.if_second`
+`lang_utils.helpers.if_second`
 
-`lang_utils.no_insert.by_index(index)`
+`lang_utils.helpers.by_index(index)`
 
-`lang_utils.no_insert.has_parent(parent_type)`
+`lang_utils.helpers.has_parent(parent_type)`
 
-`lang_utils.no_insert.match(pattern)`
+`lang_utils.helpers.match(pattern)`
 
 <details>
 
@@ -533,18 +533,6 @@ a split, or its position and spaces do not change in the case of a join).
 
 When some value of list is `function` the principle of operation is the same as
 that of `no_insert_if`.
-
-Helper function:
-
-`lang_utils.omit.if_penultimate`
-
-`lang_utils.omit.if_second`
-
-`lang_utils.omit.by_index(index)`
-
-`lang_utils.omit.has_parent(parent_type)`
-
-`lang_utils.omit.match(pattern)`
 
 #### Option `non_bracket_node`
 
