@@ -2,7 +2,7 @@ local lang_utils = require('treesj.langs.utils')
 
 return {
   flow_sequence = {
-    join = nil,
+    join = { enable = false },
     split = {
       non_bracket_node = true,
       last_separator = false,
@@ -18,7 +18,7 @@ return {
     },
   },
   flow_mapping = {
-    join = nil,
+    join = { enable = false },
     split = {
       non_bracket_node = true,
       recursive = true,
@@ -30,7 +30,7 @@ return {
     },
   },
   block_sequence = {
-    split = nil,
+    split = { enable = false },
     join = {
       space_in_brackets = true,
       non_bracket_node = { left = ' [', right = ']' },
@@ -46,7 +46,7 @@ return {
     },
   },
   block_mapping = {
-    split = nil,
+    split = { enable = false },
     join = {
       space_in_brackets = true,
       non_bracket_node = { left = ' {', right = '}' },

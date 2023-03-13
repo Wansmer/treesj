@@ -809,7 +809,7 @@ This can be implemented with:
 ```lua
 local ruby = {
   conditional = lang_utils.set_default_preset({
-    join = nil,
+    join = { enable = false },
     split = {
       omit = { lang_utils.omit.if_second },
       format_tree = function(tsj)

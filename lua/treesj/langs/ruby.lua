@@ -48,7 +48,7 @@ return {
     },
   }),
   if_modifier = lang_utils.set_default_preset({
-    join = nil,
+    join = { enable = false },
     split = {
       omit = { lang_utils.omit.if_second },
       format_tree = function(tsj)
@@ -59,7 +59,7 @@ return {
     },
   }),
   ['if'] = lang_utils.set_default_preset({
-    split = nil,
+    split = { enable = false },
     join = {
       enable = function(tsn)
         local check = {
@@ -93,7 +93,7 @@ return {
     },
   }),
   conditional = lang_utils.set_default_preset({
-    join = nil,
+    join = { enable = false },
     split = {
       omit = { lang_utils.omit.if_second },
       format_tree = function(tsj)
