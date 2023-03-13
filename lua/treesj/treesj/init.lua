@@ -13,7 +13,6 @@ local search = require('treesj.search')
 ---@field _next TreeSJ|nil TreeSJ instance. Next sibling of current TreeSJ node
 ---@field _preset table|nil Preset for current TreeSJ if exist. Include both modes
 ---@field _text string|string[] Formatted tsnode text. Can be string[] when `recursive` is true in preset
----@field _has_node_to_format boolean true if `recursive` enable and node has descendants for recursive format
 ---@field _children TreeSJ[] List of children
 ---@field _root_indent integer|nil Start indent to calculate other insdent when split
 ---@field _remove boolean Marker if node should be removed from tree
@@ -28,15 +27,11 @@ TreeSJ.__index = TreeSJ
 function TreeSJ.new(tsn_data)
   local tsnode = tsn_data.tsnode
   local preset = tsn_data.preset
-    and vim.tbl_deep_extend('force', {}, tsn_data.preset)
   local lang = tsn_data.lang
   local parent = tsn_data.parent
   local from_self = tsn_data.from_self
-  local root_preset = parent and parent:root():preset() or nil
 
   local is_tsn = tu.is_tsnode(tsnode)
-  local hntf = is_tsn and search.has_node_to_format(tsnode, root_preset, lang)
-    or false
   local text = is_tsn and tu.get_node_text(tsnode) or tsnode:text()
 
   local ri
@@ -55,7 +50,6 @@ function TreeSJ.new(tsn_data)
     _next = nil,
     _preset = preset,
     _text = text,
-    _has_node_to_format = hntf,
     _children = {},
     _root_indent = ri,
     _mode = tsn_data.mode,
@@ -70,10 +64,15 @@ function TreeSJ:build_tree()
   local children = tu.collect_children(self:tsnode(), tu.skip_empty_nodes)
 
   for _, child in ipairs(children) do
+    local preset
+
+    if child:named() then
+      preset = search.get_self_preset(child:type(), self._lang)
+    end
+
     local tsj = TreeSJ.new({
       tsnode = child,
-      preset = child:named()
-        and search.get_self_preset(child:type(), self._lang),
+      preset = preset,
       lang = self._lang,
       parent = self,
       mode = mode,
@@ -109,22 +108,44 @@ function TreeSJ:build_tree()
 end
 
 ---Creating a new TreeSJ instance as a child of current TreeSJ.
----If index present, puts it in children list and returned this child,
----if not – returned child, but not puts it in children list. Index can be a negative value,
----meaning insert from the end. If an index is specified that is outside the list of children,
----then `nil` will be returned.
----@param data table { text = string, type? = string }. If `type` not present, uses value of `text`
+---  - data: {text=string, type=string|nil, copy_from=TreeSJ|nil}
+---      The "copy_from" field is used if a node needs to be duplicated and expects TreeSJ.
+---      If a TreeSJ instance is passed to it, then the "text" and "type" fields will be ignored.
+---  - index: If index present, puts it in children list and returned this child,
+---      if not – returned child, but not puts it in children list. Index can be a negative value,
+---      meaning insert from the end. If an index is specified that is outside the list of children,
+---      then `nil` will be returned.
+---@param data {text=string, type=string|nil, copy_from=TreeSJ|nil}. If `type` not present, uses value of `text`
 ---@param index? integer Index where the child should be inserted.
 ---@return TreeSJ|nil
 function TreeSJ:create_child(data, index)
+  local tsnode, preset
+  local from_self = false
+  local copy = data.copy_from
+
+  if copy and (getmetatable(copy) == getmetatable(self)) then
+    tsnode = copy:tsnode()
+    preset = tsnode:named()
+        and search.get_self_preset(tsnode:type(), self._lang)
+      or nil
+    from_self = copy == self
+  else
+    tsnode = tu.imitate_tsn(self, data)
+  end
+
   local child = TreeSJ.new({
-    tsnode = tu.imitate_tsn(self, data),
-    preset = nil,
+    tsnode = tsnode,
+    preset = preset,
     lang = self._lang,
     parent = self,
     mode = self._mode,
-    from_self = false,
+    from_self = from_self,
   })
+
+  if copy then
+    tu.handle_indent(child)
+    child:build_tree()
+  end
 
   if index then
     local children = self:children()
@@ -143,14 +164,6 @@ function TreeSJ:create_child(data, index)
   return child
 end
 
----Checking if the current TreeSJ node is non-bracket block
----@return boolean
-function TreeSJ:non_bracket()
-  return self:has_preset()
-      and u.get_nested_key_value(self:preset(), 'non_bracket_node')
-    or false
-end
-
 ---Get indent from previous configured ancestor node
 function TreeSJ:_get_prev_indent()
   if self:parent():has_preset() and not self:parent():is_ignore() then
@@ -160,6 +173,8 @@ function TreeSJ:_get_prev_indent()
     return self:parent():_get_prev_indent()
   end
 end
+
+--[[ Work with children ]]
 
 ---Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
 --- - The `index` can be a negative value, which means to search from the end of the list.
@@ -180,20 +195,6 @@ function TreeSJ:child(type_or_index)
   end
 end
 
----Checks if the specified types of children exist among the list of children.
----If types are omitted, checks that there is at least one child.
----@param types? string[]
----@return boolean
-function TreeSJ:has_children(types)
-  if not types then
-    return #self:children() > 0
-  else
-    return u.every(types, function(t)
-      return self:child(t)
-    end)
-  end
-end
-
 ---Removes children by the passed types or index.
 ---@param types_or_index string|string[]|integer Type, types, or index of child to remove
 function TreeSJ:remove_child(types_or_index)
@@ -211,6 +212,20 @@ function TreeSJ:remove_child(types_or_index)
   end
 end
 
+---Checks if the specified types of children exist among the list of children.
+---If types are omitted, checks that there is at least one child.
+---@param types? string[]
+---@return boolean
+function TreeSJ:has_children(types)
+  if not types then
+    return #self:children() > 0
+  else
+    return u.every(types, function(t)
+      return self:child(t)
+    end)
+  end
+end
+
 ---Get the children of the current TreeSJ.
 ---Returns all children if `types` are omitted, otherwise returns all children of the listed types.
 ---@param types? string[] List-like table with child's types for filtering
@@ -225,35 +240,13 @@ function TreeSJ:children(types)
   return children
 end
 
----Get root treesj-node of current TreeSJ
----@return TreeSJ TreeSJ instance
-function TreeSJ:root()
-  return self._root and self or self:parent():root()
-end
-
----Creating child of TreeSJ from self
----@return TreeSJ
-function TreeSJ:_copy_self()
-  local preset = search.get_self_preset(self:type(), self._lang)
-
-  local data = {
-    tsnode = self:tsnode(),
-    preset = preset,
-    lang = self._lang,
-    parent = self,
-    from_self = true,
-    mode = self._mode,
-  }
-
-  if preset then
-    self._has_node_to_format = true
+---Updated children list of current TreeSJ
+---@param children TreeSJ[]
+function TreeSJ:update_children(children)
+  if type(children) ~= 'table' then
+    return
   end
-
-  local child = TreeSJ.new(data)
-  tu.handle_indent(child)
-  child:build_tree()
-
-  return child
+  self._children = tu.linking_tree(children)
 end
 
 ---Creates the first and last elements in the list of children of the current TreeSJ.
@@ -266,12 +259,46 @@ function TreeSJ:wrap(data, mode)
   mode = mode and mode or 'wrap'
   local left = self:create_child({ text = data.left, type = 'left_bracket' })
   local right = self:create_child({ text = data.right, type = 'right_bracket' })
-  local children = mode == 'wrap' and { self:_copy_self() } or self:children()
+  local children = mode == 'wrap'
+      and { self:create_child({ copy_from = self }) }
+    or self:children()
 
   table.insert(children, 1, left)
   table.insert(children, right)
 
   self:update_children(children)
+end
+
+--[[ Work with TreeSJ data ]]
+
+---Get root treesj-node of current TreeSJ
+---@return TreeSJ TreeSJ instance
+function TreeSJ:root()
+  return self._root and self or self:parent():root()
+end
+
+---Get TSNode or TSNode imitator of current
+---@return userdata|table TSNode or TSNode imitator
+function TreeSJ:tsnode()
+  return self._tsnode
+end
+
+---Get parent TreeSJ
+---@return TreeSJ|nil
+function TreeSJ:parent()
+  return self._parent
+end
+
+---Get left side node
+---@return TreeSJ|nil
+function TreeSJ:prev()
+  return self._prev
+end
+
+---Get right side node
+---@return TreeSJ|nil
+function TreeSJ:next()
+  return self._next
 end
 
 ---Merge TreeSJ to one line for replace start text
@@ -323,36 +350,20 @@ function TreeSJ:split()
   end
 end
 
+---Checking if the current TreeSJ node is non-bracket block
+---@return boolean
+function TreeSJ:non_bracket()
+  return self:has_preset()
+      and u.get_nested_key_value(self:preset(), 'non_bracket_node')
+    or false
+end
+
 ---Checking if the current node must be ignored while recursive formatting
 ---@return boolean
 function TreeSJ:is_ignore()
   local mode = self._mode
   local p = self:root():preset(mode)
   return p and vim.tbl_contains(p.recursive_ignore, self:type()) or false
-end
-
----Get TSNode or TSNode imitator of current
----@return userdata|table TSNode or TSNode imitator
-function TreeSJ:tsnode()
-  return self._tsnode
-end
-
----Get parent TreeSJ
----@return TreeSJ|nil
-function TreeSJ:parent()
-  return self._parent
-end
-
----Get left side node
----@return TreeSJ|nil
-function TreeSJ:prev()
-  return self._prev
-end
-
----Get right side node
----@return TreeSJ|nil
-function TreeSJ:next()
-  return self._next
 end
 
 ---Set left side node
@@ -365,15 +376,6 @@ end
 ---@param node TreeSJ TreeSJ instance
 function TreeSJ:_set_next(node)
   self._next = node
-end
-
----Updated children list of current TreeSJ
----@param children TreeSJ[]
-function TreeSJ:update_children(children)
-  if type(children) ~= 'table' then
-    return
-  end
-  self._children = tu.linking_tree(children)
 end
 
 ---Get node type of current TreeSJ
@@ -406,10 +408,24 @@ function TreeSJ:update_text(new_text)
   self._text = new_text
 end
 
----Checks if the TreeSJ contains children that need to be formatted
+---Checks if the TreeSJ contains descendants that need to be formatted
 ---@return boolean
 function TreeSJ:has_to_format()
-  return self._has_node_to_format
+  local ignore = self:root():preset(self._mode).recursive_ignore
+
+  for child in self:iter_children() do
+    if not child:is_imitator() and child:tsnode():named() then
+      local tsnode = child:tsnode()
+      local hp = child:has_preset(self._mode)
+
+      -- It needs to be applied in a loop to handle cases where any of the nodes were copied from themselves
+      if hp or search.has_node_to_format(tsnode, ignore, self._lang) then
+        return true
+      end
+    end
+  end
+
+  return false
 end
 
 ---Get preset for current TreeSJ

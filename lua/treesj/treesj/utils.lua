@@ -22,7 +22,7 @@ end
 ---Get list-like table with children of node
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
----@param tsnode userdata TSNode instance
+---@param tsnode userdata|table TSNode instance or TSNode imitator
 ---@param filter? function Function for filtering output list
 ---@return table
 function M.collect_children(tsnode, filter)
@@ -176,7 +176,7 @@ end
 function M.imitate_tsn(tsj, data)
   local imitator = {}
   imitator.__index = imitator
-  local text = data.text
+  local text = data.text and data.text or ''
   local ts_type = data.type and data.type or data.text
   local sr, sc, er, ec = search.range(tsj:tsnode())
 

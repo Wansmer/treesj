@@ -59,6 +59,8 @@ function M._format(mode, override)
       table.insert(viewed, node)
       start_node = node:parent()
     else
+      -- Need to use a copy of the preset so that it can be updated on the fly
+      tsn_data.preset = vim.tbl_deep_extend('force', {}, tsn_data.preset)
       break
     end
   end
@@ -82,7 +84,7 @@ function M._format(mode, override)
 
   tsn_data.mode = MODE
   local treesj = TreeSJ.new(tsn_data)
-  treesj:build_tree(MODE)
+  treesj:build_tree()
   treesj[MODE](treesj)
   local replacement = treesj:get_lines()
 

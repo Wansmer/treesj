@@ -41,18 +41,20 @@ end
 ---Recursively searches for the configured node among the ancestors
 ---@param node userdata TSNode instance
 ---@param lang string Language of TSNode
----@return userdata|nil
+---@return userdata|nil, table|nil
 local function search_node_up(node, lang)
   if not node then
     return nil
   end
 
-  if not get_preset(node:type(), lang) then
+  local preset = get_preset(node:type(), lang)
+
+  if not (node:named() and preset) then
     node = node:parent()
     return search_node_up(node, lang)
   end
 
-  return node
+  return node, preset
 end
 
 ---Recursively searches for a configured node inside the current node and
@@ -69,7 +71,7 @@ local function search_inside_node(node, lang, targets)
   local target_node, use_preset
 
   for child in node:iter_children() do
-    local target_type = targets[child:type()]
+    local target_type = child:named() and targets[child:type()]
     use_preset = target_type and M.get_self_preset(target_type, lang)
 
     if use_preset then
@@ -99,7 +101,7 @@ local function get_node_from_field(node, lang, targets)
 end
 
 ---Get target node and node data
----@param node userdata TSNode instance
+---@param node userdata|nil TSNode instance
 ---@param lang string TSNode language
 ---@return table|nil
 local function search_node(node, lang)
@@ -113,10 +115,9 @@ local function search_node(node, lang)
   local preset
 
   while node do
-    node = search_node_up(node, lang)
-    preset = node and get_preset(node:type(), lang)
+    node, preset = search_node_up(node, lang)
 
-    if not node then
+    if not (node and preset) then
       return nil
     end
 
@@ -211,18 +212,18 @@ end
 
 ---Checking if the node contains descendants to format
 ---@param tsnode userdata TSNode instance
----@param root_preset table|nil Preset of root node for check 'recursive_ignore'
+---@param ignore table|nil List of types to be ignored
 ---@param lang string Current lang
 ---@return boolean
-function M.has_node_to_format(tsnode, root_preset, lang)
+function M.has_node_to_format(tsnode, ignore, lang)
+  if not ((tsnode ~= 'userdata') and ignore) then
+    return false
+  end
+
   local function configured_and_must_be_formatted(tsn)
-    local p = get_preset(tsn:type(), lang)
-    local recursive_ignore =
-      u.get_nested_key_value(root_preset, 'recursive_ignore')
-    local ignore = recursive_ignore
-        and vim.tbl_contains(recursive_ignore, tsn:type())
-      or false
-    return u.tobool(p and not (p.target_nodes or ignore))
+    local has_preset = tsn:named() and M.get_self_preset(tsn:type(), lang)
+    local ignored = vim.tbl_contains(ignore, tsn:type())
+    return has_preset and not ignored
   end
 
   return M.check_descendants(tsnode, configured_and_must_be_formatted)
@@ -245,7 +246,7 @@ function M.has_disabled_descendants(tsnode, mode, lang)
 end
 
 ---Returned range of node considering the presence of brackets
----@param tsn userdata
+---@param tsn userdata|table TSNode instance or TSNode imitator
 ---@param p? table
 ---@return integer, integer, integer, integer
 function M.range(tsn, p)
