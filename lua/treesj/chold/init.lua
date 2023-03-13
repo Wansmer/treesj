@@ -159,7 +159,7 @@ function CHold:compute(tsj, mode)
 
     -- Checking if the cursor is after a node
     if cursor[1] == range[3] + 1 and cursor[2] >= range[4] then
-      local lines = tsj:get_lines()
+      local lines = tsj:_get_lines()
       local shift = cursor[2] - range[4]
       local start = range[2]
 
@@ -177,7 +177,7 @@ function CHold:compute(tsj, mode)
       end
     end
   elseif BEHAVIOR == 'end' then
-    local lines = tsj:get_lines()
+    local lines = tsj:_get_lines()
     local text_len = #lines[#lines]
     row = mode == 'join' and range[1] + 1 or range[1] + #lines
     col = mode == 'join' and (range[2] + text_len - 1) or text_len - 1

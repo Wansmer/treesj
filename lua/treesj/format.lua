@@ -84,9 +84,15 @@ function M._format(mode, override)
 
   tsn_data.mode = MODE
   local treesj = TreeSJ.new(tsn_data)
-  treesj:build_tree()
-  treesj[MODE](treesj)
-  local replacement = treesj:get_lines()
+  treesj:_build_tree()
+
+  local ok_format, err = pcall(treesj._format, treesj)
+  if not ok_format then
+    notify.warn(err)
+    return
+  end
+
+  local replacement = treesj:_get_lines()
 
   if MODE == JOIN and #replacement[1] > MAX_LENGTH then
     notify.info(msg.extra_longer:format(MAX_LENGTH))
@@ -97,7 +103,13 @@ function M._format(mode, override)
   cursor:compute(treesj, MODE)
   local new_cursor = cursor:get_cursor()
 
-  vim.api.nvim_buf_set_text(0, sr, sc, er, ec, replacement)
+  local insert_ok, e =
+    pcall(vim.api.nvim_buf_set_text, 0, sr, sc, er, ec, replacement)
+
+  if not insert_ok then
+    notify(e)
+    return
+  end
 
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
 end

@@ -1,3 +1,5 @@
+local notify = require('treesj.notify')
+local msg = notify.msg
 local u = require('treesj.utils')
 local tu = require('treesj.treesj.utils')
 local search = require('treesj.search')
@@ -15,7 +17,6 @@ local search = require('treesj.search')
 ---@field _text string|string[] Formatted tsnode text. Can be string[] when `recursive` is true in preset
 ---@field _children TreeSJ[] List of children
 ---@field _root_indent integer|nil Start indent to calculate other insdent when split
----@field _remove boolean Marker if node should be removed from tree
 ---@field _mode 'split'|'join' Current mode
 ---@field _copy_from_self boolean Marker that the current instance is a copy of itself,
 ---wrapped with TreeSJ:wrap({...}, 'wrap' )
@@ -53,58 +54,8 @@ function TreeSJ.new(tsn_data)
     _children = {},
     _root_indent = ri,
     _mode = tsn_data.mode,
-    _remove = false,
     _copy_from_self = from_self,
   }, TreeSJ)
-end
-
----Recursive parse current node children and building TreeSJ
-function TreeSJ:build_tree()
-  local mode = self._mode
-  local children = tu.collect_children(self:tsnode(), tu.skip_empty_nodes)
-
-  for _, child in ipairs(children) do
-    local preset
-
-    if child:named() then
-      preset = search.get_self_preset(child:type(), self._lang)
-    end
-
-    local tsj = TreeSJ.new({
-      tsnode = child,
-      preset = preset,
-      lang = self._lang,
-      parent = self,
-      mode = mode,
-      from_self = false,
-    })
-
-    tu.handle_indent(tsj)
-
-    if tu.is_tsnode(child) then
-      tsj:build_tree()
-    end
-
-    table.insert(self._children, tsj)
-  end
-
-  self:update_children(tu.linking_tree(self:children()))
-
-  local preset = self:preset(mode)
-  if preset then
-    tu.handle_framing_nodes(self, preset)
-    tu.handle_last_separator(self, preset)
-
-    local format_tree = preset.format_tree
-    -- Don't run `format_tree` if node is copied from itself and uses the same preset,
-    -- because it will be endless recursion
-    local is_run = not self._copy_from_self and true
-      or (self:parent_preset(mode).__info.node ~= preset.__info.node)
-
-    if type(format_tree) == 'function' and is_run then
-      self:preset(mode).format_tree(self)
-    end
-  end
 end
 
 ---Creating a new TreeSJ instance as a child of current TreeSJ.
@@ -144,7 +95,7 @@ function TreeSJ:create_child(data, index)
 
   if copy then
     tu.handle_indent(child)
-    child:build_tree()
+    child:_build_tree()
   end
 
   if index then
@@ -162,16 +113,6 @@ function TreeSJ:create_child(data, index)
   end
 
   return child
-end
-
----Get indent from previous configured ancestor node
-function TreeSJ:_get_prev_indent()
-  if self:parent():has_preset() and not self:parent():is_ignore() then
-    return self:parent()._root_indent
-  end
-  if self:parent() then
-    return self:parent():_get_prev_indent()
-  end
 end
 
 --[[ Work with children ]]
@@ -301,55 +242,6 @@ function TreeSJ:next()
   return self._next
 end
 
----Merge TreeSJ to one line for replace start text
-function TreeSJ:join()
-  if self:has_preset() or self:has_to_format() then
-    local root = self:root()
-
-    if self:has_to_format() and root:preset('join').recursive then
-      for child in self:iter_children() do
-        if not child:is_ignore() then
-          child:join()
-        end
-      end
-    end
-
-    local lines = tu._join(self)
-    local format_lines = self:preset('join')
-      and self:preset('join').format_resulted_lines
-
-    if format_lines then
-      lines = format_lines(lines)
-    end
-
-    self:update_text(table.concat(lines))
-  end
-end
-
----Merge TreeSJ to lines for replace start text
-function TreeSJ:split()
-  if self:has_preset() or self:has_to_format() then
-    local root = self:root()
-    if self:has_to_format() and root:preset('split').recursive then
-      for child in self:iter_children() do
-        if not child:is_ignore() then
-          child:split()
-        end
-      end
-    end
-
-    local lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
-    local format_lines = self:preset('split')
-      and self:preset('split').format_resulted_lines
-
-    if format_lines then
-      lines = format_lines(lines)
-    end
-
-    self:update_text(lines)
-  end
-end
-
 ---Checking if the current TreeSJ node is non-bracket block
 ---@return boolean
 function TreeSJ:non_bracket()
@@ -364,18 +256,6 @@ function TreeSJ:is_ignore()
   local mode = self._mode
   local p = self:root():preset(mode)
   return p and vim.tbl_contains(p.recursive_ignore, self:type()) or false
-end
-
----Set left side node
----@param node TreeSJ TreeSJ instance
-function TreeSJ:_set_prev(node)
-  self._prev = node
-end
-
----Set right side node
----@param node TreeSJ TreeSJ instance
-function TreeSJ:_set_next(node)
-  self._next = node
 end
 
 ---Get node type of current TreeSJ
@@ -428,6 +308,16 @@ function TreeSJ:has_to_format()
   return false
 end
 
+--[[ Work with preset ]]
+
+---Checking if the current TreeSJ is configured
+---@param mode? 'split'|'join' Current mode (split|join)
+---@return boolean
+function TreeSJ:has_preset(mode)
+  local has = self._preset and (mode and self._preset[mode] or self._preset)
+  return u.tobool(has)
+end
+
 ---Get preset for current TreeSJ
 ---@param mode? 'split'|'join' Current mode (split|join)
 ---@return table|nil
@@ -447,14 +337,6 @@ function TreeSJ:parent_preset(mode)
     return mode and parent:preset(mode) or parent:preset()
   end
   return nil
-end
-
----Checking if the current TreeSJ is configured
----@param mode? 'split'|'join'
----@return boolean
-function TreeSJ:has_preset(mode)
-  local has = self._preset and (mode and self._preset[mode] or self._preset)
-  return u.tobool(has)
 end
 
 ---Checking if the current node is first among sibling
@@ -488,18 +370,6 @@ function TreeSJ:is_imitator()
   return self._imitator
 end
 
----Return formatted lines of TreeSJ
----@return string[]
-function TreeSJ:get_lines()
-  local text = self:text()
-  return type(text) == 'table' and text or { text }
-end
-
----Mark current TreeSJ as removed
-function TreeSJ:remove()
-  self._remove = true
-end
-
 ---Iterate all TreeSJ instance children.
 ---Use: `... for child, index in tsj:iter_children() do ...`
 ---@return function, TreeSJ[]
@@ -525,6 +395,134 @@ function TreeSJ:update_preset(new_preset, mode)
     else
       self._preset = vim.tbl_deep_extend('force', self._preset, new_preset)
     end
+  end
+end
+
+--[[ Private, not use in presets ]]
+
+---Recursive parse current node children and building TreeSJ
+function TreeSJ:_build_tree()
+  local mode = self._mode
+  local children = tu.collect_children(self:tsnode(), tu.skip_empty_nodes)
+
+  for _, child in ipairs(children) do
+    local preset
+
+    if child:named() then
+      preset = search.get_self_preset(child:type(), self._lang)
+    end
+
+    local tsj = TreeSJ.new({
+      tsnode = child,
+      preset = preset,
+      lang = self._lang,
+      parent = self,
+      mode = mode,
+      from_self = false,
+    })
+
+    tu.handle_indent(tsj)
+
+    if tu.is_tsnode(child) then
+      tsj:_build_tree()
+    end
+
+    table.insert(self._children, tsj)
+  end
+
+  self:update_children(self:children())
+
+  local preset = self:preset(mode)
+  if preset then
+    tu.handle_framing_nodes(self, preset)
+    tu.handle_last_separator(self, preset)
+
+    local format_tree = preset.format_tree
+    -- Don't run `format_tree` if node is copied from itself and uses the same preset,
+    -- because it will be endless recursion
+    local is_run = not self._copy_from_self and true
+      or (self:parent_preset(mode).__info.node ~= preset.__info.node)
+
+    if type(format_tree) == 'function' and is_run then
+      local ok, error = pcall(preset.format_tree, self)
+      if not ok then
+        notify.warn(
+          msg.custom_func:format('format_tree', preset.__info.node, error)
+        )
+      end
+    end
+  end
+end
+
+---Merge TreeSJ to one line for replace start text
+function TreeSJ:_format()
+  if self:has_preset() or self:has_to_format() then
+    local mode = self._mode
+    local root = self:root()
+
+    if self:has_to_format() and root:preset(mode).recursive then
+      for child in self:iter_children() do
+        if not child:is_ignore() then
+          child:_format()
+        end
+      end
+    end
+
+    local preset = self:preset(mode)
+    local lines
+
+    if mode == 'join' then
+      lines = tu._join(self)
+    else
+      lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
+    end
+
+    local format_lines = preset and preset.format_resulted_lines
+
+    if format_lines then
+      local ok, output = pcall(format_lines, lines)
+      local correct = type(output) == 'table' and u.every(output, u.is_string)
+
+      if not (ok and correct) then
+        local mess = (not correct and ok) and msg.wrong_resut or msg.custom_func
+        mess = mess:format('format_resulted_lines', preset.__info.node, output)
+        error(mess, 0)
+      end
+
+      lines = output
+    end
+
+    lines = mode == 'split' and lines or table.concat(lines)
+    self:update_text(lines)
+  end
+end
+
+---Set left side node
+---@param node TreeSJ TreeSJ instance
+function TreeSJ:_set_prev(node)
+  self._prev = node
+end
+
+---Set right side node
+---@param node TreeSJ TreeSJ instance
+function TreeSJ:_set_next(node)
+  self._next = node
+end
+
+---Return formatted lines of TreeSJ
+---@return string[]
+function TreeSJ:_get_lines()
+  local text = self:text()
+  return type(text) == 'table' and text or { text }
+end
+
+---Get indent from previous configured ancestor node
+function TreeSJ:_get_prev_indent()
+  if self:parent():has_preset() and not self:parent():is_ignore() then
+    return self:parent()._root_indent
+  end
+  if self:parent() then
+    return self:parent():_get_prev_indent()
   end
 end
 

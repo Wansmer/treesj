@@ -26,7 +26,7 @@ end
 ---@param cb function Callback for checking every item
 ---@return boolean
 function M.every(tbl, cb)
-  if not vim.tbl_islist(tbl) or M.is_empty(tbl) then
+  if type(tbl) ~= 'table' or not vim.tbl_islist(tbl) or M.is_empty(tbl) then
     return false
   end
 
@@ -79,6 +79,14 @@ function M.get_nested_key_value(tbl, target_key)
     end
   end
   return nil
+end
+
+function M.is_string(el)
+  return type(el) == 'string'
+end
+
+function M.is_table(el)
+  return type(el) == 'table'
 end
 
 return M

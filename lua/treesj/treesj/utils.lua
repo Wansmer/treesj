@@ -445,13 +445,11 @@ function M._join(tsj)
   local lines = {}
 
   for child in tsj:iter_children() do
-    if not child._remove then
-      if tsj:has_preset() then
-        handle_force_insert(child)
-      end
-      set_whitespace(child)
-      table.insert(lines, child:text())
+    if tsj:has_preset() then
+      handle_force_insert(child)
     end
+    set_whitespace(child)
+    table.insert(lines, child:text())
   end
 
   return collapse_spacing(lines)
@@ -533,21 +531,13 @@ function M._split(tsj)
 
   for child in tsj:iter_children() do
     if tsj:has_preset() then
-      if not child._remove then
-        process_configured(child, lines)
-      end
+      process_configured(child, lines)
     elseif tsj:has_to_format() then
       process_configured_container(child, lines)
     else
       set_whitespace(child:text())
       table.insert(lines, child:text())
     end
-  end
-
-  local p = tsj:preset('split')
-  local format_lines = p and p.format_resulted_lines
-  if type(format_lines) == 'function' then
-    lines = tsj:preset('split').format_resulted_lines(lines)
   end
 
   return lines

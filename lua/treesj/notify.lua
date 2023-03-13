@@ -17,6 +17,8 @@ M.msg = {
   version_not_support = 'Current version of neovim is "0.%s". TreeSJ requires version "0.8" or higher',
   node_not_received = 'Node not received',
   node_is_disable = 'Action "%s" for node "%s" is disabled in preset',
+  custom_func = 'Something went wrong in function "%s" from preset for "%s": %s',
+  wrong_resut = 'Function "%s" from preset for "%s" returned wrong format for new lines',
 }
 
 ---Wraper for vim.notify and nvim-notify
