@@ -1,7 +1,7 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  attributes = u.set_default_preset(),
+  attributes = lang_utils.set_default_preset(),
   tag = {
     target_nodes = { 'attributes' },
   },

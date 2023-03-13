@@ -52,15 +52,17 @@ M.settings = DEFAULT_SETTINGS
 
 local function merge_settings(default_settings, opts)
   opts = opts or {}
-  -- TODO: rewrite
+
   if opts.langs then
     for lang, presets in pairs(opts.langs) do
       for node, preset in pairs(presets) do
-        presets[node] = lu._premerge(preset)
+        local info = { lang = lang, node = node, mode = 'both' }
+        presets[node] = lu._premerge(preset, info)
       end
       opts.langs[lang] = presets
     end
   end
+
   local settings = vim.tbl_deep_extend('force', default_settings, opts)
   settings.langs = lu._prepare_presets(settings.langs)
   settings.langs = lu._skip_disabled(settings.langs)

@@ -8,16 +8,16 @@ M.setup = function(opts)
   settings._create_commands()
 end
 
-M.__toggle = function()
-  require('treesj.format')._format()
+M.__toggle = function(_, preset)
+  require('treesj.format')._format(nil, preset)
 end
 
-M.__split = function()
-  require('treesj.format')._format('split')
+M.__split = function(_, preset)
+  require('treesj.format')._format('split', preset)
 end
 
-M.__join = function()
-  require('treesj.format')._format('join')
+M.__join = function(_, preset)
+  require('treesj.format')._format('join', preset)
 end
 
 local function set_opfunc_and_format(dir)
@@ -25,24 +25,25 @@ local function set_opfunc_and_format(dir)
   vim.api.nvim_feedkeys('g@l', 'nx', true)
 end
 
-local function format(dir)
-  if settings.settings.dot_repeat then
+local function format(data)
+  local dir, preset = data.dir, data.preset
+  if settings.settings.dot_repeat and not preset then
     set_opfunc_and_format(dir)
   else
-    M['__' .. dir]()
+    M['__' .. dir](_, preset)
   end
 end
 
-M.toggle = function()
-  format('toggle')
+M.toggle = function(preset)
+  format({ dir = 'toggle', preset = preset })
 end
 
-M.join = function()
-  format('join')
+M.join = function(preset)
+  format({ dir = 'toggle', preset = preset })
 end
 
-M.split = function()
-  format('split')
+M.split = function(preset)
+  format({ dir = 'toggle', preset = preset })
 end
 
 return M

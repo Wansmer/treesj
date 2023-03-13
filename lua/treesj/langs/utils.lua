@@ -37,26 +37,32 @@ local function convert_to_dict(tbl)
   return result
 end
 
----Merge 'both' fielf to 'split' and 'join' if needed
+---Merge 'both' field to 'split' and 'join' if needed
 ---@param preset table
+---@param info table
 ---@return table
-function M._premerge(preset)
+function M._premerge(preset, info)
   if preset.disable then
-    return { disable = preset.disable }
+    return { disable = preset.disable, __info = info }
   end
 
   if preset.target_nodes and not vim.tbl_isempty(preset.target_nodes) then
-    return { target_nodes = convert_to_dict(preset.target_nodes) }
+    return { target_nodes = convert_to_dict(preset.target_nodes), __info = info }
   end
 
   local both = preset.both or {}
-  local split = preset.split or {}
-  local join = preset.join or {}
-
-  return {
-    split = vim.tbl_deep_extend('force', both, split),
-    join = vim.tbl_deep_extend('force', both, join),
+  local modes = {
+    split = preset.split or {},
+    join = preset.join or {},
   }
+
+  for mode, opts in pairs(modes) do
+    info.mode = mode
+    opts.__info = info
+    modes[mode] = vim.tbl_deep_extend('force', both, opts)
+  end
+
+  return modes
 end
 
 ---Add 'separator' and 'force_insert' to 'omit'
@@ -84,8 +90,8 @@ end
 ---Add missing options to preset
 ---@param preset table
 ---@return table
-function M._add_missing(preset)
-  return vim.tbl_deep_extend('force', M._premerge(DEFAULT_PRESET), preset)
+function M._add_missing(preset, info)
+  return vim.tbl_deep_extend('force', M._premerge(DEFAULT_PRESET, info), preset)
 end
 
 ---Prepare presets
@@ -94,8 +100,9 @@ end
 function M._prepare_presets(languages)
   for lang, presets in pairs(languages) do
     for node, preset in pairs(presets) do
-      preset = M._premerge(preset)
-      preset = M._add_missing(preset)
+      local info = { lang = lang, node = node, mode = 'both' }
+      preset = M._premerge(preset, info)
+      preset = M._add_missing(preset, info)
       preset = M._update_omit(preset)
       presets[node] = preset
     end
@@ -173,23 +180,35 @@ M.set_preset_for_non_bracket = set_preset({
   },
 })
 
-M.no_insert = {}
-M.omit = {}
+M.helpers = {}
 
-local function if_penultimate(tsj)
-  local next = tsj:next()
+M.helpers.if_penultimate = function(child)
+  local next = child:next()
   return next and next:is_last() or false
 end
 
-local function if_second(tsj)
-  local prev = tsj:prev()
+M.helpers.if_second = function(child)
+  local prev = child:prev()
   return prev and prev:is_first() or false
 end
 
-M.no_insert.if_penultimate = if_penultimate
-M.no_insert.if_second = if_second
+M.helpers.by_index = function(i)
+  return function(child)
+    return child:parent() and child:parent():child(i) == child
+  end
+end
 
-M.omit.if_penultimate = if_penultimate
-M.omit.if_second = if_second
+M.helpers.has_parent = function(parent_type)
+  return function(child)
+    return child:parent() and child:parent():type() == parent_type
+  end
+end
+
+M.helpers.match = function(pattern)
+  return function(child)
+    local text = child:text()
+    return type(text) == 'string' and text:match(pattern) or false
+  end
+end
 
 return M

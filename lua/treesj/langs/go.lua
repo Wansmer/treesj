@@ -1,43 +1,43 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  literal_value = u.set_preset_for_list(),
-  parameter_list = u.set_preset_for_args({
+  literal_value = lang_utils.set_preset_for_list(),
+  parameter_list = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  argument_list = u.set_preset_for_args({
+  argument_list = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  block = u.set_preset_for_statement({
+  block = lang_utils.set_preset_for_statement({
     join = {
       no_insert_if = {
-        u.no_insert.if_penultimate,
+        lang_utils.helpers.if_penultimate,
       },
     },
   }),
-  import_spec = u.set_preset_for_args({
+  import_spec = lang_utils.set_preset_for_args({
     both = {
       enable = function(tsn)
         return tsn:parent():type() ~= 'import_spec_list'
       end,
     },
     split = {
-      add_framing_nodes = { left = '(', right = ')' },
+      format_tree = function(tsj)
+        tsj:wrap({ left = '(', right = ')' })
+      end,
     },
   }),
-  import_spec_list = u.set_preset_for_args({
+  import_spec_list = lang_utils.set_preset_for_args({
     join = {
       enable = function(tsn)
         return tsn:named_child_count() < 2
       end,
-      foreach = function(tsj)
-        if tsj:is_framing() then
-          tsj:_update_text('')
-        end
+      format_tree = function(tsj)
+        tsj:remove_child({ '(', ')' })
       end,
     },
   }),

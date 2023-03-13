@@ -1,7 +1,7 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  array = u.set_preset_for_list({
+  array = lang_utils.set_preset_for_list({
     split = {
       last_separator = false,
     },

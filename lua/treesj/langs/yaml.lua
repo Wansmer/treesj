@@ -1,58 +1,57 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  flow_sequence = u.set_preset_for_list({
+  flow_sequence = {
+    join = { enable = false },
     split = {
+      non_bracket_node = true,
       last_separator = false,
-      foreach = function(child)
-        if child:is_first() or child:text() == ',' then
-          child:_update_text('')
-        elseif child:is_last() then
-          child:remove()
-        else
-          child:_update_text('- ' .. child:text())
+      last_indent = 'inner',
+      no_insert_if = { lang_utils.helpers.if_penultimate },
+      format_tree = function(tsj)
+        tsj:remove_child({ ',', '[', ']' })
+        for _, flow_node in ipairs(tsj:children({ 'flow_node' })) do
+          flow_node:update_text('- ' .. flow_node:text())
         end
+        tsj:remove_child(-1)
       end,
     },
-  }),
-  flow_mapping = u.set_preset_for_list({
+  },
+  flow_mapping = {
+    join = { enable = false },
     split = {
-      last_separator = false,
+      non_bracket_node = true,
       recursive = true,
-      foreach = function(child)
-        if child:is_first() or child:text() == ',' then
-          child:_update_text('')
-        elseif child:is_last() then
-          child:remove()
-        end
+      last_indent = 'inner',
+      format_tree = function(tsj)
+        tsj:remove_child({ ',', '{', '}' })
+        tsj:remove_child(-1)
       end,
     },
-  }),
-  block_sequence = u.set_preset_for_list({
+  },
+  block_sequence = {
+    split = { enable = false },
     join = {
-      non_bracket_node = true,
-      add_framing_nodes = { left = ' [', right = ']' },
-      last_separator = false,
-      foreach = function(child)
-        local text = child:text()
-        text = string.gsub(text, '^- ', '')
-        if not child:is_framing() then
-          child:_update_text(text .. ',')
+      space_in_brackets = true,
+      non_bracket_node = { left = ' [', right = ']' },
+      force_insert = ',',
+      no_insert_if = { lang_utils.helpers.if_penultimate },
+      format_tree = function(tsj)
+        local items = tsj:children({ 'block_sequence_item' })
+        for _, item in ipairs(items) do
+          local text = item:text():gsub('^- ', '')
+          item:update_text(text)
         end
       end,
     },
-  }),
-  block_mapping = u.set_preset_for_list({
+  },
+  block_mapping = {
+    split = { enable = false },
     join = {
-      non_bracket_node = true,
-      add_framing_nodes = { left = ' {', right = '}' },
-      last_separator = false,
-      foreach = function(child)
-        local text = child:text()
-        if not child:is_framing() then
-          child:_update_text(text .. ',')
-        end
-      end,
+      space_in_brackets = true,
+      non_bracket_node = { left = ' {', right = '}' },
+      force_insert = ',',
+      no_insert_if = { lang_utils.helpers.if_penultimate },
     },
-  }),
+  },
 }

@@ -1,13 +1,13 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  argument_list = u.set_preset_for_args(),
-  formal_parameters = u.set_preset_for_args(),
-  block = u.set_preset_for_statement(),
-  constructor_body = u.set_preset_for_statement(),
-  array_initializer = u.set_preset_for_list(),
-  annotation_argument_list = u.set_preset_for_args(),
-  enum_body = u.set_preset_for_dict(),
+  argument_list = lang_utils.set_preset_for_args(),
+  formal_parameters = lang_utils.set_preset_for_args(),
+  block = lang_utils.set_preset_for_statement(),
+  constructor_body = lang_utils.set_preset_for_statement(),
+  array_initializer = lang_utils.set_preset_for_list(),
+  annotation_argument_list = lang_utils.set_preset_for_args(),
+  enum_body = lang_utils.set_preset_for_dict(),
   enum_declaration = {
     target_nodes = { 'enum_body' },
   },

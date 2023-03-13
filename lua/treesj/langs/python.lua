@@ -1,6 +1,6 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
-local no_space_in_brackets = u.set_preset_for_list({
+local no_space_in_brackets = lang_utils.set_preset_for_list({
   join = {
     space_in_brackets = false,
   },
@@ -10,18 +10,39 @@ return {
   dictionary = no_space_in_brackets,
   list = no_space_in_brackets,
   set = no_space_in_brackets,
-  tuple = u.set_preset_for_list({
+  tuple = lang_utils.set_preset_for_list({
     join = {
       space_in_brackets = false,
       last_separator = true,
     },
   }),
-  argument_list = u.set_preset_for_args(),
-  parameters = u.set_preset_for_args(),
-  parenthesized_expression = u.set_preset_for_args({}),
-  list_comprehension = u.set_preset_for_args(),
-  set_comprehension = u.set_preset_for_args(),
-  dictionary_comprehension = u.set_preset_for_args(),
+  import_from_statement = lang_utils.set_preset_for_args({
+    both = {
+      omit = { lang_utils.helpers.if_second, 'import', ' (' },
+    },
+    split = {
+      last_separator = true,
+      format_tree = function(tsj)
+        if not tsj:has_children({ '(', ')' }) then
+          tsj:create_child({ text = ' (' }, 4)
+          tsj:create_child({ text = ')' }, #tsj:children() + 1)
+          local penult = tsj:child(-2)
+          penult:update_text(penult:text() .. ',')
+        end
+      end,
+    },
+    join = {
+      format_tree = function(tsj)
+        tsj:remove_child({ '(', ')' })
+      end,
+    },
+  }),
+  argument_list = lang_utils.set_preset_for_args(),
+  parameters = lang_utils.set_preset_for_args(),
+  parenthesized_expression = lang_utils.set_preset_for_args({}),
+  list_comprehension = lang_utils.set_preset_for_args(),
+  set_comprehension = lang_utils.set_preset_for_args(),
+  dictionary_comprehension = lang_utils.set_preset_for_args(),
   assignment = {
     target_nodes = {
       'tuple',

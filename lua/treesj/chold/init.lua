@@ -1,168 +1,198 @@
 local settings = require('treesj.settings').settings
+local search = require('treesj.search')
+local tu = require('treesj.treesj.utils')
 local u = require('treesj.utils')
-local cu = require('treesj.chold.utils')
 
-local JOIN = 'join'
-local SPLIT = 'split'
+local BEHAVIOR = settings.cursor_behavior
+local special_types = {
+  'left_non_bracket',
+  'right_non_bracket',
+  'left_bracket',
+  'right_bracket',
+}
 
----Calculating new position for cursor considering current mode
----@class CHold
----@field pos table Start position of cursor (0-base index)
----@field _new_pos table Computed cursor position (1-base index)
+local function prev_not_deleted(child)
+  local tsn = child:tsnode()
+  local prev_tsn = tsn:prev_sibling()
+  while prev_tsn do
+    local not_removed = u.some(child:parent():children(), function(el)
+      return el:tsnode() == prev_tsn
+    end)
+    if not_removed then
+      return prev_tsn
+    end
+    prev_tsn = prev_tsn:prev_sibling()
+  end
+  return nil
+end
+
+local function observed_range(child)
+  local tsn = child:tsnode()
+  local prev_tsn
+  if
+    child:prev()
+    and child:prev():is_imitator()
+    and vim.tbl_contains(special_types, child:prev():type())
+  then
+    prev_tsn = child:prev():tsnode()
+  else
+    prev_tsn = prev_not_deleted(child)
+  end
+  local sr, sc, er, ec = tsn:range()
+
+  if prev_tsn then
+    _, _, sr, sc = prev_tsn:range()
+  end
+
+  return { sr + 1, sc, er + 1, ec }
+end
+
+local function in_range(cursor, range, mode)
+  local cr, cc = unpack(cursor)
+  local sr, sc, er, ec = unpack(range)
+
+  if mode == 'join' then
+    if sr <= cr and cr <= er then
+      if sr == cr then
+        return cc >= sc
+      elseif cr == er then
+        return cc < ec
+      else
+        return true
+      end
+    end
+    return false
+  else
+    return sc <= cc and cc < ec
+  end
+end
+
+local function pos_in_node(cursor, child)
+  local range = { child:tsnode():range() }
+  local cursor_col = cursor[1] ~= range[1] + 1 and -1 or cursor[2]
+  return cursor_col - range[2]
+end
+
+local function calc_new_pos(cursor, child, mode)
+  local ws = mode == 'join' and #tu.get_whitespace(child)
+    or tu.calc_indent(child)
+  local pos = pos_in_node(cursor, child)
+  pos = pos < -ws and -ws or pos
+  return pos + ws
+end
+
+local function need_check(child)
+  return not child:is_imitator()
+    or (vim.tbl_contains(special_types, child:type()) and child:is_framing())
+end
+
+local function get_cursor_for_join(tsj, rowcol, cursor)
+  local len = 0
+  local row, col = unpack(rowcol)
+
+  for child in tsj:iter_children() do
+    local is_in_range = need_check(child)
+      and in_range(cursor, observed_range(child), 'join')
+
+    if is_in_range then
+      local pos = calc_new_pos(cursor, child, 'join')
+      col = col + len + pos
+      break
+    else
+      len = len + #child:text()
+    end
+  end
+
+  return row, col
+end
+
+local function get_cursor_for_split(tsj, rowcol, cursor)
+  local row, col = unpack(rowcol)
+
+  for child in tsj:iter_children() do
+    local is_in_range = need_check(child)
+      and in_range(cursor, observed_range(child), 'split')
+
+    if not child:is_first() then
+      local rows = is_in_range and 1
+        or (type(child:text()) == 'string' and 1 or #child:text())
+      col = 0
+      row = child:is_omit() and row or row + rows
+    end
+
+    if is_in_range then
+      local pos = calc_new_pos(cursor, child, 'split')
+      local len = child:is_omit() and #child:prev():text() or 0
+      col = pos + col + len
+      break
+    end
+  end
+
+  return row, col
+end
+
 local CHold = {}
 CHold.__index = CHold
 
----Create new CHold instance
----@return CHold
 function CHold.new()
-  local pos = cu.get_cursor()
+  local pos = vim.api.nvim_win_get_cursor(0)
   return setmetatable({
-    pos = pos,
-    _new_pos = {
-      col = pos.col,
-      row = pos.row + 1,
-    },
-    _done = false,
+    row = pos[1],
+    col = pos[2],
+    original = pos,
   }, CHold)
 end
 
----Update new position for cursor
----@param tsj TreeSJ TreeSJ instance
----@param mode string Current mode
-function CHold:update(tsj, mode)
-  if not self:is_done() then
-    if settings.cursor_behavior == 'start' then
-      self:_calc_for_start(tsj)
-    elseif settings.cursor_behavior == 'end' then
-      self:_calc_for_end(tsj, mode)
-    elseif cu.is_not_need_change(self, tsj) then
-      self:done()
-    elseif cu.is_after_node(self, tsj) then
-      self:_calc_when_after(tsj, mode)
+function CHold:compute(tsj, mode)
+  -- local range = { search.range(tsj:root():tsnode(), tsj:root():preset()) }
+  local range = { search.range(tsj:tsnode(), tsj:preset()) }
+
+  -- Use position for `start` behavior by default
+  local row, col = range[1] + 1, range[2]
+
+  if BEHAVIOR == 'hold' then
+    local cursor = self:get_cursor()
+    -- Checking if the cursor needs to be moved
+    if cursor[1] == range[1] + 1 and cursor[2] < range[2] then
+      return
+    end
+
+    -- Checking if the cursor is after a node
+    if cursor[1] == range[3] + 1 and cursor[2] >= range[4] then
+      local lines = tsj:_get_lines()
+      local shift = cursor[2] - range[4]
+      local start = range[2]
+
+      if mode == 'split' then
+        start = 0
+        row = row + #lines - 1
+      end
+
+      col = #lines[#lines] + shift + start
     else
-      if mode == JOIN then
-        self:_calc_for_join(tsj)
+      if mode == 'join' then
+        row, col = get_cursor_for_join(tsj, { row, col }, cursor)
       else
-        self:_calc_for_split(tsj)
+        row, col = get_cursor_for_split(tsj, { row, col }, cursor)
       end
     end
-  end
-end
-
----Complute new position for cursor
----@param tsj TreeSJ TreeSJ instance
----@param mode string Current mode (split|join)
-function CHold:compute(tsj, mode)
-  for child in tsj:iter_children() do
-    self:update(child, mode)
-  end
-end
-
----Calculate '_new_pos' when settings.cursor_behavior is 'start'
----@param tsj TreeSJ TreeSJ instance
-function CHold:_calc_for_start(tsj)
-  local rr = u.readable_range(tsj:root():range())
-  self:_update_pos({ row = rr.row.start + 1, col = rr.col.start })
-  self:done()
-end
-
----Calculate '_new_pos' when settings.cursor_behavior is 'end'
----@param tsj TreeSJ TreeSJ instance
-function CHold:_calc_for_end(tsj, mode)
-  if tsj:is_last() then
-    local lines = tsj:root():get_lines()
-    if mode == SPLIT then
-      self:_update_pos({
-        row = self._new_pos.row + #lines - 1,
-        col = #lines[#lines] - 1,
-      })
-      self:done()
-    else
-      local rr = u.readable_range(tsj:root():range())
-      self:_update_pos({
-        col = rr.col.start + #lines[1] - 1,
-        row = rr.row.start + 1,
-      })
-      self:done()
-    end
-  end
-end
-
----Calculate '_new_pos' when cursor position is after node
----@param tsj TreeSJ TreeSJ instance
-function CHold:_calc_when_after(tsj, mode)
-  if tsj:is_last() then
-    local rr = u.readable_range(tsj:root():range())
-    local after = self.pos.col - rr.col.end_
-    local lines = tsj:root():get_lines()
-    if mode == SPLIT then
-      self:_update_pos({
-        row = self._new_pos.row + #lines - 1,
-        col = #lines[#lines] + after,
-      })
-      self:done()
-    else
-      self:_update_pos({
-        col = rr.col.start + #lines[1] + after,
-        row = rr.row.start + 1,
-      })
-      self:done()
-    end
-  end
-end
-
----Calculate '_new_pos' when settings.cursor_behavior is 'hold' and mode is 'join'
----@param tsj TreeSJ TreeSJ instance
-function CHold:_calc_for_join(tsj)
-  local rr = u.readable_range(tsj:root():child(1):range())
-
-  if cu.in_node_range(self, tsj) then
-    self:_update_pos({
-      row = rr.row.start + 1,
-      col = self._new_pos.col + cu.new_col_pos(self, tsj, JOIN),
-    })
-    self:done()
-    return
+  elseif BEHAVIOR == 'end' then
+    local lines = tsj:_get_lines()
+    local text_len = #lines[#lines]
+    row = mode == 'join' and range[1] + 1 or range[1] + #lines
+    col = mode == 'join' and (range[2] + text_len - 1) or text_len - 1
   end
 
-  local len = #tsj:text()
-  local col = tsj:is_first() and rr.col.start + len or self._new_pos.col + len
-  self:_update_pos({ col = col })
-end
-
----Calculate '_new_pos' when settings.cursor_behavior is 'hold' and mode is 'split'
----@param tsj TreeSJ TreeSJ instance
-function CHold:_calc_for_split(tsj)
-  cu.increase_row(self, tsj)
-
-  if cu.in_node_range(self, tsj) then
-    local rr = u.readable_range(tsj:root():range())
-    if not (self._new_pos.row - 1 == rr.row.start) then
-      self:_update_pos({ col = cu.new_col_pos(self, tsj, SPLIT) })
-      self:done()
-    else
-      self:done()
-    end
-  end
-end
-
----Checking if new position for cursor is already calculated
----@return boolean
-function CHold:is_done()
-  return self._done
-end
-
----Set 'done' option to true
-function CHold:done()
-  self._done = true
-end
-
-function CHold:_update_pos(pos)
-  self._new_pos = vim.tbl_deep_extend('force', self._new_pos, pos)
+  self:update_pos({ row = row, col = col })
 end
 
 function CHold:get_cursor()
-  return { self._new_pos.row, self._new_pos.col }
+  return { self.row, self.col }
+end
+
+function CHold:update_pos(pos)
+  self.row = pos.row >= 1 and pos.row or self.row
+  self.col = pos.col >= 0 and pos.col or self.col
 end
 
 return CHold

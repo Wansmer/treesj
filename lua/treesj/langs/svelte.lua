@@ -1,4 +1,4 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 local html = require('treesj.langs.html')
 
-return u.merge_preset(html, {})
+return lang_utils.merge_preset(html, {})

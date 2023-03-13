@@ -46,3 +46,25 @@ cell.siblings = [ ...new Set([ ...cell.siblings, ...currentPlaceSiblings ]) ];
 cell.siblings = [
   ...new Set([ ...cell.siblings, ...currentPlaceSiblings ]),
 ];
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "parenthesized_expression", preset with recursive = true)
+const myFunc = (param) => ({ one: 'one' });
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "parenthesized_expression", preset with recursive = true)
+const myFunc = (param) => {
+  return {
+    one: 'one',
+  }
+};
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "array", preset with recursive = true)
+const myFunc = (param) => [ 1, 2, 3 ];
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "array", preset with recursive = true)
+const myFunc = (param) => {
+  return [
+    1,
+    2,
+    3,
+  ]
+};

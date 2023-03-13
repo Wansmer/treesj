@@ -1,10 +1,14 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
+
+local split_recursive_ignore = {
+  split = { recursive_ignore = { 'arguments', 'parameters' } },
+}
 
 return {
-  table_constructor = u.set_preset_for_dict(),
-  arguments = u.set_preset_for_args(),
-  parameters = u.set_preset_for_args(),
-  block = u.set_preset_for_non_bracket(),
+  table_constructor = lang_utils.set_preset_for_dict(split_recursive_ignore),
+  arguments = lang_utils.set_preset_for_args(),
+  parameters = lang_utils.set_preset_for_args(),
+  block = lang_utils.set_preset_for_non_bracket(split_recursive_ignore),
   variable_declaration = {
     target_nodes = { 'table_constructor', 'block' },
   },

@@ -1,22 +1,22 @@
-local u = require('treesj.langs.utils')
+local lang_utils = require('treesj.langs.utils')
 
 return {
-  array_creation_expression = u.set_preset_for_dict({
+  array_creation_expression = lang_utils.set_preset_for_dict({
     join = {
       space_in_brackets = false,
     },
   }),
-  arguments = u.set_preset_for_args({
+  arguments = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  formal_parameters = u.set_preset_for_args({
+  formal_parameters = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
     },
   }),
-  compound_statement = u.set_preset_for_statement({
+  compound_statement = lang_utils.set_preset_for_statement({
     join = {
       no_insert_if = {
         'function_definition',

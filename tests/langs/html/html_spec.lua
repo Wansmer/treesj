@@ -12,7 +12,6 @@ local data_for_split = {
     cursor = { 13, 20 },
     expected = { 14, 18 },
     result = { 12, 16 },
-    settings = {},
   },
   {
     path = PATH,
@@ -22,7 +21,6 @@ local data_for_split = {
     cursor = { 21, 20 },
     expected = { 22, 26 },
     result = { 20, 24 },
-    settings = {},
   },
   {
     path = PATH,
@@ -32,7 +30,6 @@ local data_for_split = {
     cursor = { 29, 35 },
     expected = { 30, 33 },
     result = { 28, 31 },
-    settings = {},
   },
   {
     path = PATH,
@@ -42,7 +39,6 @@ local data_for_split = {
     cursor = { 36, 15 },
     expected = { 38, 40 },
     result = { 35, 37 },
-    settings = {},
   },
   {
     path = PATH,
@@ -52,7 +48,6 @@ local data_for_split = {
     cursor = { 43, 6 },
     expected = { 45, 47 },
     result = { 42, 44 },
-    settings = {},
   },
   {
     path = PATH,
@@ -62,7 +57,6 @@ local data_for_split = {
     cursor = { 50, 6 },
     expected = { 52, 54 },
     result = { 49, 51 },
-    settings = {},
   },
 }
 
@@ -75,7 +69,6 @@ local data_for_join = {
     cursor = { 17, 12 },
     expected = { 12, 13 },
     result = { 14, 15 },
-    settings = {},
   },
   {
     path = PATH,
@@ -85,7 +78,6 @@ local data_for_join = {
     cursor = { 25, 11 },
     expected = { 20, 21 },
     result = { 22, 23 },
-    settings = {},
   },
   {
     path = PATH,
@@ -95,7 +87,6 @@ local data_for_join = {
     cursor = { 32, 8 },
     expected = { 28, 29 },
     result = { 30, 31 },
-    settings = {},
   },
   {
     path = PATH,
@@ -105,7 +96,6 @@ local data_for_join = {
     cursor = { 40, 9 },
     expected = { 35, 36 },
     result = { 38, 39 },
-    settings = {},
   },
   {
     path = PATH,
@@ -115,7 +105,6 @@ local data_for_join = {
     cursor = { 46, 5 },
     expected = { 42, 43 },
     result = { 45, 46 },
-    settings = {},
   },
   {
     path = PATH,
@@ -125,18 +114,21 @@ local data_for_join = {
     cursor = { 53, 6 },
     expected = { 49, 50 },
     result = { 52, 53 },
-    settings = {},
   },
 }
 
+local treesj = require('treesj')
+local opts = {}
+treesj.setup(opts)
+
 describe('TreeSJ SPLIT:', function()
   for _, value in ipairs(data_for_split) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)
 
 describe('TreeSJ JOIN:', function()
   for _, value in ipairs(data_for_join) do
-    tu._test_format(value)
+    tu._test_format(value, treesj)
   end
 end)
