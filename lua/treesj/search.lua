@@ -12,7 +12,7 @@ end
 local M = {}
 
 ---Get lunguage for node
----@param node userdata TSNode instance
+---@param node TSNode TSNode instance
 ---@return string
 local function get_node_lang(node)
   local range = { node:range() }
@@ -39,9 +39,9 @@ local function get_preset(tsn_type, lang, mode)
 end
 
 ---Recursively searches for the configured node among the ancestors
----@param node userdata TSNode instance
+---@param node TSNode TSNode instance
 ---@param lang string Language of TSNode
----@return userdata|nil, table|nil
+---@return TSNode|nil, table|nil
 local function search_node_up(node, lang)
   if not node then
     return nil
@@ -59,10 +59,10 @@ end
 
 ---Recursively searches for a configured node inside the current node and
 ---returns the first configured node found
----@param node userdata|nil TSNode instance
+---@param node TSNode|nil TSNode instance
 ---@param lang string TSNode lang
 ---@param targets table List of target node types
----@return userdata|nil, table|nil
+---@return TSNode|nil, table|nil
 local function search_inside_node(node, lang, targets)
   if not node then
     return nil, nil
@@ -101,7 +101,7 @@ local function get_node_from_field(node, lang, targets)
 end
 
 ---Get target node and node data
----@param node userdata|nil TSNode instance
+---@param node TSNode|nil TSNode instance
 ---@param lang string TSNode language
 ---@return table|nil
 local function search_node(node, lang)
@@ -150,7 +150,7 @@ local function search_node(node, lang)
 end
 
 ---Return the closest configured node if found or nil
----@param node userdata|nil TSNode instance
+---@param node TSNode|nil TSNode instance
 ---@return table
 function M.get_configured_node(node)
   if not node then
@@ -185,7 +185,7 @@ function M.get_self_preset(tsn_type, lang)
 end
 
 ---Recursively iterates over each one until the state is satisfied
----@param tsnode userdata TSNode instance
+---@param tsnode TSNode TSNode instance
 ---@param cb function Callback: boolean
 ---@return boolean
 function M.check_descendants(tsnode, cb)
@@ -211,15 +211,11 @@ function M.check_descendants(tsnode, cb)
 end
 
 ---Checking if the node contains descendants to format
----@param tsnode userdata TSNode instance
+---@param tsnode TSNode TSNode instance
 ---@param ignore table|nil List of types to be ignored
 ---@param lang string Current lang
 ---@return boolean
 function M.has_node_to_format(tsnode, ignore, lang)
-  if not ((tsnode ~= 'userdata') and ignore) then
-    return false
-  end
-
   local function configured_and_must_be_formatted(tsn)
     local has_preset = tsn:named() and M.get_self_preset(tsn:type(), lang)
     local ignored = vim.tbl_contains(ignore, tsn:type())
@@ -230,7 +226,7 @@ function M.has_node_to_format(tsnode, ignore, lang)
 end
 
 ---Checking if the node contains disabled descendants to format
----@param tsnode userdata TSNode instance
+---@param tsnode TSNode TSNode instance
 ---@param mode 'split'|'join' Current mode (split|join)
 ---@param lang string Current lang
 ---@return boolean
@@ -246,7 +242,7 @@ function M.has_disabled_descendants(tsnode, mode, lang)
 end
 
 ---Returned range of node considering the presence of brackets
----@param tsn userdata|table TSNode instance or TSNode imitator
+---@param tsn TSNode|table TSNode instance or TSNode imitator
 ---@param p? table
 ---@return integer, integer, integer, integer
 function M.range(tsn, p)

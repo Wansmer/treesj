@@ -7,7 +7,7 @@ local search = require('treesj.search')
 ---TreeSJ - wrapper over TS Node
 ---@class TreeSJ
 ---@field _root boolean If the current node is the root
----@field _tsnode userdata|table TSNode instance or TSNode imitator
+---@field _tsnode TSNode|table TSNode instance or TSNode imitator
 ---@field _lang string TSNode language
 ---@field _imitator boolean Tree if _tsnode is imitator
 ---@field _parent TreeSJ|nil TreeSJ instance. Parent of current TreeSJ node
@@ -117,6 +117,18 @@ end
 
 --[[ Work with children ]]
 
+---Iterate all TreeSJ instance children.
+---Use: `... for child, index in tsj:iter_children() do ...`
+---@return function, TreeSJ[]
+function TreeSJ:iter_children()
+  local index = 0
+  local function iterator(tbl)
+    index = index + 1
+    return tbl[index], index
+  end
+  return iterator, self._children
+end
+
 ---Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
 --- - The `index` can be a negative value, which means to search from the end of the list.
 --- - If a `type` is passed, the first element found will be returned.
@@ -212,52 +224,6 @@ end
 
 --[[ Work with TreeSJ data ]]
 
----Get root treesj-node of current TreeSJ
----@return TreeSJ TreeSJ instance
-function TreeSJ:root()
-  return self._root and self or self:parent():root()
-end
-
----Get TSNode or TSNode imitator of current
----@return userdata|table TSNode or TSNode imitator
-function TreeSJ:tsnode()
-  return self._tsnode
-end
-
----Get parent TreeSJ
----@return TreeSJ|nil
-function TreeSJ:parent()
-  return self._parent
-end
-
----Get left side node
----@return TreeSJ|nil
-function TreeSJ:prev()
-  return self._prev
-end
-
----Get right side node
----@return TreeSJ|nil
-function TreeSJ:next()
-  return self._next
-end
-
----Checking if the current TreeSJ node is non-bracket block
----@return boolean
-function TreeSJ:non_bracket()
-  return self:has_preset()
-      and u.get_nested_key_value(self:preset(), 'non_bracket_node')
-    or false
-end
-
----Checking if the current node must be ignored while recursive formatting
----@return boolean
-function TreeSJ:is_ignore()
-  local mode = self._mode
-  local p = self:root():preset(mode)
-  return p and vim.tbl_contains(p.recursive_ignore, self:type()) or false
-end
-
 ---Get node type of current TreeSJ
 ---@return string
 function TreeSJ:type()
@@ -286,6 +252,84 @@ end
 ---@param new_text string|string[]
 function TreeSJ:update_text(new_text)
   self._text = new_text
+end
+
+---Get root treesj-node of current TreeSJ
+---@return TreeSJ TreeSJ instance
+function TreeSJ:root()
+  return self._root and self or self:parent():root()
+end
+
+---Get TSNode or TSNode imitator of current
+---@return TSNode|table TSNode or TSNode imitator
+function TreeSJ:tsnode()
+  return self._tsnode
+end
+
+---Get parent TreeSJ
+---@return TreeSJ|nil
+function TreeSJ:parent()
+  return self._parent
+end
+
+---Get left side node
+---@return TreeSJ|nil
+function TreeSJ:prev()
+  return self._prev
+end
+
+---Get right side node
+---@return TreeSJ|nil
+function TreeSJ:next()
+  return self._next
+end
+
+--[[ Work with TreeSJ conditions ]]
+
+---Checking if the current node is first among sibling
+---@return boolean
+function TreeSJ:is_first()
+  return not u.tobool(self:prev())
+end
+
+---Checking if the current node is last among sibling
+---@return boolean
+function TreeSJ:is_last()
+  return not u.tobool(self:next())
+end
+
+---Checking if the current node is first or is last among sibling
+---@return boolean
+function TreeSJ:is_framing()
+  return self:is_last() or self:is_first()
+end
+
+---Checking if the text of current node contains at 'preset.omit'
+---@return boolean
+function TreeSJ:is_omit()
+  local omit = u.get_nested_key_value(self:parent_preset(), 'omit')
+  return omit and tu.check_match(omit, self) or false
+end
+
+---Checking if the current TreeSJ is node-imitator
+---@return boolean
+function TreeSJ:is_imitator()
+  return self._imitator
+end
+
+---Checking if the current TreeSJ node is non-bracket block
+---@return boolean
+function TreeSJ:non_bracket()
+  local preset = self:preset(self._mode)
+  return u.tobool(preset and preset.non_bracket_node)
+end
+
+---Checking if the current node must be ignored while recursive formatting
+---@return boolean
+function TreeSJ:is_ignore()
+  local mode = self._mode
+  local p = self:root():preset(mode)
+  return p and vim.tbl_contains(p.recursive_ignore, self:type()) or false
 end
 
 ---Checks if the TreeSJ contains descendants that need to be formatted
@@ -337,51 +381,6 @@ function TreeSJ:parent_preset(mode)
     return mode and parent:preset(mode) or parent:preset()
   end
   return nil
-end
-
----Checking if the current node is first among sibling
----@return boolean
-function TreeSJ:is_first()
-  return not u.tobool(self:prev())
-end
-
----Checking if the current node is last among sibling
----@return boolean
-function TreeSJ:is_last()
-  return not u.tobool(self:next())
-end
-
----Checking if the current node is first or is last among sibling
----@return boolean
-function TreeSJ:is_framing()
-  return self:is_last() or self:is_first()
-end
-
----Checking if the text of current node contains at 'preset.omit'
----@return boolean
-function TreeSJ:is_omit()
-  local omit = u.get_nested_key_value(self:parent_preset(), 'omit')
-  return omit and tu.check_match(omit, self) or false
-end
-
----Checking if the current TreeSJ is node-imitator
----@return boolean
-function TreeSJ:is_imitator()
-  return self._imitator
-end
-
----Iterate all TreeSJ instance children.
----Use: `... for child, index in tsj:iter_children() do ...`
----@return function, TreeSJ[]
-function TreeSJ:iter_children()
-  local index = 0
-  ---@param tbl TreeSJ[]
-  ---@return TreeSJ, integer
-  local function iterator(tbl)
-    index = index + 1
-    return tbl[index], index
-  end
-  return iterator, self._children
 end
 
 ---Updates the presets for the current node.

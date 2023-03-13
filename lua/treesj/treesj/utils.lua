@@ -5,14 +5,14 @@ local u = require('treesj.utils')
 local M = {}
 
 ---Checking if tsn is TSNode instance. False if it imitator of tsn
----@param tsn userdata|table
+---@param tsn TSNode|table
 ---@return boolean
 function M.is_tsnode(tsn)
   return type(tsn) == 'userdata'
 end
 
 ---Returned true if node is not empty
----@param tsn userdata TSNode instance
+---@param tsn TSNode TSNode instance
 ---@return boolean
 function M.skip_empty_nodes(tsn)
   local text = vim.trim(query.get_node_text(tsn, 0))
@@ -22,7 +22,7 @@ end
 ---Get list-like table with children of node
 ---This function is pretty much copied from 'nvim-treesitter'
 ---(TSRange:collect_children)
----@param tsnode userdata|table TSNode instance or TSNode imitator
+---@param tsnode TSNode|table TSNode instance or TSNode imitator
 ---@param filter? function Function for filtering output list
 ---@return table
 function M.collect_children(tsnode, filter)
@@ -38,7 +38,7 @@ function M.collect_children(tsnode, filter)
 end
 
 ---Return text of node
----@param node TSNode from userdata
+---@param node TSNode from TSNode
 ---@return string
 function M.get_node_text(node)
   -- TODO: concat is deprecated in 0.9+. Refactor later
@@ -58,7 +58,7 @@ function M.get_node_text(node)
 end
 
 ---Checking if the found node is empty
----@param tsnode userdata TSNode instance
+---@param tsnode TSNode TSNode instance
 ---@param preset table Preset for TSNode
 ---@return boolean
 function M.is_empty_node(tsnode, preset)
