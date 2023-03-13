@@ -1,8 +1,9 @@
 # TreeSJ
 
 Neovim plugin for splitting/joining blocks of code like arrays, hashes,
-statements, objects, dictionaries, etc. Written in Lua, using
-[Tree-Sitter](https://tree-sitter.github.io/tree-sitter/).
+statements, objects, dictionaries, etc.
+
+Written in Lua, using [Tree-Sitter](https://tree-sitter.github.io/tree-sitter/).
 
 Inspired by and partly repeats the functionality of
 [splitjoin.vim](https://github.com/AndrewRadev/splitjoin.vim).
@@ -394,7 +395,7 @@ local langs = {
 
 ## Advanced node
 
-Although most nodes have similar parameters and can be configured declaratively,
+Although most nodes have similar parameters and can be configured declarative,
 sometimes you need to change the values, text, or order of children on the fly.
 
 To do this, some options accept functions as a value, which are passed instances
@@ -586,7 +587,7 @@ local lua = {
   block = {
     both = {
       non_bracket_node = true,
-      -- non_bracket_node = { left = '', right = '' }, - it is same
+      -- non_bracket_node = { left = '', right = '' }, - it is similar
     },
     join = {
       space_in_brackets = true,
@@ -665,7 +666,7 @@ local rust = {
       end,
     },
     join = {
-      no_insert_if = { lang_utils.no_insert.if_penultimate },
+      no_insert_if = { lang_utils.helpers.if_penultimate },
       format_tree = function(tsj)
         local node = tsj:tsnode()
         local parents = { 'match_arm', 'closure_expression' }
@@ -776,9 +777,11 @@ local dict = {
 
 The problem:
 
-Python's `import_from_statement` does not have a container for a list of imported modules.
+Python's `import_from_statement` does not have a container for a list of
+imported modules.
 
-Here you need to add parentheses to the middle and end of TreeSJ when splitting and remove these parentheses when joining.
+Here you need to add parentheses to the middle and end of TreeSJ when splitting
+and remove these parentheses when joining.
 
 ```ruby
 # from
@@ -927,12 +930,15 @@ function TreeSJ:child(type_or_index)
 
 #### create_child
 
-Creating a new TreeSJ instance as a child of current TreeSJ. If index present,
-puts it in children list and returned this child, if not – returned
-child, but not puts it in children list (This means that you need to update the
-list of children manually with `TreeSJ:update_children(...)`).
-Index can be a negative value, meaning insert from the end. If an index is
-specified that is outside the list of children, then `nil` will be returned.
+Creating a new TreeSJ instance as a child of current TreeSJ.
+
+- data: {text=string, type=string|nil, copy_from=TreeSJ|nil}
+  The "copy_from" field is used if a node needs to be duplicated and expects TreeSJ.
+  If a TreeSJ instance is passed to it, then the "text" and "type" fields will be ignored.
+- index: If index present, puts it in children list and returned this child,
+  if not – returned child, but not puts it in children list. Index can be a negative value,
+  meaning insert from the end. If an index is specified that is outside the list of children,
+  then `nil` will be returned.
 
 ```lua
 ---@param data table { text = string, type? = string }. If `type` not present, uses value of `text`
@@ -950,6 +956,29 @@ Updating children list of current TreeSJ
 function TreeSJ:update_children(children)
 ```
 
+This function must be called every time you update the list of children from
+outside, for example:
+
+```lua
+-- When a function should be called
+local children = tsj:children()
+local child = tsj:create_child({ text = 'end' })
+table.insert(children, child)
+tsj:update_children(children) -- important
+
+-- Here it is not necessary
+tsj:create_child({ text = 'end' }, #tsj:children() + 1)
+```
+
+#### remove_child
+
+Removes children by the passed types or index.
+
+```lua
+---@param types_or_index string|string[]|integer Type, types, or index of child to remove
+function TreeSJ:remove_child(types_or_index)
+```
+
 #### wrap
 
 Creates the first and last elements in the list of children of the current TreeSJ.
@@ -965,13 +994,14 @@ Creates the first and last elements in the list of children of the current TreeS
 function TreeSJ:wrap(data, mode)
 ```
 
-#### remove_child
+#### swap_children
 
-Removes children by the passed types or index.
+Helps to swap elements by their indexes
 
 ```lua
----@param types_or_index string|string[]|integer Type, types, or index of child to remove
-function TreeSJ:remove_child(types_or_index)
+---@param index1 integer
+---@param index2 integer
+function TreeSJ:swap_children(index1, index2)
 ```
 
 #### tsnode
@@ -981,7 +1011,7 @@ TSNode imitator of current TreeSJ. If you plan to use tsnode methods in the
 future, you first need to check that the returned value is not an imitator.
 
 ```lua
----@return userdata|table TSNode or TSNode imitator
+---@return TSNode|table TSNode or TSNode imitator
 function TreeSJ:tsnode()
 ```
 
@@ -1015,6 +1045,8 @@ function TreeSJ:type()
 #### text
 
 Get text of current TreeSJ.
+At the time of the execution of the `format_tree` function, the text will always
+be returned, not the table.
 
 ```lua
 ---@return string|table
@@ -1032,9 +1064,49 @@ its children directly.
 function TreeSJ:update_text(new_text)
 ```
 
+When working in recursive mode, you need to check that the nodes in which you
+want to change the text do not have children for recursive processing. In this
+case, the text will be glued from the children of the node, and you need to
+change the text in them.
+
+E.g.:
+
+```lua
+{
+  format_tree = function(tsj)
+    if tsj:type() ~= 'statement_block' then
+      -- ...
+      local body = tsj:child(2)
+      if body:will_be_formatted() then
+        local set_return
+        if body:has_preset('split') then
+          set_return = body:child(1)
+        else
+          set_return = body:child(1):child(1)
+        end
+        set_return:update_text('return ' .. set_return:text())
+      else
+        body:update_text('return ' .. body:text())
+      end
+      -- ...
+    end
+  end,
+}
+```
+
+#### will_be_formatted
+
+Returns true if the current TreeSJ will be formatted.
+The conditions are met: recursion is active, the current element has a preset, or among its descendants there are nodes that will be processed.
+
+```lua
+---@return boolean
+function TreeSJ:will_be_formatted()
+```
+
 #### is_ignore
 
-Checks if the current TreeSJ child must be ignored while recursive formatting
+Checks if the current TreeSJ child must be ignored while recursive formatting.
 
 ```lua
 ---@return boolean

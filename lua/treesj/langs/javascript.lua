@@ -60,11 +60,11 @@ return {
         if tsj:type() ~= 'statement_block' then
           tsj:wrap({ left = '{', right = '}' })
 
-          local rec = tsj:preset('split').recursive
           local ph = tsj:child('parenthesized_expression')
           local not_seq = ph and not ph:child('sequence_expression')
+
           if not_seq then
-            if rec and ph:has_to_format() then
+            if ph:will_be_formatted() then
               ph:remove_child({ '(', ')' })
             else
               local text = ph:text():gsub('^%(', ''):gsub('%)$', '')
@@ -73,10 +73,14 @@ return {
           end
 
           local body = tsj:child(2)
-          if rec and (body:has_to_format() or body:has_preset('split')) then
-            local set_ret = body:has_preset('split') and body:child(1)
-              or body:child(1):child(1)
-            set_ret:update_text('return ' .. set_ret:text())
+          if body:will_be_formatted() then
+            local set_return
+            if body:has_preset('split') then
+              set_return = body:child(1)
+            else
+              set_return = body:child(1):child(1)
+            end
+            set_return:update_text('return ' .. set_return:text())
           else
             body:update_text('return ' .. body:text())
           end

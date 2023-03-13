@@ -364,6 +364,20 @@ function TreeSJ:has_to_format()
   return false
 end
 
+---Returns true if the current TreeSJ will be formatted
+---@return boolean
+function TreeSJ:will_be_formatted()
+  local root = self:root()
+
+  if self == root then
+    return true
+  end
+
+  local mode = self._mode
+  return root:preset(mode).recursive
+    and (self:has_preset(mode) or self:has_to_format())
+end
+
 --[[ Work with preset ]]
 
 ---Checking if the current TreeSJ is configured
