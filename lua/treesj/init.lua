@@ -39,11 +39,11 @@ M.toggle = function(preset)
 end
 
 M.join = function(preset)
-  format({ dir = 'toggle', preset = preset })
+  format({ dir = 'join', preset = preset })
 end
 
 M.split = function(preset)
-  format({ dir = 'toggle', preset = preset })
+  format({ dir = 'split', preset = preset })
 end
 
 return M
