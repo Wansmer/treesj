@@ -34,6 +34,8 @@ return {
     join = {
       format_tree = function(tsj)
         tsj:remove_child({ '(', ')' })
+        local penult = tsj:child(-2)
+        penult:update_text(penult:text() .. ' ')
       end,
     },
   }),
