@@ -293,6 +293,12 @@ Default preset for node:
         ---If value is table, should be contains follow keys: { left = 'text', right = 'text' }. Empty string uses by default
         ---@type boolean|table
         non_bracket_node = false,
+        ---If you need to process only nodes in the range from / to.
+        ---If `shrink_node` is present, `non_bracket_node` will be ignored
+        ---Learn more in advanced node configuration
+        ---@type table|nil
+        shrink_node = nil,
+        -- shrink_node = { from = string, to = string },
       },
       -- Use only for join. If contains field from 'both',
       -- field here have higher priority
@@ -597,6 +603,66 @@ This can be implemented with:
           space_in_brackets = true,
         },
       },
+    }
+<
+
+
+OPTION SHRINK_NODE
+
+The `shrink_node` option does not process or modify text outside the specified
+child types in from/to. This is needed when the node does not have a container,
+but can be split or join. For better understanding, see example of usage.
+
+Example of usage ~
+
+The problem:
+
+In the Kotlin language, the `function_declaration` node has parameters in
+brackets, but they are not packaged in a separate container and go at the same
+level as the other children of the `function_declaration`.
+
+The difficulty is that the last element in `function_declaration` is
+`function_body`, which must remain unchanged and can be multi-line.
+
+>kotlin
+    | - start of `function_declaration`
+    |        | - from             | - to
+    |        |                    | | - `function_body` must remain unchanged
+    |fun test(a: String, b: String) {
+             | - start insert range
+                                  | - end insert range
+             Everything outside the insertion range will remain unchanged,
+             even though it is part of the node
+      val var1 = 1
+      val var2 = 2
+    }|
+     | - end of `function_declaration`
+    
+    // from
+    fun test(a: String, b: String) {
+      val var1 = 1
+      val var2 = 2
+    }
+    // to
+    fun test(
+      a: String,
+      b: String
+    ) {
+      val var1 = 1
+      val var2 = 2
+    }
+<
+
+This can be implemented with:
+
+>lua
+    {
+      function_declaration = lang_utils.set_preset_for_args({
+        both = {
+          non_bracket_node = true,
+          shrink_node = { from = '(', to = ')' },
+        },
+      }),
     }
 <
 
