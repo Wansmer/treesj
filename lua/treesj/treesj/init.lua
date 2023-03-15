@@ -560,12 +560,13 @@ end
 
 ---Get indent from previous configured ancestor node
 function TreeSJ:_get_prev_indent()
-  if self:parent():has_preset() and not self:parent():is_ignore() then
-    return self:parent()._root_indent
-  end
   if self:parent() then
+    if self:parent():has_preset() and not self:parent():is_ignore() then
+      return self:parent()._root_indent
+    end
     return self:parent():_get_prev_indent()
   end
+  return 0
 end
 
 return TreeSJ

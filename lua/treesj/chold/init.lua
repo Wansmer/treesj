@@ -122,7 +122,9 @@ local function get_cursor_for_split(tsj, rowcol, cursor)
 
     if is_in_range then
       local pos = calc_new_pos(cursor, child, 'split')
-      local len = child:is_omit() and #child:prev():text() or 0
+      local len = (child:is_omit() and not child:is_first())
+          and #child:prev():text()
+        or 0
       col = pos + col + len
       break
     end
