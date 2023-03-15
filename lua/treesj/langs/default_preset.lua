@@ -39,6 +39,12 @@ return {
     ---If value is table, should be contains follow keys: { left = 'text', right = 'text' }. Empty string uses by default
     ---@type boolean|table
     non_bracket_node = false,
+    ---If you need to process only nodes in the range from / to.
+    ---If `shrink_node` is present, `non_bracket_node` will be ignored
+    ---Learn more in advanced node configuration
+    ---@type table|nil
+    shrink_node = nil,
+    -- shrink_node = { from = string, to = string },
   },
   -- Use only for join. If contains field from 'both',
   -- field here have higher priority

@@ -243,33 +243,56 @@ end
 
 ---Returned range of node considering the presence of brackets
 ---@param tsn TSNode|table TSNode instance or TSNode imitator
----@param p? table
+---@param preset table|nil Preset
 ---@return integer, integer, integer, integer
-function M.range(tsn, p)
-  local function get_last_symbol_range(n)
-    local len = n:child_count()
-    while len > 0 do
-      n = n:child(len - 1)
-      len = n:child_count()
+function M.range(tsn, preset)
+  local function get_last_symbol_range(n, last)
+    if last then
+      for child in n:iter_children() do
+        if child:type() == last then
+          n = child
+        end
+      end
+    else
+      local len = n:child_count()
+      while len > 0 do
+        n = n:child(len - 1)
+        len = n:child_count()
+      end
     end
     local _, _, er, ec = n:range()
     return er, ec
   end
 
-  local function get_framing_for_non_bracket(n)
-    local first = n:prev_sibling() or n:parent():prev_sibling()
-    local last = n:next_sibling() or n:parent():next_sibling()
-    return first, last
+  local function get_first_symbol_range(n, first)
+    if first then
+      for child in n:iter_children() do
+        if child:type() == first then
+          n = child
+        end
+      end
+    end
+    local sr, sc = n:range()
+    return sr, sc
   end
 
-  local non_bracket_node = u.get_nested_key_value(p, 'non_bracket_node')
+  local non_bracket_node = u.get_nested_key_value(preset, 'non_bracket_node')
+  local shrink_node = u.get_nested_key_value(preset, 'shrink_node')
+  local to = shrink_node and shrink_node.to
+  local from = shrink_node and shrink_node.from
 
   -- Some parsers give incorrect range, when `tsn:range()` (e.g. `yaml`).
   -- That's why using end_row and end_column of last children text.
-  local sr, sc = tsn:range()
-  local er, ec = get_last_symbol_range(tsn)
+  local sr, sc = get_first_symbol_range(tsn, from)
+  local er, ec = get_last_symbol_range(tsn, to)
 
-  if p and non_bracket_node then
+  if preset and (non_bracket_node and not shrink_node) then
+    local function get_framing_for_non_bracket(n)
+      local first = n:prev_sibling() or n:parent():prev_sibling()
+      local last = n:next_sibling() or n:parent():next_sibling()
+      return first, last
+    end
+
     local first, last = get_framing_for_non_bracket(tsn)
     if first then
       local r = { first:range() }

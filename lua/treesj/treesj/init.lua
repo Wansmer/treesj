@@ -410,15 +410,19 @@ function TreeSJ:parent_preset(mode)
 end
 
 ---Updates the presets for the current node.
----@param new_preset table
+---@param new_preset table|nil
 ---@param mode? 'split'|'join'
 function TreeSJ:update_preset(new_preset, mode)
   if self._preset then
-    if mode then
-      self._preset[mode] =
-        vim.tbl_deep_extend('force', self._preset[mode], new_preset)
+    if type(new_preset) == 'nil' then
+      self._preset = nil
     else
-      self._preset = vim.tbl_deep_extend('force', self._preset, new_preset)
+      if mode then
+        self._preset[mode] =
+          vim.tbl_deep_extend('force', self._preset[mode], new_preset)
+      else
+        self._preset = vim.tbl_deep_extend('force', self._preset, new_preset)
+      end
     end
   end
 end
@@ -428,18 +432,32 @@ end
 ---Recursive parse current node children and building TreeSJ
 function TreeSJ:_build_tree()
   local mode = self._mode
+  local preset = self:preset(mode)
   local children = tu.collect_children(self:tsnode(), tu.skip_empty_nodes)
 
+  if preset and preset.shrink_node then
+    if self ~= self:root() then
+      self:update_preset(nil)
+    else
+      local target = self:preset(mode).shrink_node
+      local _, from = tu.get_by_type(children, target.from)
+      local _, to = tu.get_by_type(children, target.to)
+      from = from and from or 1
+      to = to and to or #children
+      children = vim.list_slice(children, from, to)
+    end
+  end
+
   for _, child in ipairs(children) do
-    local preset
+    local self_preset
 
     if child:named() then
-      preset = search.get_self_preset(child:type(), self._lang)
+      self_preset = search.get_self_preset(child:type(), self._lang)
     end
 
     local tsj = TreeSJ.new({
       tsnode = child,
-      preset = preset,
+      preset = self_preset,
       lang = self._lang,
       parent = self,
       mode = mode,
@@ -457,7 +475,6 @@ function TreeSJ:_build_tree()
 
   self:update_children(self:children())
 
-  local preset = self:preset(mode)
   if preset then
     tu.handle_framing_nodes(self, preset)
     tu.handle_last_separator(self, preset)

@@ -12,6 +12,9 @@ return {
     },
   }),
   statements = lang_utils.set_preset_for_non_bracket({
+    split = {
+      recursive_ignore = { 'value_arguments' },
+    },
     join = {
       force_insert = ';',
       no_insert_if = {
@@ -35,4 +38,10 @@ return {
       'value_arguments',
     },
   },
+  function_declaration = lang_utils.set_preset_for_args({
+    both = {
+      non_bracket_node = true,
+      shrink_node = { from = '(', to = ')' },
+    },
+  }),
 }
