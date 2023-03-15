@@ -25,3 +25,18 @@ call_expression("arg1") {
   call1(1, 2)
   call2(1, 2)
 }
+
+// RESULT OF JOIN (node "function_declaration" (parameters), preset default)
+fun test(a: String, b: String) {
+  val var1 = 1
+  val var2 = 2
+}
+
+// RESULT OF SPLIT (node "function_declaration" (parameters), preset default)
+fun test(
+  a: String,
+  b: String
+) {
+  val var1 = 1
+  val var2 = 2
+}

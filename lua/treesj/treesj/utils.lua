@@ -37,6 +37,18 @@ function M.collect_children(tsnode, filter)
   return children
 end
 
+function M.get_by_type(children, ts_type)
+  local index, child
+  for i, el in ipairs(children) do
+    if el:type() == ts_type then
+      child = el
+      index = i
+      break
+    end
+  end
+  return child, index
+end
+
 ---Return text of node
 ---@param node TSNode from TSNode
 ---@return string
@@ -245,7 +257,7 @@ end
 ---@param tsj TreeSJ
 ---@param preset table
 function M.handle_framing_nodes(tsj, preset)
-  if tsj:non_bracket() then
+  if tsj:non_bracket() and not preset.shrink_node then
     local left_type, right_type = 'left_non_bracket', 'right_non_bracket'
     local left, right = '', ''
 

@@ -107,7 +107,7 @@ function M._format(mode, override)
     pcall(vim.api.nvim_buf_set_text, 0, sr, sc, er, ec, replacement)
 
   if not insert_ok then
-    notify(e)
+    notify.warn(e)
     return
   end
 
