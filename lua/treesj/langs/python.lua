@@ -30,6 +30,10 @@ return {
           penult:update_text(penult:text() .. ',')
         end
       end,
+      format_resulted_lines = function(lines)
+        lines[1] = lines[1]:gsub(',$', '')
+        return lines
+      end,
     },
     join = {
       format_tree = function(tsj)

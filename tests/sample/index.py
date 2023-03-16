@@ -165,4 +165,12 @@ from re import (
     sub,
 )
 
+# RESULT OF JOIN (node "import_from_statement", preset default)
+from re import search
+
+# RESULT OF SPLIT (node "import_from_statement", preset default)
+from re import (
+    search,
+)
+
 # code from https://learnxinyminutes.com/docs/python/
