@@ -186,31 +186,31 @@ cons|t arr = [ 1, 2, 3 ];
 
 By default, TreeSJ has presets for these languages:
 
-- **Javascript**;
-- **Typescript**;
-- **Tsx**;
-- **Jsx**;
-- **Lua**;
 - **CSS**;
-- **SCSS**;
-- **HTML**;
-- **Pug**;
-- **Vue**;
-- **Svelte**;
-- **JSON**;
-- **JSONC**;
-- **Toml**;
-- **Yaml**;
-- **PHP**;
-- **Ruby**;
-- **Python**;
+- **C/C++**;
 - **Go**;
+- **HTML**;
+- **Javascript**;
 - **Java**;
+- **JSONC**;
+- **JSON**;
+- **Jsx**;
+- **Kotlin**;
+- **Lua**;
+- **Nix**;
+- **PHP**;
+- **Pug**;
+- **Python**;
+- **Ruby**;
 - **Rust**;
 - **R**;
-- **C/C++**;
-- **Nix**;
-- **Kotlin**;
+- **SCSS**;
+- **Svelte**;
+- **Toml**;
+- **Tsx**;
+- **Typescript**;
+- **Vue**;
+- **Yaml**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
