@@ -1,6 +1,11 @@
-local query = require('vim.treesitter.query')
 local search = require('treesj.search')
 local u = require('treesj.utils')
+
+local query = require('vim.treesitter.query')
+local ts = require('vim.treesitter')
+-- `ts.get_node_text` for NVIM v0.9.0-dev-1275+gcbbf8bd66-dirty and newer
+-- see: https://github.com/neovim/neovim/pull/22761
+local get_node_text = ts.get_node_text or query.get_node_text
 
 local M = {}
 
@@ -15,7 +20,7 @@ end
 ---@param tsn TSNode TSNode instance
 ---@return boolean
 function M.skip_empty_nodes(tsn)
-  local text = vim.trim(query.get_node_text(tsn, 0))
+  local text = vim.trim(get_node_text(tsn, 0))
   return not u.is_empty(text)
 end
 
@@ -54,7 +59,7 @@ end
 ---@return string
 function M.get_node_text(node)
   -- TODO: concat is deprecated in 0.9+. Refactor later
-  local lines = query.get_node_text(node, 0, { concat = false })
+  local lines = get_node_text(node, 0)
   local trimed_lines = {}
   local sep = ' '
   if type(lines) == 'string' then
