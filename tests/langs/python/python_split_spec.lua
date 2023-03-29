@@ -184,6 +184,15 @@ local data_for_split = {
     expected = { 179, 184 },
     result = { 176, 181 },
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "pattern_list", preset default',
+    cursor = { 187, 2 },
+    expected = { 189, 194 },
+    result = { 186, 191 },
+  },
 }
 
 local treesj = require('treesj')

@@ -183,4 +183,14 @@ from re import (
     t3,
 ) = (1, 2, 3,)
 
+# RESULT OF JOIN (node "pattern_list", preset default)
+d1, d2, d3 = { "one": 1, "two": 2, "three": 3 }.values()
+
+# RESULT OF SPLIT (node "pattern_list", preset default)
+(
+    d1,
+    d2,
+    d3,
+) = { "one": 1, "two": 2, "three": 3 }.values()
+
 # code from https://learnxinyminutes.com/docs/python/
