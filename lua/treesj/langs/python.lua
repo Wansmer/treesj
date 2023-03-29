@@ -10,6 +10,12 @@ return {
   dictionary = no_space_in_brackets,
   list = no_space_in_brackets,
   set = no_space_in_brackets,
+  tuple_pattern = lang_utils.set_preset_for_list({
+    join = {
+      space_in_brackets = false,
+      last_separator = true,
+    },
+  }),
   tuple = lang_utils.set_preset_for_list({
     join = {
       space_in_brackets = false,

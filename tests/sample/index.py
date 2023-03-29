@@ -37,6 +37,15 @@ tup = (
     3,
 )
 
+# # RESULT OF JOIN (node "tuple_pattern", preset default)
+(t1, t2, t2,) = (1, 2, 3,)
+# # RESULT OF SPLIT (node "tuple_pattern", preset default)
+(
+    t1,
+    t2,
+    t3,
+) = (1, 2, 3,)
+
 # RESULT OF JOIN (node "argument_list", preset default)
 print("Hello, World", end="!")
 # RESULT OF SPLIT (node "argument_list", preset default)
