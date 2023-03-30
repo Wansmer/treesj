@@ -173,8 +173,8 @@ from re import (
     search,
 )
 
- # RESULT OF JOIN (node "tuple_pattern", preset default)
-(t1, t2, t3,) = (1, 2, 3,)
+ # RESULT OF JOIN (node "tuple_pattern to pattern_list", preset default)
+t1, t2, t3 = (1, 2, 3,)
 
 # RESULT OF SPLIT (node "tuple_pattern", preset default)
 (

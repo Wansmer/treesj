@@ -40,8 +40,13 @@ return {
   }),
   tuple_pattern = lang_utils.set_preset_for_list({
     join = {
-      space_in_brackets = false,
-      last_separator = true,
+      space_in_brackets = true,
+      last_separator = false,
+      format_tree = function(tsj)
+        if tsj:has_children({ '(', ')' }) then
+          tsj:remove_child({ '(', ')' })
+        end
+      end,
     },
   }),
   tuple = lang_utils.set_preset_for_list({
