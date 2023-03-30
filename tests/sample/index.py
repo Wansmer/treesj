@@ -173,4 +173,24 @@ from re import (
     search,
 )
 
+ # RESULT OF JOIN (node "tuple_pattern to pattern_list", preset default)
+t1, t2, t3 = (1, 2, 3,)
+
+# RESULT OF SPLIT (node "tuple_pattern", preset default)
+(
+    t1,
+    t2,
+    t3,
+) = (1, 2, 3,)
+
+# RESULT OF JOIN (node "pattern_list", preset default)
+d1, d2, d3 = { "one": 1, "two": 2, "three": 3 }.values()
+
+# RESULT OF SPLIT (node "pattern_list", preset default)
+(
+    d1,
+    d2,
+    d3,
+) = { "one": 1, "two": 2, "three": 3 }.values()
+
 # code from https://learnxinyminutes.com/docs/python/
