@@ -39,8 +39,12 @@ return {
       format_tree = function(tsj)
         local items = tsj:children({ 'block_sequence_item' })
         for _, item in ipairs(items) do
-          local text = item:text():gsub('^- ', '')
-          item:update_text(text)
+          if item:will_be_formatted() then
+            item:remove_child('-')
+          else
+            local text = item:text():gsub('^- ', '')
+            item:update_text(text)
+          end
         end
       end,
     },

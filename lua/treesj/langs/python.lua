@@ -17,7 +17,7 @@ return {
         tsj:create_child({ text = '(' }, 1)
         tsj:create_child({ text = ')' }, #tsj:children() + 1)
         local penult = tsj:child(-2)
-        if (penult:text():sub(-1) == ",") then
+        if penult:text():sub(-1) == ',' then
           tsj.remove_child(penult)
         else
           local antepenult = tsj:child(-3)
