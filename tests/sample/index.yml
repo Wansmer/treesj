@@ -17,3 +17,9 @@ mixed:
   array:
     - value1
     - value2
+
+no-empty: [ warn, { allowEmptyCatch: true } ]
+
+no-empty:
+  - warn
+  - allowEmptyCatch: true
