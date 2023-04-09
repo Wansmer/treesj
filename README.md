@@ -392,7 +392,7 @@ local tsj_utils = require('treesj.langs.utils')
 local css = require('treesj.langs.css')
 
 local langs = {
-  scss = u.merge_preset(css, {--[[
+  scss = tsj_utils.merge_preset(css, {--[[
     Here you can override existing nodes
     or add language-specific nodes
 ]]})
