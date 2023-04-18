@@ -1,4 +1,4 @@
-*treesj.txt*           For Neovim >= 0.8.0          Last change: 2023 April 03
+*treesj.txt*           For Neovim >= 0.8.0          Last change: 2023 April 18
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -402,7 +402,7 @@ of nodes:
     local css = require('treesj.langs.css')
     
     local langs = {
-      scss = u.merge_preset(css, {--[[
+      scss = tsj_utils.merge_preset(css, {--[[
         Here you can override existing nodes
         or add language-specific nodes
     ]]})
