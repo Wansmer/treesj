@@ -13,7 +13,10 @@ return {
   }),
   statements = lang_utils.set_preset_for_non_bracket({
     split = {
-      recursive_ignore = { 'value_arguments' },
+      recursive_ignore = {
+        'value_arguments',
+        'function_value_parameters',
+      },
     },
     join = {
       force_insert = ';',
@@ -38,10 +41,5 @@ return {
       'value_arguments',
     },
   },
-  function_declaration = lang_utils.set_preset_for_args({
-    both = {
-      non_bracket_node = true,
-      shrink_node = { from = '(', to = ')' },
-    },
-  }),
+  function_value_parameters = lang_utils.set_preset_for_args(),
 }

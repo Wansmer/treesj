@@ -31,7 +31,10 @@ local opts = {
       statements = {
         split = {
           recursive = true,
-          recursive_ignore = { 'value_arguments' },
+          recursive_ignore = {
+            'value_arguments',
+            'function_value_parameters',
+          },
         },
       },
     },
