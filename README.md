@@ -204,6 +204,7 @@ By default, TreeSJ has presets for these languages:
 - **PHP**;
 - **Ruby**;
 - **Python**;
+- **Starlark**;
 - **Go**;
 - **Java**;
 - **Rust**;
