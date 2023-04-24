@@ -72,11 +72,9 @@ end
 M._create_commands = function()
   local treesj = require('treesj')
   for _, cmd in ipairs(commands) do
-    vim.api.nvim_create_user_command(
-      cmd.name,
-      treesj[cmd.func],
-      { desc = cmd.desc }
-    )
+    vim.api.nvim_create_user_command(cmd.name, function()
+      treesj[cmd.func]()
+    end, { desc = cmd.desc })
   end
 end
 
