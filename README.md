@@ -212,6 +212,7 @@ By default, TreeSJ has presets for these languages:
 - **C/C++**;
 - **Nix**;
 - **Kotlin**;
+- **Bash**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
@@ -491,6 +492,8 @@ The utilities have helper functions that you will need most often:
 `lang_utils.helpers.has_parent(parent_type)`
 
 `lang_utils.helpers.match(pattern)`
+
+`lang_utils.helpers.contains(tsn_types)`
 
 <details>
 
