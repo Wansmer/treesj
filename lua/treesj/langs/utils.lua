@@ -211,4 +211,15 @@ M.helpers.match = function(pattern)
   end
 end
 
+M.helpers.contains = function(tsn_types)
+  return function(tsn)
+    for child in tsn:iter_children() do
+      if vim.tbl_contains(tsn_types, child:type()) then
+        return true
+      end
+    end
+    return false
+  end
+end
+
 return M
