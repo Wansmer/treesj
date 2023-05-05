@@ -275,7 +275,7 @@ local node_type = {
     enable = true,
     ---@type function|nil function(tsj: TreeSJ): void
     format_tree = nil,
-    ---@type function|nil function(lines: string[], tsn?: TSNode): void
+    ---@type function|nil function(lines: string[], tsn?: TSNode): string[]
     format_resulted_lines = nil,
 
     --[[ The options below should be the same for both modes. ]]
