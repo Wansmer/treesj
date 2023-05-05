@@ -1,4 +1,4 @@
-*treesj.txt*            For Neovim >= 0.8.0           Last change: 2023 May 03
+*treesj.txt*            For Neovim >= 0.8.0           Last change: 2023 May 05
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -222,6 +222,7 @@ By default, TreeSJ has presets for these languages:
 - **Nix**;
 - **Kotlin**;
 - **Bash**;
+- **SQL**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how to implement fallback
@@ -284,7 +285,7 @@ Default preset for node:
         enable = true,
         ---@type function|nil function(tsj: TreeSJ): void
         format_tree = nil,
-        ---@type function|nil function(tsj: TreeSJ): void
+        ---@type function|nil function(lines: string[], tsn?: TSNode): string[]
         format_resulted_lines = nil,
     
         --[[ The options below should be the same for both modes. ]]
@@ -816,7 +817,9 @@ This can be implemented with:
 OPTION FORMAT_RESULTED_LINES
 
 The `format_resulted_lines` function takes as an argument an array of strings
-that will replace the content of the base node.
+that will replace the content of the base node. The second optional argument is
+the node that was processed. Useful if you want to format terms based on some
+values, such as a range.
 
 The function should return an array of strings that may have been modified.
 
