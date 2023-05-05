@@ -522,7 +522,7 @@ function TreeSJ:_format()
     local format_lines = preset and preset.format_resulted_lines
 
     if format_lines then
-      local ok, output = pcall(format_lines, lines)
+      local ok, output = pcall(format_lines, lines, self:tsnode())
       local correct = type(output) == 'table' and u.every(output, u.is_string)
 
       if not (ok and correct) then

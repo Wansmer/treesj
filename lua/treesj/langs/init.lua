@@ -28,6 +28,7 @@ M.configured_langs = {
   'nix',
   'kotlin',
   'bash',
+  'sql',
 }
 
 M.presets = {}

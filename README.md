@@ -213,6 +213,7 @@ By default, TreeSJ has presets for these languages:
 - **Nix**;
 - **Kotlin**;
 - **Bash**;
+- **SQL**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
@@ -274,7 +275,7 @@ local node_type = {
     enable = true,
     ---@type function|nil function(tsj: TreeSJ): void
     format_tree = nil,
-    ---@type function|nil function(tsj: TreeSJ): void
+    ---@type function|nil function(lines: string[], tsn?: TSNode): void
     format_resulted_lines = nil,
 
     --[[ The options below should be the same for both modes. ]]
@@ -821,7 +822,9 @@ local python = {
 #### Option `format_resulted_lines`
 
 The `format_resulted_lines` function takes as an argument an array of strings
-that will replace the content of the base node.
+that will replace the content of the base node. The second optional argument is
+the node that was processed. Useful if you want to format terms based on some
+values, such as a range.
 
 The function should return an array of strings that may have been modified.
 
