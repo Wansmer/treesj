@@ -29,6 +29,7 @@ M.configured_langs = {
   'kotlin',
   'bash',
   'sql',
+  'dart',
 }
 
 M.presets = {}
