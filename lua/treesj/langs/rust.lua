@@ -2,7 +2,11 @@ local lang_utils = require('treesj.langs.utils')
 
 return {
   field_declaration_list = lang_utils.set_preset_for_dict(),
-  declaration_list = lang_utils.set_preset_for_statement(),
+  declaration_list = lang_utils.set_preset_for_statement({
+    join = {
+      force_insert = '',
+    },
+  }),
   field_initializer_list = lang_utils.set_preset_for_dict(),
   struct_pattern = lang_utils.set_preset_for_dict({
     both = {
@@ -32,7 +36,10 @@ return {
   }),
   block = lang_utils.set_preset_for_statement({
     join = {
-      no_insert_if = { lang_utils.helpers.if_penultimate },
+      no_insert_if = {
+        lang_utils.helpers.if_penultimate,
+        'function_item',
+      },
       format_tree = function(tsj)
         local node = tsj:tsnode()
         local parents = { 'match_arm', 'closure_expression' }
