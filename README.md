@@ -10,9 +10,7 @@ Inspired by and partly repeats the functionality of
 
 <!-- panvimdoc-ignore-start -->
 
-<https://user-images.githubusercontent.com/46977173/201088511-b336cec5-cec4-437f-95b3-0208c83377fd.mov>
-
-<sup align="center">Theme: [Catppuccin](https://github.com/catppuccin/nvim), Font: JetBrains Mono</sup>
+https://github.com/Wansmer/treesj/assets/46977173/4277455b-81fd-4e99-9af7-43c77dbf542b
 
 <!--toc:start-->
 
