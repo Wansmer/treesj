@@ -19,6 +19,16 @@ return {
       },
     },
   }),
+  interface_type = lang_utils.set_preset_for_statement({
+    both = {
+      shrink_node = { from = '{', to = '}' },
+    },
+    join = {
+      no_insert_if = {
+        lang_utils.helpers.if_penultimate,
+      },
+    },
+  }),
   import_spec = lang_utils.set_preset_for_args({
     both = {
       enable = function(tsn)
@@ -42,6 +52,7 @@ return {
     },
   }),
   import_declaration = { target_nodes = { 'import_spec', 'import_spec_list' } },
+  -- const_declaration = { target_nodes = { 'const_spec' } },
   function_declaration = {
     target_nodes = { 'block' },
   },
