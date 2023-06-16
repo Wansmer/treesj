@@ -1,7 +1,13 @@
 local lang_utils = require('treesj.langs.utils')
 
+local no_spases = {
+  join = {
+    space_in_brackets = false,
+  },
+}
+
 return {
-  literal_value = lang_utils.set_preset_for_list(),
+  literal_value = lang_utils.set_preset_for_list(no_spases),
   parameter_list = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
@@ -24,6 +30,7 @@ return {
       shrink_node = { from = '{', to = '}' },
     },
     join = {
+      space_in_brackets = false,
       no_insert_if = {
         lang_utils.helpers.if_penultimate,
       },
