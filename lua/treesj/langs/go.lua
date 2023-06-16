@@ -52,7 +52,6 @@ return {
     },
   }),
   import_declaration = { target_nodes = { 'import_spec', 'import_spec_list' } },
-  -- const_declaration = { target_nodes = { 'const_spec' } },
   function_declaration = {
     target_nodes = { 'block' },
   },
