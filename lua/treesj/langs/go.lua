@@ -30,7 +30,18 @@ return {
       shrink_node = { from = '{', to = '}' },
     },
     join = {
-      space_in_brackets = false,
+      no_insert_if = {
+        lang_utils.helpers.if_penultimate,
+      },
+    },
+  }),
+  field_declaration_list = lang_utils.set_preset_for_statement({
+    split = {
+      format_tree = function(tsj)
+        tsj:remove_child(';')
+      end,
+    },
+    join = {
       no_insert_if = {
         lang_utils.helpers.if_penultimate,
       },
