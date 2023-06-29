@@ -1,4 +1,4 @@
-*treesj.txt*            For Neovim >= 0.8.0           Last change: 2023 May 10
+*treesj.txt*           For Neovim >= 0.8.0           Last change: 2023 June 29
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -30,7 +30,6 @@ Inspired by and partly repeats the functionality of splitjoin.vim
 
 FEATURES                                              *treesj-treesj-features*
 
-
 - **Can be called from anywhere in the block**No need to move cursor to
     specified place to split/join block of code;
 - **Make cursor sticky**The cursor follows the text on which it was called;
@@ -44,7 +43,6 @@ FEATURES                                              *treesj-treesj-features*
 
 
 REQUIREMENTS                                      *treesj-treesj-requirements*
-
 
 - Neovim 0.8+ <https://github.com/neovim/neovim/releases>
 - nvim-treesitter <https://github.com/nvim-treesitter/nvim-treesitter>
@@ -119,7 +117,6 @@ COMMANDS                                              *treesj-treesj-commands*
 
 TreeSJ provide user commands:
 
-
 - `:TSJToggle` - toggle node under cursor (split if one-line and join if
     multiline);
 - `:TSJSplit` - split node under cursor;
@@ -160,7 +157,6 @@ is found.
 
 Presets for node can be two types:
 
-
 - With preset for self - if this type is found, the node will be formatted;
 - With referens for nested nodes or fields - in this case, search will be
     continued among this node descendants;
@@ -193,7 +189,6 @@ Presets for node can be two types:
 LANGUAGES                                     *treesj-configuration-languages*
 
 By default, TreeSJ has presets for these languages:
-
 
 - **Javascript**;
 - **Typescript**;
@@ -909,7 +904,6 @@ the fly (see advanced node configuration).
 
 TREESJ LIFECYCLE ~
 
-
 - **Checking the found Node**There is a check that there is no syntax error in
     the node, there are no descendants with types from `preset[mode].no_format_with`
     and `preset[mode].enable` is true.
@@ -992,7 +986,6 @@ CHILD
 
 Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
 
-
 - The `index` can be a negative value, which means to search from the end of the
     list.
 - If a `type` is passed, the first element found will be returned. To get an
@@ -1008,7 +1001,6 @@ Get the child of the current node, using its `type` (`tsj:type()`) or `index`.
 CREATE_CHILD
 
 Creating a new TreeSJ instance as a child of current TreeSJ.
-
 
 - data: {text=string, type=string|nil, copy_from=TreeSJ|nil}
     The "copy_from" field is used if a node needs to be duplicated and expects TreeSJ.
@@ -1064,7 +1056,6 @@ WRAP
 
 Creates the first and last elements in the list of children of the current
 TreeSJ.
-
 
 - If the `wrap` mode is passed (the default), then a new list of children is
     created with one element as itself, and the wrapping elements are added to it.
