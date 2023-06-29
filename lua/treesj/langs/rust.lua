@@ -78,6 +78,7 @@ return {
   },
   use_list = lang_utils.set_preset_for_list(),
   array_expression = lang_utils.set_preset_for_list(),
+  parenthesized_expression = lang_utils.set_preset_for_args(),
   let_declaration = {
     target_nodes = {
       'field_declaration_list',
