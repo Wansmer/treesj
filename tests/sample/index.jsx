@@ -21,7 +21,7 @@ const Button = (props) => {
   return (
     <div>
       // result of JOIN (node 'jsx_self_closing_element')
-      <button onClick={onClick} className='Button' disabled={isDisabled} id={id} />
+      <button onClick={onClick} className='Button' disabled={isDisabled} id={id}/>
       // result of SPLIT (node 'jsx_self_closing_element')
       <button
         onClick={onClick}
@@ -60,7 +60,7 @@ const Button = (props) => {
 // result of JOIN (node with 'nested_identifier')
 const test = () => {
   return (
-    <Skeleton.Button block active />
+    <Skeleton.Button block active/>
   );
 }
 

@@ -155,7 +155,7 @@ return {
   }),
   jsx_self_closing_element = lang_utils.set_default_preset({
     both = {
-      omit = { 'identifier', 'nested_identifier', '>' },
+      omit = { 'member_expression', 'identifier', 'nested_identifier', '>' },
       no_format_with = {},
     },
   }),

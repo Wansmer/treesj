@@ -8,7 +8,7 @@ local settings = {
     javascript = {
       jsx_self_closing_element = {
         split = {
-          omit = { 'identifier', 'nested_identifier', '/', '>' },
+          omit = { 'identifier', 'nested_identifier', '/', '>', '/>' },
           last_indent = 'inner',
         },
       },
@@ -46,7 +46,7 @@ local opts = {
     javascript = {
       jsx_self_closing_element = {
         split = {
-          omit = { 'identifier', 'nested_identifier', '/', '>' },
+          omit = { 'identifier', 'nested_identifier', '/', '>', '/>' },
           last_indent = 'inner',
         },
       },
