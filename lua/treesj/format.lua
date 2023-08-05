@@ -18,6 +18,12 @@ local MAX_LENGTH = settings.max_join_length
 local M = {}
 
 function M._format(mode, override)
+  -- Tree reparsing is required, otherwise the tree may not be updated
+  -- and each node will be processed only once (until
+  -- the tree is updated). See issue #118
+  local parser = vim.treesitter.get_parser(0)
+  parser:parse()
+
   local start_node = ts_utils.get_node_at_cursor(0)
   if not start_node then
     notify.info(msg.no_detect_node)
@@ -112,12 +118,6 @@ function M._format(mode, override)
   end
 
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
-
-  -- Tree reparsing is required, otherwise the tree may not be updated
-  -- and each node will be processed only once (until
-  -- the tree is updated). See issue #118
-  local parser = vim.treesitter.get_parser(0)
-  parser:parse()
 end
 
 return M
