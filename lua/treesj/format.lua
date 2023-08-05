@@ -112,6 +112,12 @@ function M._format(mode, override)
   end
 
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
+
+  -- Tree reparsing is required, otherwise the tree may not be updated
+  -- and each node will be processed only once (until
+  -- the tree is updated). See issue #118
+  local parser = vim.treesitter.get_parser(0)
+  parser:parse()
 end
 
 return M
