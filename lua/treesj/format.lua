@@ -21,7 +21,11 @@ function M._format(mode, override)
   -- Tree reparsing is required, otherwise the tree may not be updated
   -- and each node will be processed only once (until
   -- the tree is updated). See issue #118
-  local parser = vim.treesitter.get_parser(0)
+  local ok_ts, parser = pcall(vim.treesitter.get_parser, 0)
+  if not ok_ts then
+    notify.error(msg.no_ts_parser)
+    return
+  end
   parser:parse()
 
   local start_node = ts_utils.get_node_at_cursor(0)

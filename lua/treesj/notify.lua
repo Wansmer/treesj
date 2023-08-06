@@ -19,6 +19,7 @@ M.msg = {
   node_is_disable = 'Action "%s" for node "%s" is disabled in preset',
   custom_func = 'Something went wrong in function "%s" from preset for "%s": %s',
   wrong_resut = 'Function "%s" from preset for "%s" returned wrong format for new lines',
+  no_ts_parser = 'Treesitter parser not found for current buffer',
 }
 
 ---Wraper for vim.notify and nvim-notify
@@ -26,6 +27,8 @@ M.msg = {
 ---@param level number vim.levels[level]
 ---@vararg string Strings for substitute
 M.notify = function(msg, level, ...)
+  local orig_msg = msg
+
   if settings.notify then
     msg = msg:format(...)
     level = level or vim.log.levels.INFO
@@ -37,6 +40,10 @@ M.notify = function(msg, level, ...)
     else
       vim.notify(('[%s]: %s'):format(PLUGIN_NAME, msg), level)
     end
+  end
+
+  if type(settings.on_error) == 'function' then
+    settings.on_error(orig_msg, level, ...)
   end
 end
 
