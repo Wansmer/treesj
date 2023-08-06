@@ -7,12 +7,12 @@ CREATE TABLE my_table (
 );
 
 -- RESULT OF JOIN (node "list", preset default)
-INSERT INTO persons (first_name, last_name) VALUES ('Janet', 'Smith'), ('Lee', 'Reynolds')
+INSERT INTO persons (first_name, last_name) VALUES ('Janet', 'Smith'), ('Lee', 'Reynolds');
 -- RESULT OF SPLIT (node "list", preset default)
 INSERT INTO persons (
   first_name,
   last_name
-) VALUES ('Janet', 'Smith'), ('Lee', 'Reynolds')
+) VALUES ('Janet', 'Smith'), ('Lee', 'Reynolds');
 
 -- RESULT OF JOIN (node "select_expression", preset default)
 SELECT fullname, email AS "E-mail", tel AS "Phone"
