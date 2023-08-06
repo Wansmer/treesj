@@ -19,6 +19,7 @@ M.msg = {
   node_is_disable = 'Action "%s" for node "%s" is disabled in preset',
   custom_func = 'Something went wrong in function "%s" from preset for "%s": %s',
   wrong_resut = 'Function "%s" from preset for "%s" returned wrong format for new lines',
+  no_ts_parser = 'Treesitter parser not found for current buffer'
 }
 
 ---Wraper for vim.notify and nvim-notify
