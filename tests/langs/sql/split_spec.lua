@@ -22,15 +22,15 @@ local data_for_split = {
     expected = { 11, 15 },
     result = { 9, 13 },
   },
-  -- {
-  --   path = PATH,
-  --   mode = 'split',
-  --   lang = LANG,
-  --   desc = 'lang "%s", node "select_expression", preset default',
-  --   cursor = { 18, 23 },
-  --   expected = { 20, 24 },
-  --   result = { 17, 21 },
-  -- },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "select_expression", preset default',
+    cursor = { 18, 23 },
+    expected = { 20, 24 },
+    result = { 17, 21 },
+  },
 }
 
 local treesj = require('treesj')
