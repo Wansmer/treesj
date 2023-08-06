@@ -32,11 +32,11 @@ func() {
 }
 
 // RESULT OF JOIN (node "arguments", preset default)
-print(map["key"], list[0]);
+print(a, b);
 // RESULT OF SPLIT (node "arguments", preset default)
 print(
-  map["key"],
-  list[0]
+  a,
+  b
 );
 
 // RESULT OF JOIN (node "formal_parameter_list", preset default)
