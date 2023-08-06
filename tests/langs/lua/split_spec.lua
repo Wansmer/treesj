@@ -76,6 +76,15 @@ local data_for_split = {
     expected = { 123, 125 },
     result = { 120, 122 },
   },
+  {
+    path = PATH,
+    mode = 'split',
+    lang = LANG,
+    desc = 'lang "%s", node "table_constructor" with empty table, preset default',
+    cursor = { 135, 14 },
+    expected = { 136, 140 },
+    result = { 134, 138 },
+  },
 }
 
 local treesj = require('treesj')
