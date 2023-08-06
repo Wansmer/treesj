@@ -461,6 +461,13 @@ end
 function M._join(tsj)
   local lines = {}
 
+  -- No spaces in empty node (node with only framings). See issue #108
+  if tsj:has_preset() and not tsj:non_bracket() and not tsj:is_imitator() then
+    if #tsj:children() == 2 then
+      tsj:update_preset({ space_in_brackets = false }, 'join')
+    end
+  end
+
   for child in tsj:iter_children() do
     if tsj:has_preset() then
       handle_force_insert(child)
