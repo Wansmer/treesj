@@ -47,9 +47,9 @@ function M._format(mode, override)
       return
     end
 
-    if override then
-      tsn_data.preset = vim.tbl_deep_extend('force', tsn_data.preset, override)
-    end
+    -- Required to create an independent copy of the preset
+    override = override or {}
+    tsn_data.preset = vim.tbl_deep_extend('force', tsn_data.preset, override)
 
     node = tsn_data.tsnode
     p = tsn_data.preset
