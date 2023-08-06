@@ -30,6 +30,9 @@ return {
     format_tree = nil,
     ---@type function|nil function(lines: string[], tsn?: TSNode): string[]
     format_resulted_lines = nil,
+    ---Passes control to an external script and terminates treesj execution.
+    ---@type function|nil function(node: TSNode): void
+    fallback = nil,
 
     --[[ The options below should be the same for both modes. ]]
     ---The text of the node will be merged with the previous one, without wrapping to a new line

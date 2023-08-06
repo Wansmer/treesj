@@ -216,6 +216,9 @@ For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
 fallback](https://github.com/Wansmer/treesj/discussions/19) to splitjoin.vim.
 
+It is also possible to configure fallback for any node (see [Advanced
+node](#advanced-node)).
+
 To find out what nodes are called in your language, analyze your code with
 [nvim-treesitter/playground](https://github.com/nvim-treesitter/playground) or
 look in the [source code of the
@@ -274,6 +277,9 @@ local node_type = {
     format_tree = nil,
     ---@type function|nil function(lines: string[], tsn?: TSNode): string[]
     format_resulted_lines = nil,
+    ---Passes control to an external script and terminates treesj execution.
+    ---@type function|nil function(node: TSNode): void
+    fallback = nil,
 
     --[[ The options below should be the same for both modes. ]]
     ---The text of the node will be merged with the previous one, without wrapping to a new line
@@ -469,6 +475,73 @@ local go = {
     },
   }),
 }
+```
+
+</details>
+
+#### Option `fallback`
+
+The `fallback` option passes control to a third-party script that can be called
+within the function. When this option is used, `treesj` only searches for the
+required node, but does not process it.
+
+A found TSNode instance is passed to the function, which can be handled
+independently. For example, you can get the region of its location, check its
+siblings, etc.
+
+<details>
+<summary>Example of usage</summary>
+
+The problem:
+
+This action is difficult to implement with `treesj`, so you can pass control to
+`splitjoin.vim` if the found node is a `class` or `module`.
+
+> Note that in the above example, `splitjoin.vim' requires the cursor to be on the
+> name of a class or module. In some cases, you may need to keep track of the
+> position of the cursor from which the handler is called.
+
+```ruby
+# RESULT OF JOIN
+class Foo::Bar::Baz < Quux
+  def initialize
+    # foo
+  end
+end
+
+# RESULT OF SPLIT
+module Foo
+  module Bar
+    class Baz < Quux
+      def initialize
+        # foo
+      end
+    end
+  end
+end
+```
+
+This can be implemented with:
+
+```lua
+ruby = {
+  module = {
+    both = {
+      no_format_with = {}, -- Need to avoid 'no format with comment'
+      fallback = function(_)
+        vim.cmd('SplitjoinJoin')
+      end,
+    },
+  },
+  class = {
+    both = {
+      no_format_with = {},
+      fallback = function(_)
+        vim.cmd('SplitjoinSplit')
+      end,
+    },
+  },
+},
 ```
 
 </details>

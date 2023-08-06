@@ -75,6 +75,11 @@ function M._format(mode, override)
     end
   end
 
+  if type(p.fallback) == 'function' then
+    p.fallback(tsn_data.tsnode)
+    return
+  end
+
   if p and not p.format_empty_node then
     if not p.non_bracket_node and tu.is_empty_node(node, p) then
       return
