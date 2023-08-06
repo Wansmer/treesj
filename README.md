@@ -216,6 +216,9 @@ For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
 fallback](https://github.com/Wansmer/treesj/discussions/19) to splitjoin.vim.
 
+It is also possible to configure fallback for any node (see [Advanced
+node](#advanced-node)).
+
 To find out what nodes are called in your language, analyze your code with
 [nvim-treesitter/playground](https://github.com/nvim-treesitter/playground) or
 look in the [source code of the
