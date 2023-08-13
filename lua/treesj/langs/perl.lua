@@ -27,4 +27,7 @@ return {
       omit = { 'semi_colon' },
     },
   }),
+  variable_declaration = {
+    target_nodes = { 'array', 'array_ref', 'hash_ref' },
+  },
 }
