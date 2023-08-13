@@ -11,6 +11,7 @@ M.configured_langs = {
   'css',
   'scss',
   'tsx',
+  'perl',
   'php',
   'ruby',
   'go',
