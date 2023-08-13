@@ -7,6 +7,7 @@ M.configured_langs = {
   'html',
   'json',
   'jsonc',
+  'json5',
   'vue',
   'css',
   'scss',
