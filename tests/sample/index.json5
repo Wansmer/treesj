@@ -1,0 +1,20 @@
+[
+  // language: json5
+  // result of SPLIT
+  {
+    object: {
+      split: 'split',
+      join: "join"
+    },
+    array: [
+      'split',
+      "join"
+    ]
+  },
+  // language: json5
+  // result of JOIN
+  {
+    object: { split: 'split', join: "join" },
+    array: [ 'split', "join" ]
+  }
+]
