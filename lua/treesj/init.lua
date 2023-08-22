@@ -11,32 +11,32 @@ M.setup = function(opts)
   settings._create_commands()
 end
 
-M.__format = function()
-  require('treesj.format')._format(M._mode_to_use, M._preset_to_use)
-end
-
-local function perform(mode, preset)
-  M._mode_to_use = mode
-  M._preset_to_use = preset
-
+local function repeatable(fn)
   if settings.settings.dot_repeat then
-    vim.opt.operatorfunc = "v:lua.require'treesj'.__format"
-    vim.api.nvim_feedkeys('g@l', 'nix', true)
+    M.__repeat = fn
+    vim.opt.operatorfunc = "v:lua.require'treesj'.__repeat"
+    vim.api.nvim_feedkeys('g@l', 'n', true)
   else
-    M.__format()
+    fn()
   end
 end
 
+M.format = function(mode, preset)
+  repeatable(function()
+    require('treesj.format')._format(mode, preset)
+  end)
+end
+
 M.toggle = function(preset)
-  perform(nil, preset)
+  M.format(nil, preset)
 end
 
 M.join = function(preset)
-  perform("join", preset)
+  M.format('join', preset)
 end
 
 M.split = function(preset)
-  perform("split", preset)
+  M.format('split', preset)
 end
 
 return M
