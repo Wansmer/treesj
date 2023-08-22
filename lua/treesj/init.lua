@@ -8,42 +8,32 @@ M.setup = function(opts)
   settings._create_commands()
 end
 
-M.__toggle = function(_, preset)
-  require('treesj.format')._format(nil, preset)
-end
-
-M.__split = function(_, preset)
-  require('treesj.format')._format('split', preset)
-end
-
-M.__join = function(_, preset)
-  require('treesj.format')._format('join', preset)
-end
-
-local function set_opfunc_and_format(dir)
-  vim.opt.operatorfunc = "v:lua.require'treesj'.__" .. dir
-  vim.api.nvim_feedkeys('g@l', 'nx', true)
-end
-
-local function format(data)
-  local dir, preset = data.dir, data.preset
-  if settings.settings.dot_repeat and not preset then
-    set_opfunc_and_format(dir)
+local function repeatable(fn)
+  if settings.settings.dot_repeat then
+    M.__repeat = fn
+    vim.opt.operatorfunc = "v:lua.require'treesj'.__repeat"
+    vim.api.nvim_feedkeys('g@l', 'n', true)
   else
-    M['__' .. dir](_, preset)
+    fn()
   end
 end
 
+M.format = function(mode, preset)
+  repeatable(function()
+    require('treesj.format')._format(mode, preset)
+  end)
+end
+
 M.toggle = function(preset)
-  format({ dir = 'toggle', preset = preset })
+  M.format(nil, preset)
 end
 
 M.join = function(preset)
-  format({ dir = 'join', preset = preset })
+  M.format('join', preset)
 end
 
 M.split = function(preset)
-  format({ dir = 'split', preset = preset })
+  M.format('split', preset)
 end
 
 return M
