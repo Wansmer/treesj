@@ -68,7 +68,7 @@ With [packer.nvim](https://github.com/wbthomason/packer.nvim):
 ```lua
 use({
   'Wansmer/treesj',
-  requires = { 'nvim-treesitter' },
+  requires = { 'nvim-treesitter/nvim-treesitter' },
   config = function()
     require('treesj').setup({--[[ your config ]]})
   end,
