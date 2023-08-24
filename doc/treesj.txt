@@ -1,4 +1,4 @@
-*treesj.txt*          For Neovim >= 0.8.0          Last change: 2023 August 13
+*treesj.txt*          For Neovim >= 0.8.0          Last change: 2023 August 24
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -68,7 +68,7 @@ Withpacker.nvim <https://github.com/wbthomason/packer.nvim>
 >lua
     use({
       'Wansmer/treesj',
-      requires = { 'nvim-treesitter' },
+      requires = { 'nvim-treesitter/nvim-treesitter' },
       config = function()
         require('treesj').setup({--[[ your config ]]})
       end,
