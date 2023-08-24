@@ -173,6 +173,46 @@ function M.get_configured_node(node)
 
   return data
 end
+---Return the all configured nodes
+---@param node TSNode|nil TSNode instance
+---@return table
+function M.get_configured_nodes(node)
+  if not node then
+    error(msg.node_not_received, 0)
+  end
+
+  local lang = get_node_lang(node)
+  if not langs[lang] then
+    error(msg.no_configured_lang:format(lang), 0)
+  end
+  local start_node_type = node:type()
+
+  local nodes = {}
+  local done = {}
+  while node do
+    local data = search_node(node, lang)
+
+    if not data or not data.tsnode then
+      error(msg.no_configured_node:format(start_node_type, lang), 0)
+      break
+    end
+
+    local id = table.concat({ data.tsnode:range() }, '-')
+    if done[id] then
+      break
+    else
+      done[id] = true
+    end
+
+    nodes[#nodes + 1] = data
+    node = data.tsnode:parent()
+  end
+
+  if #nodes == 0 then
+    error(msg.no_configured_node:format(start_node_type, lang), 0)
+  end
+  return nodes
+end
 
 ---Return the preset for current node if it no contains field 'target_nodes'
 ---@param tsn_type string TSNode type
