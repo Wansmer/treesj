@@ -163,3 +163,17 @@ const myFunc = (param) => {
   doSomething();
   andThisDoTo();
 };
+
+// RESULT OF JOIN (field "body" in "arrow_function" with "statement_block" without return, preset default)
+export async function pretendDelay() {
+  const delay = Math.floor(Math.random() * 1000); // Between 0 and 1 seconds
+  return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+// RESULT OF SPLIT (field "body" in "arrow_function" with "statement_block" without return, preset default)
+export async function pretendDelay() {
+  const delay = Math.floor(Math.random() * 1000); // Between 0 and 1 seconds
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+}
