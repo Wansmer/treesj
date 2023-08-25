@@ -6,18 +6,19 @@ local arrow_body_format_join = function(tsj)
   if parent == 'arrow_function' and tsj:tsnode():named_child_count() == 1 then
     tsj:remove_child({ '{', '}' })
     tsj:update_preset({ force_insert = '', space_in_brackets = false }, 'join')
-    local ret = tsj:child('return_statement')
+    local stmt = tsj:child('return_statement')
+      or tsj:child('expression_statement')
 
-    if ret then
-      if ret:has_to_format() then
-        ret:remove_child({ 'return', ';' })
-        local obj = ret:child('object')
+    if stmt then
+      if stmt:has_to_format() then
+        stmt:remove_child({ 'return', ';' })
+        local obj = stmt:child('object')
         if obj then
           tsj:wrap({ left = '(', right = ')' }, 'inline')
         end
       else
-        local text = ret:text():gsub('^return ', ''):gsub(';$', '')
-        ret:update_text(text)
+        local text = stmt:text():gsub('^return ', ''):gsub(';$', '')
+        stmt:update_text(text)
       end
     end
   end

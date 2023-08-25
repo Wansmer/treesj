@@ -157,6 +157,15 @@ local data_for_join = {
     expected = { 158, 159 },
     result = { 161, 162 },
   },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", field "body" in "arrow_function" with "statement_block" without return, preset default',
+    cursor = { 177, 5 },
+    expected = { 167, 171 },
+    result = { 173, 177 },
+  },
 }
 
 local treesj = require('treesj')
