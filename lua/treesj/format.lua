@@ -62,8 +62,12 @@ function M._format(mode, override)
     MODE = mode or sr == er and SPLIT or JOIN
     p = p[MODE]
 
-    local enable = p
-      and (type(p.enable) == 'boolean' and p.enable or p.enable(node))
+    local enable
+    if type(p.enable) == 'function' then
+      enable = p.enable(node)
+    else
+      enable = p.enable
+    end
 
     if not enable then
       table.insert(viewed, node)
