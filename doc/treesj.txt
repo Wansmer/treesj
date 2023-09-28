@@ -1,4 +1,4 @@
-*treesj.txt*          For Neovim >= 0.8.0          Last change: 2023 August 25
+*treesj.txt*         For Neovim >= 0.8.0        Last change: 2023 September 28
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -101,12 +101,12 @@ Defaultconfiguration:
       cursor_behavior = 'hold',
       ---@type boolean Notify about possible problems or not
       notify = true,
-      ---@type table Presets for languages
-      langs = lu._prepare_presets(langs.presets),
       ---@type boolean Use `dot` for repeat action
       dot_repeat = true,
       ---@type nil|function Callback for treesj error handler. func (err_text, level, ...other_text)
       on_error = nil,
+      ---@type table Presets for languages
+      -- langs = {}, -- See the default presets in lua/treesj/langs
     })
 <
 
@@ -508,19 +508,19 @@ This action is difficult to implement with `treesj`, so you can pass control to
   the name of a class or module. In some cases, you may need to keep track of the
   position of the cursor from which the handler is called.
 >ruby
-     RESULT OF JOIN
+    # RESULT OF JOIN
     class Foo::Bar::Baz < Quux
       def initialize
-         foo
+        # foo
       end
     end
     
-     RESULT OF SPLIT
+    # RESULT OF SPLIT
     module Foo
       module Bar
         class Baz < Quux
           def initialize
-             foo
+            # foo
           end
         end
       end
@@ -835,10 +835,10 @@ Here you need to add parentheses to the middle and end of TreeSJ when splitting
 and remove these parentheses when joining.
 
 >python
-     from
+    # from
     from re import search, match,sub
     
-     to this and back
+    # to this and back
     from re import (
         search,
         match,
@@ -862,7 +862,7 @@ This can be implemented with:
             -- If there are no brackets, then create them
             if not tsj:has_children({ '(', ')' }) then
               tsj:create_child({ text = ' (' }, 4)
-              tsj:create_child({ text = ')' }, tsj:children() + 1)
+              tsj:create_child({ text = ')' }, #tsj:children() + 1)
               -- Since the elements have moved, you need to add the penultimate
               -- separator manually
               local penult = tsj:child(-2)
@@ -919,14 +919,14 @@ Here you need to add parentheses to the middle and end of TreeSJ when splitting
 and remove these parentheses when joining.
 
 >ruby
-     from
+    # from
     if cond
         do_that('cond')
     else
         do_this('not nond')
     end
     
-     to this and back
+    # to this and back
     cond ? do_that('cond') : do_this('not nond')
 <
 
@@ -1109,7 +1109,7 @@ outside, for example:
     tsj:update_children(children) -- important
     
     -- Here it is not necessary
-    tsj:create_child({ text = 'end' }, tsj:children() + 1)
+    tsj:create_child({ text = 'end' }, #tsj:children() + 1)
 <
 
 
