@@ -1,4 +1,4 @@
-*treesj.txt*         For Neovim >= 0.8.0        Last change: 2023 September 28
+*treesj.txt*          For Neovim >= 0.8.0         Last change: 2023 October 14
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -44,7 +44,7 @@ FEATURES                                              *treesj-treesj-features*
 
 REQUIREMENTS                                      *treesj-treesj-requirements*
 
-- Neovim 0.8+ <https://github.com/neovim/neovim/releases>
+- Neovim 0.9+ <https://github.com/neovim/neovim/releases>
 - nvim-treesitter <https://github.com/nvim-treesitter/nvim-treesitter>
 
 
