@@ -3,21 +3,23 @@ local langs = require('treesj.settings').settings.langs
 local u = require('treesj.utils')
 local msg = notify.msg
 
-local ts_ok, parsers = pcall(require, 'nvim-treesitter.parsers')
-if not ts_ok then
-  notify.error(msg.ts_not_found)
-  return
-end
-
 local M = {}
 
----Get lunguage for node
+---Get language for node
 ---@param node TSNode TSNode instance
 ---@return string
 local function get_node_lang(node)
   local range = { node:range() }
-  local lang_tree = parsers.get_parser()
-  local current_tree = lang_tree:language_for_range(range)
+  local buf = vim.api.nvim_get_current_buf()
+  local ok, parser = pcall(
+    vim.treesitter.get_parser,
+    buf,
+    vim.treesitter.language.get_lang(vim.bo[buf].ft)
+  )
+  if not ok then
+    return ''
+  end
+  local current_tree = parser:language_for_range(range)
   return current_tree:lang()
 end
 
