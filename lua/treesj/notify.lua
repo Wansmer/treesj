@@ -11,7 +11,6 @@ M.msg = {
   contains_error = 'The node "%s" or its descendants contain a syntax error and cannot be %s',
   no_configured_node = 'Node "%s" for lang "%s" is not configured',
   no_contains_target_node = 'Node "%s" has no contains descendants for split/join',
-  ts_not_found = 'Nvim-treesitter not found. TreeSJ required treesitter for work.',
   no_format_with = 'Cannot %s "%s" containing node from one of this: %s',
   extra_longer = 'Cannot "join" node longer than %s symbols. Check your settings to change it.',
   version_not_support = 'Current version of neovim is "0.%s". TreeSJ requires version "0.8" or higher',

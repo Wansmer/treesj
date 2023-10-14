@@ -45,7 +45,7 @@ https://github.com/Wansmer/treesj/assets/46977173/4277455b-81fd-4e99-9af7-43c77d
 
 ## Requirements
 
-- [Neovim 0.8+](https://github.com/neovim/neovim/releases)
+- [Neovim 0.9+](https://github.com/neovim/neovim/releases)
 - [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
 
 ## Installation
