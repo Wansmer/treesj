@@ -54,7 +54,7 @@ function M._format(mode, override)
     notify.error(msg.no_ts_parser)
     return
   end
-  parser:parse()
+  parser:parse(true)
 
   local start_node = M.get_node_at_cursor(parser)
   if not start_node then
