@@ -146,7 +146,7 @@ return {
   },
   jsx_opening_element = lang_utils.set_default_preset({
     both = {
-      omit = { 'identifier', 'nested_identifier' },
+      omit = { 'identifier', 'nested_identifier', 'member_expression' },
     },
   }),
   jsx_element = lang_utils.set_default_preset({
