@@ -3,6 +3,16 @@ local lu = require('treesj.langs.utils')
 
 local M = {}
 
+---User options for `treesj`
+---@class UserOpts
+---@field use_default_keymaps boolean Use default keymaps (<space>m - toggle, <space>j - join, <space>s - split)
+---@field check_syntax_error boolean Node with syntax error will not be formatted
+---@field max_join_length number If line after join will be longer than max value, node will not be formatted
+---@field cursor_behavior 'hold'|'start'|'end'
+---@field notify boolean Notify about possible problems or not
+---@field langs table Presets for languages
+---@field dot_repeat boolean Use `dot` for repeat action
+---@field on_error fun(err_text: string, level: number, ...)
 local DEFAULT_SETTINGS = {
   ---@type boolean Use default keymaps (<space>m - toggle, <space>j - join, <space>s - split)
   use_default_keymaps = true,
