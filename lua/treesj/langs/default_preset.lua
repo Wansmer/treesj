@@ -1,4 +1,14 @@
-return {
+---@class SplitPreset
+---@class JoinPreset
+
+---Default node preset
+---@class NodePreset
+---@field both SplitPreset|JoinPreset
+---@field split SplitPreset
+---@field join JoinPreset
+---@field disable boolean
+---@field target_nodes string[]|table
+local DEFAULT_PRESET = {
   -- `both` will be merged with both presets from `split` and `join` modes tables.
   -- If you need different values for different modes, they can be overridden
   -- in mode tables unless otherwise noted.
@@ -92,3 +102,5 @@ return {
   ---@type string[]|table See `advanced node configuration`
   target_nodes = {},
 }
+
+return DEFAULT_PRESET
