@@ -100,6 +100,7 @@ M._set_default_keymaps = function()
   end
 end
 
+---@param opts UserOpts
 M._update_settings = function(opts)
   M.settings = merge_settings(M.settings, opts)
 end
