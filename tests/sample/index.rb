@@ -115,3 +115,11 @@ def config
     method
   end
 end
+
+# RESULT OF JOIN (node "unless_modifier to unless", preset default)
+return false unless true
+
+# RESULT OF SPLIT (node "unless to unless_modifier", preset default)
+unless true
+  return false
+end
