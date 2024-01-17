@@ -123,3 +123,13 @@ return false unless true
 unless true
   return false
 end
+
+# RESULT OF JOIN (node "conditional to unless", preset default)
+cond ? do_that('cond') : do_this('not nond')
+
+# RESULT OF SPLIT (node "unless to conditional", preset default)
+unless cond
+  do_this('not nond')
+else
+  do_that('cond')
+end

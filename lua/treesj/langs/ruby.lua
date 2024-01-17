@@ -119,20 +119,20 @@ return {
       space_in_brackets = true,
       format_tree = function(tsj)
         if tsj:child('else') then
-          local if_ = tsj:child('unless')
+          local unless_ = tsj:child('unless')
           local else_ = tsj:child('else')
           if else_:has_to_format() then
             local text = else_:child(1):text()
-            else_:child(1):update_text(text:gsub('^else', ':'))
+            else_:child(1):update_text(text:gsub('^else', '?'))
           else
             local text = else_:text()
-            else_:update_text(text:gsub('^else', ':'))
+            else_:update_text(text:gsub('^else', '?'))
           end
-          if_:update_text('? ')
-          tsj:update_children({ tsj:child(2), if_, tsj:child('then'), else_ })
+          unless_:update_text(': ')
+          tsj:update_children({ tsj:child(2), else_, unless_, tsj:child('then') })
         else
-          local if_node = tsj:child('unless')
-          tsj:update_children({ tsj:child('then'), if_node, if_node:next() })
+          local unless_node = tsj:child('unless')
+          tsj:update_children({ tsj:child('then'), unless_node, unless_node:next() })
         end
       end,
     },
