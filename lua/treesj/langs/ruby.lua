@@ -58,6 +58,17 @@ return {
       end,
     },
   }),
+  unless_modifier = lang_utils.set_default_preset({
+    join = { enable = false },
+    split = {
+      omit = { lang_utils.helpers.if_second },
+      format_tree = function(tsj)
+        local if_node = tsj:child('unless')
+        local end_ = tsj:create_child({ text = 'end', type = 'end' })
+        tsj:update_children({ if_node, if_node:next(), tsj:child(1), end_ })
+      end,
+    },
+  }),
   ['if'] = lang_utils.set_default_preset({
     split = { enable = false },
     join = {
@@ -88,6 +99,40 @@ return {
         else
           local if_node = tsj:child('if')
           tsj:update_children({ tsj:child('then'), if_node, if_node:next() })
+        end
+      end,
+    },
+  }),
+  ['unless'] = lang_utils.set_default_preset({
+    split = { enable = false },
+    join = {
+      enable = function(tsn)
+        local check = {
+          tsn:field('consequence')[1],
+          tsn:field('alternative')[1],
+        }
+
+        return utils.every(check, function(el)
+          return not el and true or el:named_child_count() == 1
+        end)
+      end,
+      space_in_brackets = true,
+      format_tree = function(tsj)
+        if tsj:child('else') then
+          local unless_ = tsj:child('unless')
+          local else_ = tsj:child('else')
+          if else_:has_to_format() then
+            local text = else_:child(1):text()
+            else_:child(1):update_text(text:gsub('^else', '?'))
+          else
+            local text = else_:text()
+            else_:update_text(text:gsub('^else', '?'))
+          end
+          unless_:update_text(': ')
+          tsj:update_children({ tsj:child(2), else_, unless_, tsj:child('then') })
+        else
+          local unless_node = tsj:child('unless')
+          tsj:update_children({ tsj:child('then'), unless_node, unless_node:next() })
         end
       end,
     },

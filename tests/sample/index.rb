@@ -115,3 +115,21 @@ def config
     method
   end
 end
+
+# RESULT OF JOIN (node "unless_modifier to unless", preset default)
+return false unless true
+
+# RESULT OF SPLIT (node "unless to unless_modifier", preset default)
+unless true
+  return false
+end
+
+# RESULT OF JOIN (node "conditional to unless", preset default)
+cond ? do_that('cond') : do_this('not nond')
+
+# RESULT OF SPLIT (node "unless to conditional", preset default)
+unless cond
+  do_this('not nond')
+else
+  do_that('cond')
+end
