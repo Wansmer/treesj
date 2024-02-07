@@ -107,16 +107,16 @@ function M._format(mode, override)
     end
   end
 
+  if type(p.fallback) == 'function' then
+    p.fallback(tsn_data.tsnode)
+    return
+  end
+
   if mode == JOIN and sr == er then
     notify.info(msg.node_is_already_joined)
     return
   elseif mode == SPLIT and sr ~= er then
     notify.info(msg.node_is_already_splitted)
-    return
-  end
-
-  if type(p.fallback) == 'function' then
-    p.fallback(tsn_data.tsnode)
     return
   end
 
