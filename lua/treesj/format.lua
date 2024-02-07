@@ -107,6 +107,12 @@ function M._format(mode, override)
     end
   end
 
+  if mode == JOIN and sr == er then
+    return
+  elseif mode == SPLIT and sr ~= er then
+    return
+  end
+
   if type(p.fallback) == 'function' then
     p.fallback(tsn_data.tsnode)
     return
@@ -149,11 +155,6 @@ function M._format(mode, override)
   local cursor = CHold.new()
   cursor:compute(treesj, MODE)
   local new_cursor = cursor:get_cursor()
-
-  local initial_text = vim.api.nvim_buf_get_text(0, sr, sc, er, ec, {})
-  if vim.deep_equal(initial_text, replacement) then
-    return
-  end
 
   local insert_ok, e =
     pcall(vim.api.nvim_buf_set_text, 0, sr, sc, er, ec, replacement)
