@@ -130,14 +130,12 @@ In the lua version, you can optionally pass a preset that will overwrite the
 default preset values. It should contain `split` or `join` keys. Key `both`
 will be ignored.
 
-**Warning**: If you are passing a preset, repeating with a dot will not work.
-
 E.g.:
 
 ```lua
--- For use default preset and it work with dot
+-- For default preset
 vim.keymap.set('n', '<leader>m', require('treesj').toggle)
--- For extending default preset with `recursive = true`, but this doesn't work with dot
+-- For extending default preset with `recursive = true`
 vim.keymap.set('n', '<leader>M', function()
     require('treesj').toggle({ split = { recursive = true } })
 end)
