@@ -112,6 +112,14 @@ function M._format(mode, override)
     return
   end
 
+  if mode == JOIN and sr == er then
+    notify.info(msg.node_is_already_joined)
+    return
+  elseif mode == SPLIT and sr ~= er then
+    notify.info(msg.node_is_already_splitted)
+    return
+  end
+
   if p and not p.format_empty_node then
     if not p.non_bracket_node and tu.is_empty_node(node, p) then
       return
