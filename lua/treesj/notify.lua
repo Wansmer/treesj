@@ -19,6 +19,8 @@ M.msg = {
   custom_func = 'Something went wrong in function "%s" from preset for "%s": %s',
   wrong_resut = 'Function "%s" from preset for "%s" returned wrong format for new lines',
   no_ts_parser = 'Treesitter parser not found for current buffer',
+  node_is_already_joined = 'The current node is already joined',
+  node_is_already_splitted = 'The current node is already splitted',
 }
 
 ---Wraper for vim.notify and nvim-notify

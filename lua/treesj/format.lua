@@ -108,8 +108,10 @@ function M._format(mode, override)
   end
 
   if mode == JOIN and sr == er then
+    notify.info(msg.node_is_already_joined)
     return
   elseif mode == SPLIT and sr ~= er then
+    notify.info(msg.node_is_already_splitted)
     return
   end
 
