@@ -18,8 +18,13 @@ end
 local function perform(mode, preset)
   M.mode_to_use = mode
   M.preset_to_use = preset
-  vim.opt.operatorfunc = "v:lua.require'treesj'.__format"
-  vim.api.nvim_feedkeys('g@l', 'nix', true)
+
+  if settings.settings.dot_repeat then
+    vim.opt.operatorfunc = "v:lua.require'treesj'.__format"
+    vim.api.nvim_feedkeys('g@l', 'nix', true)
+  else
+    M.__format()
+  end
 end
 
 M.toggle = function(preset)
