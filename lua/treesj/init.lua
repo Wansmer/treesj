@@ -1,8 +1,8 @@
 local settings = require('treesj.settings')
 
 local M = {
-  mode_to_use = nil,
-  preset_to_use = nil,
+  _mode_to_use = nil,
+  _preset_to_use = nil,
 }
 
 M.setup = function(opts)
@@ -12,12 +12,12 @@ M.setup = function(opts)
 end
 
 M.__format = function()
-  require('treesj.format')._format(M.mode_to_use, M.preset_to_use)
+  require('treesj.format')._format(M._mode_to_use, M._preset_to_use)
 end
 
 local function perform(mode, preset)
-  M.mode_to_use = mode
-  M.preset_to_use = preset
+  M._mode_to_use = mode
+  M._preset_to_use = preset
 
   if settings.settings.dot_repeat then
     vim.opt.operatorfunc = "v:lua.require'treesj'.__format"
