@@ -14,6 +14,7 @@ M.configured_langs = {
   'tsx',
   'perl',
   'php',
+  'php_only',
   'ruby',
   'go',
   'java',
