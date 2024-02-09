@@ -197,7 +197,7 @@ By default, TreeSJ has presets for these languages:
 - **Toml**;
 - **Yaml**;
 - **Perl**;
-- **PHP**;
+- **PHP** (both `php` and `php_only`);
 - **Ruby**;
 - **Python**;
 - **Starlark**;
