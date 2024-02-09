@@ -1,4 +1,4 @@
-*treesj.txt*         For Neovim >= 0.8.0         Last change: 2024 February 07
+*treesj.txt*         For Neovim >= 0.8.0         Last change: 2024 February 09
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -203,7 +203,7 @@ By default, TreeSJ has presets for these languages:
 - **Toml**;
 - **Yaml**;
 - **Perl**;
-- **PHP**;
+- **PHP** (both `php` and `php_only`);
 - **Ruby**;
 - **Python**;
 - **Starlark**;
