@@ -1,5 +1,7 @@
 local M = {}
 
+M.is_list = vim.fn.has('nvim-0.10') == 1 and vim.islist or vim.tbl_islist
+
 ---Convert any type to boolean
 ---@param val any
 ---@return boolean
@@ -26,7 +28,7 @@ end
 ---@param cb function Callback for checking every item
 ---@return boolean
 function M.every(tbl, cb)
-  if type(tbl) ~= 'table' or not vim.tbl_islist(tbl) or M.is_empty(tbl) then
+  if type(tbl) ~= 'table' or not M.is_list(tbl) or M.is_empty(tbl) then
     return false
   end
 
@@ -45,7 +47,7 @@ end
 ---@param cb function Callback for checking every item
 ---@return boolean
 function M.some(tbl, cb)
-  if not vim.tbl_islist(tbl) or M.is_empty(tbl) then
+  if not M.is_list(tbl) or M.is_empty(tbl) then
     return false
   end
 
@@ -63,7 +65,7 @@ end
 ---@param target_key string Name of target key
 ---@return any|nil
 function M.get_nested_key_value(tbl, target_key)
-  if not tbl or vim.tbl_islist(tbl) then
+  if not tbl or M.is_list(tbl) then
     return nil
   end
   local found
@@ -71,7 +73,7 @@ function M.get_nested_key_value(tbl, target_key)
     if key == target_key then
       return val
     end
-    if type(val) == 'table' and not vim.tbl_islist(val) then
+    if type(val) == 'table' and not M.is_list(val) then
       found = M.get_nested_key_value(val, target_key)
     end
     if found then
