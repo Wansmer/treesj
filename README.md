@@ -46,7 +46,7 @@ https://github.com/Wansmer/treesj/assets/46977173/4277455b-81fd-4e99-9af7-43c77d
 ## Requirements
 
 - [Neovim 0.9+](https://github.com/neovim/neovim/releases)
-- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (optional: if you install parsers with `nvim-treesitter`)
 
 ## Installation
 
@@ -56,7 +56,7 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim):
 return {
   'Wansmer/treesj',
   keys = { '<space>m', '<space>j', '<space>s' },
-  dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  dependencies = { 'nvim-treesitter/nvim-treesitter' }, -- if you install parsers with `nvim-treesitter`
   config = function()
     require('treesj').setup({--[[ your config ]]})
   end,
@@ -68,7 +68,7 @@ With [packer.nvim](https://github.com/wbthomason/packer.nvim):
 ```lua
 use({
   'Wansmer/treesj',
-  requires = { 'nvim-treesitter/nvim-treesitter' },
+  requires = { 'nvim-treesitter/nvim-treesitter' }, -- if you install parsers with `nvim-treesitter`
   config = function()
     require('treesj').setup({--[[ your config ]]})
   end,
