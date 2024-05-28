@@ -1,4 +1,4 @@
-*treesj.txt*           For Neovim >= 0.8.0          Last change: 2024 April 22
+*treesj.txt*            For Neovim >= 0.8.0           Last change: 2024 May 28
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -45,7 +45,7 @@ FEATURES                                              *treesj-treesj-features*
 REQUIREMENTS                                      *treesj-treesj-requirements*
 
 - Neovim 0.9+ <https://github.com/neovim/neovim/releases>
-- nvim-treesitter <https://github.com/nvim-treesitter/nvim-treesitter>
+- nvim-treesitter <https://github.com/nvim-treesitter/nvim-treesitter> (optional: if you install parsers with `nvim-treesitter`)
 
 
 INSTALLATION                                      *treesj-treesj-installation*
@@ -56,7 +56,7 @@ With lazy.nvim <https://github.com/folke/lazy.nvim>
     return {
       'Wansmer/treesj',
       keys = { '<space>m', '<space>j', '<space>s' },
-      dependencies = { 'nvim-treesitter/nvim-treesitter' },
+      dependencies = { 'nvim-treesitter/nvim-treesitter' }, -- if you install parsers with `nvim-treesitter`
       config = function()
         require('treesj').setup({--[[ your config ]]})
       end,
@@ -68,7 +68,7 @@ Withpacker.nvim <https://github.com/wbthomason/packer.nvim>
 >lua
     use({
       'Wansmer/treesj',
-      requires = { 'nvim-treesitter/nvim-treesitter' },
+      requires = { 'nvim-treesitter/nvim-treesitter' }, -- if you install parsers with `nvim-treesitter`
       config = function()
         require('treesj').setup({--[[ your config ]]})
       end,
