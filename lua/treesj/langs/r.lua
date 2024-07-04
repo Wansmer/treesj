@@ -3,14 +3,17 @@ local lang_utils = require('treesj.langs.utils')
 return {
   arguments = lang_utils.set_preset_for_args({
     both = {
-      non_bracket_node = true,
+      separator = 'comma',
     },
     split = {
       recursive_ignore = { 'subset' },
     },
   }),
 
-  formal_parameters = lang_utils.set_preset_for_args({
+  parameters = lang_utils.set_preset_for_args({
+    both = {
+      separator = 'comma',
+    },
     split = {
       recursive_ignore = { 'subset' },
     },
@@ -19,48 +22,48 @@ return {
   left_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   super_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   right_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   super_right_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   equals_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   function_definition = {
-    target_nodes = { 'formal_parameters' },
+    target_nodes = { 'parameters' },
   },
 
   call = {
     target_nodes = { 'arguments' },
   },
 
-  binary = {
-    target_nodes = { 'arguments' },
+  binary_operator = {
+    target_nodes = { 'arguments', 'parameters' },
   },
 
   pipe = {
