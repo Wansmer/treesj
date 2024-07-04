@@ -17,12 +17,12 @@ mean(
   na.rm = TRUE
 )
 
-# RESULT OF JOIN (node "formal_parameters")
+# RESULT OF JOIN (node "parameters")
 my_func <- function(xs = x[, 1], ys = y[, 2]) {
   sum(xs, ys)
 }
 
-# RESULT OF SPLIT (node "formal_parameters")
+# RESULT OF SPLIT (node "parameters")
 my_func <- function(
   xs = x[, 1],
   ys = y[, 2]
@@ -109,11 +109,11 @@ ggplot(
   aes(x = Sepal.Width, y = Sepal.Length)
 )
 
-# RESULT OF JOIN (node "binary")
+# RESULT OF JOIN (node "binary_operator")
 b %>%
   sum(c(4, 5, 6))
 
-# RESULT OF SPLIT (node "binary")
+# RESULT OF SPLIT (node "binary_operator")
 b %>%
   sum(
     c(4, 5, 6)
