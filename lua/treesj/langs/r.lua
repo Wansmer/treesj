@@ -22,40 +22,40 @@ return {
   left_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   super_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   right_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   super_right_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   equals_assignment = {
     target_nodes = {
       'arguments',
-      'formal_parameters',
+      'parameters',
     },
   },
 
   function_definition = {
-    target_nodes = { 'formal_parameters' },
+    target_nodes = { 'parameters' },
   },
 
   call = {
