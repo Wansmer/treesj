@@ -45,13 +45,13 @@ print(
     end="!"
 )
 
-# RESULT OF JOIN (node "parameters", preset default)
+# RESULT OF JOIN (node "parameters" and "function_definition", preset default)
 def create_adder(x, b):
     def adder(y):
         return x + y
     return adder
 
-# RESULT OF SPLIT (node "parameters", preset default)
+# RESULT OF SPLIT (node "parameters" and "function_definition", preset default)
 def create_adder(
     x,
     b
