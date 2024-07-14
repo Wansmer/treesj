@@ -115,4 +115,7 @@ return {
       'argument_list',
     },
   },
+  function_definition = {
+    target_nodes = { 'parameters' },
+  },
 }
