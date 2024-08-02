@@ -49,6 +49,24 @@ local data_for_join = {
     expected = { 41, 42 },
     result = { 44, 45 },
   },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "keywords", preset default',
+    cursor = { 57, 6 },
+    expected = { 52, 53 },
+    result = { 55, 56 },
+  },
+  {
+    path = PATH,
+    mode = 'join',
+    lang = LANG,
+    desc = 'lang "%s", node "map" with "keywords" and "map_content", preset default',
+    cursor = { 65, 8 },
+    expected = { 61, 62 },
+    result = { 64, 65 },
+  },
 }
 
 local treesj = require('treesj')

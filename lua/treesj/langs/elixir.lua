@@ -11,9 +11,20 @@ return {
     },
   }),
   map = {
-    target_nodes = { 'map_content' },
+    target_nodes = { 'map_content', 'keywords' },
   },
   map_content = lang_utils.set_preset_for_list({
+    both = {
+      non_bracket_node = true,
+    },
+    split = {
+      last_separator = false,
+    },
+    join = {
+      space_in_brackets = false,
+    },
+  }),
+  keywords = lang_utils.set_preset_for_list({
     both = {
       non_bracket_node = true,
     },

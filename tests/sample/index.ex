@@ -10,10 +10,10 @@ list = [
   [3, 4]
 ]
 
-# RESULT OF JOIN (node "map", preset default)
+# RESULT OF JOIN (node "map_content", preset default)
 map = %{:foo => "foo", :bar => "bar", [1, 2] => 2}
 
-# RESULT OF SPLIT (node "map", preset default)
+# RESULT OF SPLIT (node "map_content", preset default)
 map = %{
   :foo => "foo",
   :bar => "bar",
@@ -47,4 +47,23 @@ test(
   b,
   123,
   {c, d}
+}
+
+# RESULT OF JOIN (node "keywords", preset default)
+map = %{foo: "bar", baz: "bar"}
+
+# RESULT OF SPLIT (node "keywords", preset default)
+map = %{
+  foo: "bar",
+  baz: "bar"
+}
+
+# RESULT OF JOIN (node "map" with "keywords" and "map_content", preset default)
+map = %{"key" => "value", foo: "bar", baz: "bar"}
+
+# RESULT OF SPLIT (node "map" with "keywords" and "map_content", preset default)
+map = %{
+  "key" => "value",
+  foo: "bar",
+  baz: "bar"
 }
