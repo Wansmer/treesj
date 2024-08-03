@@ -67,3 +67,25 @@ map = %{
   foo: "bar",
   baz: "bar"
 }
+
+# RESULT OF JOIN (node "list" with "keywords" and "map", preset default)
+list = [1, 2, %{"a" => "b", key: "value", foo: "bar"}, abc: "123", def: "456"]
+
+# RESULT OF SPLIT (node "list" with "keywords" and "map", preset default)
+list = [
+  1,
+  2,
+  %{"a" => "b", key: "value", foo: "bar"},
+  abc: "123", def: "456"
+]
+
+# RESULT OF JOIN (node "map" nested "keywords" and "maps"", preset default)
+map = %{"map" => %{"key" => "value"}, foo: "bar", map: %{"key" => "value"}, baz: "bar"}
+
+# RESULT OF SPLIT (node "map" nested "keywords" and "maps", preset default)
+map = %{
+  "map" => %{"key" => "value"},
+  foo: "bar",
+  map: %{"key" => "value"},
+  baz: "bar"
+}
