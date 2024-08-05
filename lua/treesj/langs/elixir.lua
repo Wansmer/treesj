@@ -35,17 +35,25 @@ return {
   keywords = lang_utils.set_preset_for_list({
     both = {
       non_bracket_node = true,
-      format_resulted_lines = function(lines)
-        return vim.tbl_map(function(line)
-          -- Replace ':%{' with ': %{'
-          -- This happens when a keyword is pointing to a map like `foo` here:
-          -- %{ foo: %{ inner: "value" } }
-          if line:match(':%%{') then
-            return line:gsub(':%%{', ': %%{')
-          else
-            return line
+      -- This is only needed because for some reason join and
+      -- split on a keyword where the value is a map goes like this:
+      -- expected: 'key: %{ a: "b" }'
+      -- result: 'key:%{ a: "b" }'
+      format_tree = function(tsj)
+        if tsj:has_children({ 'pair' }) then
+          local pairs = tsj:children({ 'pair' })
+          for _, pair in ipairs(pairs) do
+            for keyword in pair:iter_children() do
+              if keyword:type() == 'map' then
+                -- Grab the previous node which is the map key
+                local map_key = keyword:prev();
+                -- Add an extra space to account for keyword + map quirkness
+                local text = map_key:text():gsub(':$', ': ')
+                map_key:update_text(text)
+              end
+            end
           end
-        end, lines)
+        end
       end,
     },
     split = {
