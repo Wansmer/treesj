@@ -33,6 +33,7 @@ M.configured_langs = {
   'bash',
   'sql',
   'dart',
+  'elixir'
 }
 
 M.presets = {}
