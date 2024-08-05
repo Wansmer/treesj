@@ -46,7 +46,7 @@ return {
             for keyword in pair:iter_children() do
               if keyword:type() == 'map' then
                 -- Grab the previous node which is the map key
-                local map_key = keyword:prev();
+                local map_key = keyword:prev()
                 -- Add an extra space to account for keyword + map quirkness
                 local text = map_key:text():gsub(':$', ': ')
                 map_key:update_text(text)
