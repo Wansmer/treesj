@@ -27,7 +27,7 @@ local data_for_join = {
     mode = 'join',
     lang = LANG,
     desc = 'lang "%s", block "block", preset default',
-    cursor = { 29, 12 },
+    cursor = { 28, 12 },
     expected = { 24, 25 },
     result = { 27, 28 },
   },
