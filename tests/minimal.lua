@@ -36,6 +36,14 @@ for _, plugin in ipairs(dependencies) do
   install_dep(plugin)
 end
 
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function()
+    if vim.bo.filetype == 'go' then
+      vim.bo.expandtab = false
+    end
+  end,
+})
+
 require('plenary.busted')
 require('nvim-treesitter.configs').setup({
   ensure_installed = require('treesj.langs').configured_langs,
