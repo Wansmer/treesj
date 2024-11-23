@@ -54,7 +54,7 @@ def create_adder(x, b):
 # RESULT OF SPLIT (node "parameters" and "function_definition", preset default)
 def create_adder(
     x,
-    b
+    b,
 ):
     def adder(y):
         return x + y

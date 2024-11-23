@@ -83,7 +83,9 @@ return {
     },
   }),
   argument_list = lang_utils.set_preset_for_args(),
-  parameters = lang_utils.set_preset_for_args(),
+  parameters = lang_utils.set_preset_for_args({
+    split = { last_separator = true },
+  }),
   parenthesized_expression = lang_utils.set_preset_for_args({}),
   list_comprehension = lang_utils.set_preset_for_args(),
   set_comprehension = lang_utils.set_preset_for_args(),
