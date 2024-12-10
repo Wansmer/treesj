@@ -44,7 +44,10 @@ return {
           local pairs = tsj:children({ 'pair' })
           for _, pair in ipairs(pairs) do
             for keyword in pair:iter_children() do
-              if keyword:type() == 'map' then
+              local type = keyword:type()
+              local needs_padding =
+                type == 'map' or type == 'list' or type == 'tuple'
+              if needs_padding then
                 -- Grab the previous node which is the map key
                 local map_key = keyword:prev()
                 -- Add an extra space to account for keyword + map quirkness

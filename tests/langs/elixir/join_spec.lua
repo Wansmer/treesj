@@ -63,9 +63,9 @@ local data_for_join = {
     mode = 'join',
     lang = LANG,
     desc = 'lang "%s", node "map" with "keywords" and "map_content", preset default',
-    cursor = { 65, 8 },
-    expected = { 61, 62 },
-    result = { 64, 65 },
+    cursor = { 67, 8 },
+    expected = { 63, 64 },
+    result = { 66, 67 },
   },
   {
     path = PATH,

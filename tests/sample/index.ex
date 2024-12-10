@@ -50,12 +50,14 @@ test(
 }
 
 # RESULT OF JOIN (node "keywords", preset default)
-map = %{foo: "bar", baz: "bar"}
+map = %{foo: "bar", baz: [], abc: %{}, def: {}}
 
 # RESULT OF SPLIT (node "keywords", preset default)
 map = %{
   foo: "bar",
-  baz: "bar"
+  baz: [],
+  abc: %{},
+  def: {}
 }
 
 # RESULT OF JOIN (node "map" with "keywords" and "map_content", preset default)
