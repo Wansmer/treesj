@@ -44,14 +44,12 @@ return {
           local pairs = tsj:children({ 'pair' })
           for _, pair in ipairs(pairs) do
             for keyword in pair:iter_children() do
-              if keyword:type() ~= 'string' then
-                -- Grab the previous node which is the map key
-                local map_key = keyword:prev()
-                if map_key then
-                  -- Add an extra space to account for keyword + value quirkness
-                  local text = map_key:text():gsub(':$', ': ')
-                  map_key:update_text(text)
-                end
+              -- Grab the previous node which is the map key
+              local map_key = keyword:prev()
+              if map_key then
+                -- Add an extra space to account for keyword + value quirkness
+                local text = map_key:text():gsub(':$', ': ')
+                map_key:update_text(text)
               end
             end
           end
