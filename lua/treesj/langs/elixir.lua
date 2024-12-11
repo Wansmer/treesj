@@ -19,12 +19,9 @@ return {
       last_separator = false,
       format_tree = function(tsj)
         if tsj:has_children({ 'keywords' }) then
-          tsj:update_preset(
-            { recursive = true, recursive_ignore = { 'map' } },
-            'split'
-          )
           local keywords = tsj:child('keywords')
           keywords:update_preset({ inner_indent = 'normal' }, 'split')
+          keywords:_format()
         end
       end,
     },
