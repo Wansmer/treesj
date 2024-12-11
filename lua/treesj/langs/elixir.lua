@@ -19,12 +19,9 @@ return {
       last_separator = false,
       format_tree = function(tsj)
         if tsj:has_children({ 'keywords' }) then
-          tsj:update_preset(
-            { recursive = true, recursive_ignore = { 'map' } },
-            'split'
-          )
           local keywords = tsj:child('keywords')
           keywords:update_preset({ inner_indent = 'normal' }, 'split')
+          keywords:_format()
         end
       end,
     },
@@ -44,14 +41,12 @@ return {
           local pairs = tsj:children({ 'pair' })
           for _, pair in ipairs(pairs) do
             for keyword in pair:iter_children() do
-              if keyword:type() ~= 'string' then
-                -- Grab the previous node which is the map key
-                local map_key = keyword:prev()
-                if map_key then
-                  -- Add an extra space to account for keyword + value quirkness
-                  local text = map_key:text():gsub(':$', ': ')
-                  map_key:update_text(text)
-                end
+              -- Grab the previous node which is the map key
+              local map_key = keyword:prev()
+              if map_key then
+                -- Add an extra space to account for keyword + value quirkness
+                local text = map_key:text():gsub(':$', ': ')
+                map_key:update_text(text)
               end
             end
           end
