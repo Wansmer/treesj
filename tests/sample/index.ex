@@ -62,13 +62,15 @@ map = %{
 }
 
 # RESULT OF JOIN (node "map" with "keywords" and "map_content", preset default)
-map = %{"key" => "value", foo: "bar", baz: "bar"}
+map = %{"key" => "value", "baz" => [], abc: %{}, def: {}, hij: a(1) + 1}
 
 # RESULT OF SPLIT (node "map" with "keywords" and "map_content", preset default)
 map = %{
   "key" => "value",
-  foo: "bar",
-  baz: "bar"
+  "baz" => [],
+  abc: %{},
+  def: {},
+  hij: a(1) + 1
 }
 
 # RESULT OF JOIN (node "list" with "keywords" and "map", preset default)
