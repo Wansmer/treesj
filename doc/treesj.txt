@@ -1,4 +1,4 @@
-*treesj.txt*         For Neovim >= 0.8.0         Last change: 2024 December 12
+*treesj.txt*          For Neovim >= 0.8.0         Last change: 2025 January 04
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -218,6 +218,7 @@ By default, TreeSJ has presets for these languages:
 - **SQL**;
 - **Dart**;
 - **Elixir**;
+- **Haskell**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how to implement fallback
