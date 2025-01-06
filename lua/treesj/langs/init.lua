@@ -35,6 +35,7 @@ M.configured_langs = {
   'dart',
   'elixir',
   'haskell',
+  'zig',
 }
 
 M.presets = {}

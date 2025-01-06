@@ -213,6 +213,7 @@ By default, TreeSJ has presets for these languages:
 - **Dart**;
 - **Elixir**;
 - **Haskell**;
+- **Zig**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
