@@ -1,4 +1,4 @@
-*treesj.txt*          For Neovim >= 0.8.0         Last change: 2025 January 04
+*treesj.txt*          For Neovim >= 0.8.0         Last change: 2025 January 06
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
