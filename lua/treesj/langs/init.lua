@@ -36,6 +36,7 @@ M.configured_langs = {
   'elixir',
   'haskell',
   'zig',
+  'c_sharp',
 }
 
 M.presets = {}
