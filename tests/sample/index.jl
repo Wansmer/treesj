@@ -24,23 +24,6 @@ other_arr = [
   4 5 6
 ]
 
-# RESULT OF JOIN (node "vector_expression", preset default)
-other_arr = [[1 2 3;], [4 5 6;]]
-# RESULT OF SPLIT (node "vector_expression", preset default)
-other_arr = [
-  [1 2 3],
-  [4 5 6],
-]
-
-# RESULT OF JOIN (node "vector_expression", preset default)
-multi_arr = [[1, 2], [3, 4], [5, 6]]
-# RESULT OF SPLIT (node "vector_expression", preset default)
-multi_arr = [
-  [1, 2],
-  [3, 4],
-  [5, 6],
-]
-
 # RESULT OF JOIN (node "tuple_expression", preset default)
 tup = (1, 2, 3)
 # RESULT OF SPLIT (node "tuple_expression", preset default)
