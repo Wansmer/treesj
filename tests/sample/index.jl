@@ -56,11 +56,11 @@ comp_arr = [
   for i in 1:5
 ]
 
-# RESULT OF JOIN (node "call_expression", preset default)
+# RESULT OF JOIN (node "argument_list" in "call_expression", preset default)
 result = sum([1, 2, 3])
-# RESULT OF SPLIT (node "call_expression", preset default)
+# RESULT OF SPLIT (node "argument_list" in "call_expression", preset default)
 result = sum(
-  [1, 2, 3]
+  [1, 2, 3],
 )
 
 # RESULT OF JOIN (node "using_statement", preset default)
