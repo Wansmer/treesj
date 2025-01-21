@@ -1,5 +1,19 @@
 local lang_utils = require('treesj.langs.utils')
 
+local using = {
+  both = {
+    space_in_brackets = true,
+    omit = {
+      lang_utils.helpers.by_index(1),
+      lang_utils.helpers.by_index(2),
+      ',',
+    },
+  },
+  split = {
+    last_indent = 'inner',
+  },
+}
+
 return {
   argument_list = lang_utils.set_preset_for_args({
     split = { last_separator = true },
@@ -28,7 +42,7 @@ return {
           and tsj:tsnode():parent():child(0):equal(tsj:tsnode())
         then
           tsj:remove_child({ '(', ')' })
-          tsj:child(-1):update_text(' ' .. tsj:child(-1):text())
+          tsj:update_preset({ space_in_brackets = true }, 'join')
         end
       end,
     },
@@ -42,11 +56,8 @@ return {
     },
   }),
   call_expression = { target_nodes = { 'argument_list' } },
-  using_statement = lang_utils.set_preset_for_non_bracket({
-    both = {
-      omit = { lang_utils.helpers.if_second },
-    },
-  }),
+  using_statement = using,
+  selected_import = using,
   open_tuple = lang_utils.set_preset_for_args({
     split = {
       last_separator = true,
