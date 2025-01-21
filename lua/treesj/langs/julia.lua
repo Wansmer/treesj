@@ -7,9 +7,17 @@ return {
   vector_expression = lang_utils.set_preset_for_list({
     join = { space_in_brackets = false },
   }),
-  -- matrix_expression = lang_utils.set_preset_for_statement({
-  --   join = { space_in_brackets = false },
-  -- }),
+  matrix_expression = lang_utils.set_preset_for_statement({
+    join = {
+      space_in_brackets = false,
+      no_insert_if = { lang_utils.helpers.if_penultimate },
+    },
+    split = {
+      format_tree = function(tsj)
+        tsj:remove_child(';')
+      end,
+    },
+  }),
   tuple_expression = lang_utils.set_preset_for_list({
     join = { space_in_brackets = false },
   }),
