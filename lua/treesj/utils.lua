@@ -2,6 +2,18 @@ local M = {}
 
 M.is_list = vim.fn.has('nvim-0.10') == 1 and vim.islist or vim.tbl_islist
 
+M.flatten = (function()
+  if vim.fn.has('nvim-0.11') == 1 then
+    return function(t)
+      return vim.iter(t):flatten():totable()
+    end
+  else
+    return function(t)
+      return vim.tbl_flatten(t)
+    end
+  end
+end)()
+
 ---Convert any type to boolean
 ---@param val any
 ---@return boolean
