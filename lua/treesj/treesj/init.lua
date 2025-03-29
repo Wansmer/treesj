@@ -516,7 +516,7 @@ function TreeSJ:_format()
     if mode == 'join' then
       lines = tu._join(self)
     else
-      lines = tu.remove_empty_middle_lines(vim.tbl_flatten(tu._split(self)))
+      lines = tu.remove_empty_middle_lines(u.flatten(tu._split(self)))
     end
 
     local format_lines = preset and preset.format_resulted_lines
