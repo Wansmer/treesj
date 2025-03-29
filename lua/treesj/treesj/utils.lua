@@ -544,7 +544,7 @@ function M.remove_empty_middle_lines(lines)
     end
   end
 
-  return vim.tbl_flatten({ first, vim.tbl_filter(remover, lines), last })
+  return u.flatten({ first, vim.tbl_filter(remover, lines), last })
 end
 
 ---Make result lines for 'split'
