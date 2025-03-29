@@ -91,7 +91,7 @@ return {
         end
 
         local text = vim.treesitter.get_node_text(tsn:field('target')[1], 0)
-        return text == 'def'
+        return vim.tbl_contains({ 'def', 'defp', 'if' }, text)
       end,
     },
     split = {
@@ -103,8 +103,8 @@ return {
           return
         end
 
-        local call, keywords = args:child('call'), args:child('keywords')
-        if not (call and keywords) then
+        local first, keywords = args:child(1), args:child('keywords')
+        if not (first and keywords) then
           return
         end
 
@@ -117,7 +117,7 @@ return {
           :gsub('^do:', ''))
 
         args:update_text({
-          call:text() .. ' do',
+          first:text() .. ' do',
           indent .. kw_txt,
           p_indent .. 'end',
         })
