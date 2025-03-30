@@ -25,6 +25,8 @@ local DEFAULT_SETTINGS = {
   dot_repeat = true,
   ---@type nil|function Callback for treesj error handler. func (err_text, level, ...)
   on_error = nil,
+  ---@type boolean Whether dot repeat on nested operations should remember the selected level of nesting
+  remember_selected = true,
 }
 
 local commands = {
