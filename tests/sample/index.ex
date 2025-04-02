@@ -94,3 +94,11 @@ map = %{
   map: %{"key" => "value"},
   baz: "bar"
 }
+
+# RESULT OF JOIN (node "call", preset default)
+def foo(a, b), do: a + b
+
+# RESULT OF SPLIT (node "call", preset default)
+def foo(a, b) do
+  a + b
+end

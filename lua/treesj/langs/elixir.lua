@@ -61,7 +61,12 @@ return {
       space_in_brackets = false,
     },
   }),
-  arguments = lang_utils.set_preset_for_args(),
+  arguments = lang_utils.set_preset_for_args({
+    split = {
+      ---@param tsj TreeSJ
+      format_tree = function(tsj) end,
+    },
+  }),
   tuple = lang_utils.set_preset_for_list({
     join = {
       space_in_brackets = false,
@@ -73,5 +78,72 @@ return {
   }),
   binary_operator = {
     target_nodes = { 'list', 'map', 'tuple' },
+  },
+  call = {
+    both = {
+      recursive = false,
+      space_in_brackets = true,
+      ---@param tsn TSNode
+      enable = function(tsn)
+        local trg = tsn:field('target')[1]
+        if not trg then
+          return false
+        end
+
+        local text = vim.treesitter.get_node_text(tsn:field('target')[1], 0)
+        return vim.tbl_contains({ 'def', 'defp', 'if' }, text)
+      end,
+    },
+    split = {
+      omit = { 'arguments' },
+      ---@param tsj TreeSJ
+      format_tree = function(tsj)
+        local args = tsj:child('arguments')
+        if not args then
+          return
+        end
+
+        local first, keywords = args:child(1), args:child('keywords')
+        if not (first and keywords) then
+          return
+        end
+
+        local _, sc = tsj:tsnode():range()
+        local p_indent = (' '):rep(sc)
+        local indent = p_indent .. (' '):rep(vim.fn.shiftwidth())
+
+        local kw_txt = vim.trim(keywords
+          :text()--[[@as string]]
+          :gsub('^do:', ''))
+
+        args:update_text({
+          first:text() .. ' do',
+          indent .. kw_txt,
+          p_indent .. 'end',
+        })
+      end,
+    },
+    join = {
+      ---@param tsj TreeSJ
+      format_tree = function(tsj)
+        local args, do_block = tsj:child('arguments'), tsj:child('do_block')
+        if not (args and do_block) then
+          return
+        end
+
+        if do_block:tsnode():named_child_count() > 1 then
+          return
+        end
+
+        args:update_text(args:text() .. ', ')
+
+        local body = do_block:child(2)
+        if not body then
+          return
+        end
+
+        do_block:update_text('do: ' .. body:text())
+      end,
+    },
   },
 }
