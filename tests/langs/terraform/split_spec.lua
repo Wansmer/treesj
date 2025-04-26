@@ -10,9 +10,9 @@ local data = {
     mode = MODE,
     lang = LANG,
     desc = 'lang "%s", node "tuple", preset default',
-    cursor = { 7, 6 },
-    result = { 6, 7 },
-    expected = { 3, 4 },
+    cursor = { 3, 12},
+    result = { 2, 7 },
+    expected = { 5, 10},
   },
   {
     path = PATH,
@@ -20,8 +20,8 @@ local data = {
     lang = LANG,
     desc = 'lang "%s", node "object", preset default',
     cursor = { 13, 33 },
-    result = { 13, 18 },
-    expected = { 16, 21 },
+    result = { 12, 17 },
+    expected = { 15, 20 },
   },
   {
     path = PATH,
@@ -29,8 +29,8 @@ local data = {
     lang = LANG,
     desc = 'lang "%s", node "function_call", preset default',
     cursor = { 23, 11 },
-    result = { 23, 28 },
-    expected = { 26, 31 },
+    result = { 22, 27 },
+    expected = { 25, 30 },
   },
   {
     path = PATH,
@@ -38,8 +38,8 @@ local data = {
     lang = LANG,
     desc = 'lang "%s", node "function_arguments", preset default',
     cursor = { 23, 18 },
-    result = { 23, 28 },
-    expected = { 26, 31 },
+    result = { 22, 27 },
+    expected = { 25, 30 },
   },
 }
 
