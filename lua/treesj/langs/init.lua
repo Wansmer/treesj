@@ -37,6 +37,7 @@ M.configured_langs = {
   'haskell',
   'zig',
   'julia',
+  'terraform',
 }
 
 M.presets = {}
