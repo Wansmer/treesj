@@ -85,6 +85,20 @@ M.list_body = set_preset_for_list({})
 M.val_record = { target_nodes = { "record_body" } }
 M.record_body = set_preset_for_list({})
 
+M.val_table = set_preset_for_list({
+	both = {
+		non_bracket_node = false,
+		omit = { ";" },
+	},
+	join = {
+		no_insert_if = {
+			lang_utils.helpers.if_second,
+			";",
+			lang_utils.helpers.if_penultimate,
+		},
+	},
+})
+
 M.ctrl_match = set_preset_for_list({
 	both = {
 		non_bracket_node = true,
