@@ -25,6 +25,8 @@ local DEFAULT_SETTINGS = {
   dot_repeat = true,
   ---@type nil|function Callback for treesj error handler. func (err_text, level, ...)
   on_error = nil,
+  ---@type function Function which provides the indent multiplier
+  shiftwidth = vim.fn.shiftwidth,
 }
 
 local commands = {

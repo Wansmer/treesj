@@ -75,12 +75,12 @@ return {
     recursive = false,
     ---Which indent must be on the last line of the formatted node.
     --- 'normal' – indent equals of the indent from first line;
-    --- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
+    --- 'inner' – indent, like all inner nodes (indent of start line of node + settings.shiftwidth()).
     ---@type 'normal'|'inner'
     last_indent = 'normal',
     ---Which indent must be on the last line of the formatted node.
     --- 'normal' – indent equals of the indent from first line;
-    --- 'inner' – indent, like all inner nodes (indent of start line of node + vim.fn.shiftwidth()).
+    --- 'inner' – indent, like all inner nodes (indent of start line of node + settings.shiftwidth()).
     ---@type 'normal'|'inner'
     inner_indent = 'inner',
   },

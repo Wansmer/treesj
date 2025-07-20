@@ -151,7 +151,7 @@ return {
         return vim.tbl_map(function(line)
           if line:match('%s.else$') then
             -- TODO: create helper `unindent`
-            local rgx = '^' .. (' '):rep(vim.fn.shiftwidth())
+            local rgx = '^' .. (' '):rep(settings.shiftwidth())
             return line:gsub(rgx, '')
           else
             return line

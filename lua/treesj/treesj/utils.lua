@@ -3,6 +3,7 @@ local u = require('treesj.utils')
 
 local query = require('vim.treesitter.query')
 local ts = require('vim.treesitter')
+local settings = require('treesj.settings')
 -- `ts.get_node_text` for NVIM v0.9.0-dev-1275+gcbbf8bd66-dirty and newer
 -- see: https://github.com/neovim/neovim/pull/22761
 local get_node_text = ts.get_node_text or query.get_node_text
@@ -135,7 +136,7 @@ function M.handle_indent(tsj)
     local is_norm = tsj:root():preset('split').inner_indent == 'normal'
     local need_sw = not (tsj:is_omit() or tsj:parent():is_omit() or is_norm)
 
-    local sw = need_sw and vim.fn.shiftwidth() or 0
+    local sw = need_sw and settings.shiftwidth() or 0
 
     tsj._root_indent = tsj:_get_prev_indent() + sw
   end
@@ -350,7 +351,7 @@ function M.calc_indent(tsj)
 
   local pp = parent:preset('split')
   local start_indent = parent._root_indent
-  local shiftwidth = vim.fn.shiftwidth()
+  local shiftwidth = settings.shiftwidth()
   local common_indent = start_indent + shiftwidth
   local is_last = is_last_no_omit(tsj) and pp.last_indent == 'normal'
   local is_same = pp.inner_indent == 'normal'
@@ -486,7 +487,7 @@ local function set_indent(child)
   local sep = ' '
 
   if not vim.bo.expandtab then
-    indent = indent / vim.fn.shiftwidth()
+    indent = indent / settings.shiftwidth()
     sep = '\t'
   end
 

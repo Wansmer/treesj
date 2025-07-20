@@ -1,4 +1,5 @@
 local lang_utils = require('treesj.langs.utils')
+local settings = require('treesj.settings')
 
 return {
   list = lang_utils.set_preset_for_list({
@@ -110,7 +111,7 @@ return {
 
         local _, sc = tsj:tsnode():range()
         local p_indent = (' '):rep(sc)
-        local indent = p_indent .. (' '):rep(vim.fn.shiftwidth())
+        local indent = p_indent .. (' '):rep(settings.shiftwidth())
 
         local kw_txt = vim.trim(keywords
           :text()--[[@as string]]
