@@ -38,6 +38,7 @@ M.configured_langs = {
   'zig',
   'julia',
   'terraform',
+  'typst',
 }
 
 M.presets = {}
