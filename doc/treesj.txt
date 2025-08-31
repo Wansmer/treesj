@@ -1,4 +1,4 @@
-*treesj.txt*          For Neovim >= 0.8.0          Last change: 2025 August 30
+*treesj.txt*          For Neovim >= 0.8.0          Last change: 2025 August 31
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -222,6 +222,7 @@ By default, TreeSJ has presets for these languages:
 - **Zig**;
 - **Julia**;
 - **Terraform**;
+- **Typst**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how to implement fallback
