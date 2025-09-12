@@ -61,3 +61,12 @@ import "fmt"
 import (
 	"fmt"
 )
+
+// RESULT OF JOIN (block "type_arguments", preset default)
+learnErrorHandling[int, float64](1, 2, 3)
+
+// RESULT OF SPLIT (block "type_arguments", preset default)
+learnErrorHandling[
+	int,
+	float64,
+](1, 2, 3)
