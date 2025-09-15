@@ -12,6 +12,11 @@ return {
       last_separator = true,
     },
   }),
+  type_arguments = lang_utils.set_preset_for_args({
+    split = {
+      last_separator = true,
+    },
+  }),
   block = lang_utils.set_preset_for_statement({
     join = {
       no_insert_if = {
