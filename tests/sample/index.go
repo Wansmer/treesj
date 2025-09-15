@@ -47,7 +47,7 @@ func learnMultiple(
 // RESULT OF JOIN (block "argument_list", preset default)
 learnErrorHandling(1, 2, 3)
 
-// RESULT OF JOIN (block "argument_list", preset default)
+// RESULT OF SPLIT (block "argument_list", preset default)
 learnErrorHandling(
 	1,
 	2,
