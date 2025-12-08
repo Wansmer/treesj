@@ -1,4 +1,4 @@
-*treesj.txt*         For Neovim >= 0.8.0        Last change: 2025 September 15
+*treesj.txt*         For Neovim >= 0.8.0         Last change: 2025 December 08
 
 ==============================================================================
 Table of Contents                                   *treesj-table-of-contents*
@@ -30,16 +30,16 @@ Inspired by and partly repeats the functionality of splitjoin.vim
 
 FEATURES                                              *treesj-treesj-features*
 
-- **Can be called from anywhere in the block**No need to move cursor to
+- **Can be called from anywhere in the block**: No need to move cursor to
     specified place to split/join block of code;
-- **Make cursor sticky**The cursor follows the text on which it was called;
-- **Autodetect mode**Toggle-mode present. Split or join blocks by same key
+- **Make cursor sticky**: The cursor follows the text on which it was called;
+- **Autodetect mode**: Toggle-mode present. Split or join blocks by same key
     mapping;
-- **Do it recursively**Expand or collapse all nested nodes? Yes, you can;
-- **Recognize nested languages**Filetype doesn’t matter, detect language with
+- **Do it recursively**: Expand or collapse all nested nodes? Yes, you can;
+- **Recognize nested languages**: Filetype doesn’t matter, detect language with
     treesitter;
-- **Repeat formatting with dot**`.` support for each action.
-- **Smart**Different behavior depending on the context.
+- **Repeat formatting with dot**: `.` support for each action.
+- **Smart**: Different behavior depending on the context.
 
 
 REQUIREMENTS                                      *treesj-treesj-requirements*
@@ -50,7 +50,7 @@ REQUIREMENTS                                      *treesj-treesj-requirements*
 
 INSTALLATION                                      *treesj-treesj-installation*
 
-With lazy.nvim <https://github.com/folke/lazy.nvim>
+With lazy.nvim <https://github.com/folke/lazy.nvim>:
 
 >lua
     return {
@@ -63,7 +63,7 @@ With lazy.nvim <https://github.com/folke/lazy.nvim>
     }
 <
 
-Withpacker.nvim <https://github.com/wbthomason/packer.nvim>
+With packer.nvim <https://github.com/wbthomason/packer.nvim>:
 
 >lua
     use({
@@ -78,7 +78,7 @@ Withpacker.nvim <https://github.com/wbthomason/packer.nvim>
 
 SETTINGS                                              *treesj-treesj-settings*
 
-Defaultconfiguration:
+Default configuration:
 
 >lua
     local tsj = require('treesj')
@@ -157,10 +157,10 @@ Presets for node can be two types:
 - With referens for nested nodes or fields - in this case, search will be
     continued among this node descendants;
 
-**Example**
+**Example**:
 
 
-  "|"- meaning cursor
+  "|" - meaning cursor
 >txt
     // with preset for self
     const arr = [ 1, |2, 3 ];
@@ -215,6 +215,7 @@ By default, TreeSJ has presets for these languages:
 - **Nix**;
 - **Kotlin**;
 - **Bash**;
+- **Zsh**;
 - **SQL**;
 - **Dart**;
 - **Elixir**;
@@ -371,7 +372,7 @@ default presets for common nodes:
 
 Takes a table with the settings to be overwritten as an argument.
 
-**Usage example**
+**Usage example**:
 
 >lua
     local lang_utils = require('treesj.langs.utils')
@@ -400,7 +401,7 @@ Takes a table with the settings to be overwritten as an argument.
     }
 <
 
-Also,you can use whole preset for language if your language has the same types
+Also, you can use whole preset for language if your language has the same types
 of nodes:
 
 
@@ -979,22 +980,22 @@ the fly (see advanced node configuration).
 
 TREESJ LIFECYCLE ~
 
-- **Checking the found Node**There is a check that there is no syntax error in
+- **Checking the found Node**: There is a check that there is no syntax error in
     the node, there are no descendants with types from `preset[mode].no_format_with`
     and `preset[mode].enable` is true.
-- **Creating root TreeSJ**A node for formatting has been found and checked,
+- **Creating root TreeSJ**: A node for formatting has been found and checked,
     and an instance of TreeSJ is created based on it.
-- **Build tree**It iterates all the children of the base node and creates
+- **Build tree**: It iterates all the children of the base node and creates
     the TreeSJ children. If the `preset[mode].recursive` is true, then a check is made
     to see if the child or its children are configured, if so, a tree is built
     for it and its children.
-- **Remove or insert last separator**if a separator is specified in the
+- **Remove or insert last separator**: if a separator is specified in the
     preset.
-- **Run preset[mode].format_tree**custom function from preset.
-- **Mode-based preparation**spacing or indenting, adding a
+- **Run preset[mode].format_tree**: custom function from preset.
+- **Mode-based preparation**: spacing or indenting, adding a
     `preset.join.force_insert`, forming a list of strings to replace the base node
     content.
-- **Run preset[mode].format_resulted_lines**custom function from preset.
+- **Run preset[mode].format_resulted_lines**: custom function from preset.
 
 
 METHODS ~
