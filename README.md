@@ -209,6 +209,7 @@ By default, TreeSJ has presets for these languages:
 - **Nix**;
 - **Kotlin**;
 - **Bash**;
+- **Zsh**;
 - **SQL**;
 - **Dart**;
 - **Elixir**;

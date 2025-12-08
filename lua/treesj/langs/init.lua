@@ -31,6 +31,7 @@ M.configured_langs = {
   'nix',
   'kotlin',
   'bash',
+  'zsh',
   'sql',
   'dart',
   'elixir',
