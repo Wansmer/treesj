@@ -50,7 +50,7 @@ function M._format(mode, override)
   -- and each node will be processed only once (until
   -- the tree is updated). See issue #118
   local ok_ts, parser = pcall(vim.treesitter.get_parser, 0)
-  if not ok_ts then
+  if not ok_ts or not parser then
     notify.error(msg.no_ts_parser)
     return
   end
