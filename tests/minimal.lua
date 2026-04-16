@@ -55,4 +55,4 @@ require('nvim-treesitter').setup({
 
 require('nvim-treesitter')
   .install(require('treesj.langs').configured_langs)
-  :wait(15000) -- waiting for parsers to be installed. If some tests will completely fail, try increasing this number
+  :wait(20000) -- waiting for parsers to be installed. If some tests will completely fail, try increasing this number
