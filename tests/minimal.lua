@@ -2,6 +2,9 @@
 
 local CWD = vim.loop.cwd() .. '/'
 
+vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_netrw = 1
+
 vim.opt.shiftwidth = 2
 vim.opt.writebackup = false
 vim.opt.swapfile = false
@@ -45,7 +48,11 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 require('plenary.busted')
-require('nvim-treesitter.configs').setup({
-  ensure_installed = require('treesj.langs').configured_langs,
-  sync_install = true,
+
+require('nvim-treesitter').setup({
+  install_dir = CWD .. '.tests/parsers',
 })
+
+require('nvim-treesitter')
+  .install(require('treesj.langs').configured_langs)
+  :wait(15000) -- waiting for parsers to be installed. If some tests will completely fail, try increasing this number
