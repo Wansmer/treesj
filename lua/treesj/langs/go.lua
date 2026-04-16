@@ -17,13 +17,17 @@ return {
       last_separator = true,
     },
   }),
-  block = lang_utils.set_preset_for_statement({
+  statement_list = lang_utils.set_preset_for_statement({
+    both = {
+      non_bracket_node = true,
+    },
     join = {
       no_insert_if = {
         lang_utils.helpers.if_penultimate,
       },
     },
   }),
+  block = { target_nodes = { 'statement_list' } },
   import_spec = lang_utils.set_preset_for_args({
     both = {
       enable = function(tsn)
