@@ -45,7 +45,7 @@ function M.get_node_at_cursor(root_lang_tree)
   )
 end
 
-function M._format(mode, override)
+function M._format(mode, override, selector)
   -- Tree reparsing is required, otherwise the tree may not be updated
   -- and each node will be processed only once (until
   -- the tree is updated). See issue #118
@@ -67,7 +67,7 @@ function M._format(mode, override)
 
   -- If the node is marked as "disabled", continue searching from its parent.
   while true do
-    found, tsn_data = pcall(search.get_configured_node, start_node)
+    found, tsn_data = pcall(selector or search.get_configured_node, start_node)
     if not found then
       notify.warn(tsn_data)
       return
@@ -167,6 +167,37 @@ function M._format(mode, override)
   end
 
   pcall(vim.api.nvim_win_set_cursor, 0, new_cursor)
+end
+
+M.last_selected = nil
+function M._nested(selector, mode, preset)
+  local nodes
+  M._format(mode, preset, function(start_node)
+    if not nodes then
+      nodes = search.get_configured_nodes(start_node)
+    end
+    local selected
+    if settings.remember_selected and M.last_selected then
+      -- TODO: basic indexing is not ideal if the sticky cursor doesn't work?
+      selected = nodes[M.last_selected]
+    else
+      if type(selector) == 'string' then
+        selector = require('treesj.selectors.' .. selector).selector
+      end
+      local sel, index = selector(nodes)
+      if sel then
+        M.last_selected = index
+        selected = sel
+      end
+    end
+    if selected then
+      return selected
+    else
+      -- TODO: change the error messages
+      error(msg.no_chosen_node, 0)
+      return
+    end
+  end)
 end
 
 return M
