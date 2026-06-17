@@ -7,6 +7,7 @@ local M = {}
 
 M.msg = {
   no_detect_node = 'No detected node at cursor',
+  no_chosen_node = 'Node choice aborted',
   no_configured_lang = 'Language "%s" is not configured',
   contains_error = 'The node "%s" or its descendants contain a syntax error and cannot be %s',
   no_configured_node = 'Node "%s" for lang "%s" is not configured',
