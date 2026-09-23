@@ -43,6 +43,7 @@ M.configured_langs = {
   'typst',
   'qml',
   'qmljs',
+  'gdscript',
 }
 
 M.presets = {}

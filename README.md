@@ -220,6 +220,7 @@ By default, TreeSJ has presets for these languages:
 - **Terraform**;
 - **Typst**;
 - **Qml**;
+- **GDScript**;
 
 For adding your favorite language, add it to `langs` sections in your
 configuration. Also, see how [to implement
