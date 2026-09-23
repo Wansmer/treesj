@@ -56,3 +56,5 @@ require('nvim-treesitter').setup({
 require('nvim-treesitter')
   .install(require('treesj.langs').configured_langs)
   :wait(20000) -- waiting for parsers to be installed. If some tests will completely fail, try increasing this number
+
+vim.treesitter.language.register('c_sharp', 'cs')

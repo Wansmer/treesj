@@ -206,6 +206,7 @@ By default, TreeSJ has presets for these languages:
 - **Rust**;
 - **R**;
 - **C/C++**;
+- **C#**;
 - **Nix**;
 - **Kotlin**;
 - **Bash**;

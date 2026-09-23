@@ -26,6 +26,7 @@ M.configured_langs = {
   'r',
   'cpp',
   'c',
+  'c_sharp',
   'toml',
   'yaml',
   'nix',
