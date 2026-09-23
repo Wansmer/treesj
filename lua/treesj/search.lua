@@ -289,9 +289,18 @@ function M.range(tsn, preset)
   local er, ec = get_last_symbol_range(tsn, to)
 
   if preset and (non_bracket_node and not shrink_node) then
+    -- Indentation-based blocks (e.g. Python) have no closing delimiter token.
+    -- `outer_framing = false` stops framing from climbing to the parent's sibling
+    local climb = type(non_bracket_node) ~= 'table'
+      or non_bracket_node.outer_framing ~= false
+
     local function get_framing_for_non_bracket(n)
-      local first = n:prev_sibling() or n:parent():prev_sibling()
-      local last = n:next_sibling() or n:parent():next_sibling()
+      local first = n:prev_sibling()
+      local last = n:next_sibling()
+      if climb then
+        first = first or n:parent():prev_sibling()
+        last = last or n:parent():next_sibling()
+      end
       return first, last
     end
 

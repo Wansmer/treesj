@@ -40,6 +40,7 @@ return {
     omit = {},
     ---Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
     ---If value is table, should be contains follow keys: { left = 'text', right = 'text' }. Empty string uses by default
+    ---For indentation-based blocks with no closing delimiter, add `outer_framing = false` to stop framing from extending to the parent's sibling
     ---@type boolean|table
     non_bracket_node = false,
     ---If you need to process only nodes in the range from / to.

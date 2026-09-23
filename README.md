@@ -296,6 +296,7 @@ local node_type = {
     omit = {},
     ---Non-bracket nodes (e.g., with 'then|()' ... 'end' instead of { ... }|< ... >|[ ... ])
     ---If value is table, should be contains follow keys: { left = 'text', right = 'text' }. Empty string uses by default
+    ---For indentation-based blocks with no closing delimiter, add `outer_framing = false` to stop framing from extending to the parent's sibling
     ---@type boolean|table
     non_bracket_node = false,
     ---If you need to process only nodes in the range from / to.
@@ -638,6 +639,13 @@ node imitators are created with an empty value) or take a table that
 specifies what text should wrap the actual base node.
 
 E.g., table value: `{ left = 'text', right = 'text' }`
+
+For indentation-based blocks that have no closing delimiter (e.g. Python,
+GDScript), also set `outer_framing = false`, e.g.
+`{ left = '', right = '', outer_framing = false }`. By default the range
+framing climbs to the parent's sibling when the node has none of its own; for
+such blocks that sibling is the following statement, so the join range would
+otherwise extend over it and swallow it.
 
 <details>
 
